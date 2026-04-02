@@ -1,0 +1,14 @@
+[Unit]
+Description=Market Fiyat Scraper — Günlük Zamanlayıcı
+Requires=price-scraper.service
+
+[Timer]
+# Her gün 05:00 UTC = 08:00 Türkiye saati
+OnCalendar=*-*-* 05:00:00 UTC
+# Sunucu kapalıyken geçen run'ı boot sonrası hemen çalıştırır
+Persistent=true
+# Aynı servis hâlâ çalışıyorsa bu timer tetiklemez
+Unit=price-scraper.service
+
+[Install]
+WantedBy=timers.target

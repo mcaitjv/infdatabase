@@ -1,0 +1,13 @@
+[Unit]
+Description=Market Fiyat Scraper
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/infdatabase
+ExecStart=/home/ubuntu/.venv/bin/python -m pipeline.runner
+EnvironmentFile=/home/ubuntu/infdatabase/.env
+StandardOutput=journal
+StandardError=journal

@@ -1,0 +1,34 @@
+# Ortam değişkenleri — asla commit'leme
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Veritabanı (lokal test)
+*.db
+*.sqlite
+
+# Loglar
+logs/*.log
+
+# Playwright browser binary'leri
+.playwright/
+
+# Data exports (büyük dosyalar)
+data/exports/*.parquet
+data/exports/*.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

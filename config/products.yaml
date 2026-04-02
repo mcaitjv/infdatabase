@@ -1,0 +1,76 @@
+# Takip edilecek ürünler
+# Her ürün için market bazında SKU tanımlanır.
+# SKU bilgisi ilgili market sitesinin ürün URL'sinden veya API'sinden alınır.
+#
+# Örnek URL yapıları:
+#   Migros:  migros.com.tr/urun-adi-p-{sku}
+#   Şok:     sokmarket.com.tr/urun/{sku}
+#   A101:    a101.com.tr/urunler/{sku}
+
+products:
+  # ----- GIDA -----
+  - canonical_name: "Selpak Tuvalet Kağıdı 32 Rulo"
+    barcode: "8690804310102"
+    category: "temizlik"
+    unit_type: "adet"
+    unit_size: 32
+    markets:
+      migros:
+        sku: "TODO"
+        url: ""
+      a101:
+        sku: "TODO"
+      sok:
+        sku: "TODO"
+
+  - canonical_name: "Mis Tam Yağlı Süt 1 lt"
+    barcode: ""
+    category: "gida"
+    subcategory: "sut_urunleri"
+    unit_type: "lt"
+    unit_size: 1
+    markets:
+      migros:
+        sku: "TODO"
+      a101:
+        sku: "TODO"
+      sok:
+        sku: "TODO"
+
+  - canonical_name: "Pınar Kaşar Peyniri 400 g"
+    barcode: ""
+    category: "gida"
+    subcategory: "peynir"
+    unit_type: "g"
+    unit_size: 400
+    markets:
+      migros:
+        sku: "TODO"
+      a101:
+        sku: "TODO"
+
+  # ----- TEMİZLİK -----
+  - canonical_name: "Domestos Çamaşır Suyu 3.5 lt"
+    barcode: ""
+    category: "temizlik"
+    unit_type: "lt"
+    unit_size: 3.5
+    markets:
+      migros:
+        sku: "TODO"
+      a101:
+        sku: "TODO"
+      sok:
+        sku: "TODO"
+
+  # ----- KİŞİSEL BAKIM -----
+  - canonical_name: "Dove Duş Jeli 500 ml"
+    barcode: ""
+    category: "kisisel_bakim"
+    unit_type: "ml"
+    unit_size: 500
+    markets:
+      migros:
+        sku: "TODO"
+      a101:
+        sku: "TODO"

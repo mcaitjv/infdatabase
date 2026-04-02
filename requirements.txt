@@ -1,0 +1,39 @@
+# HTTP
+httpx[asyncio]==0.27.*
+curl_cffi==0.7.*          # Cloudflare bypass (gerekirse)
+
+# Browser automation
+playwright==1.44.*
+
+# HTML parsing
+beautifulsoup4==4.12.*
+lxml==5.2.*
+parsel==1.9.*             # XPath/CSS (Scrapy'den bağımsız)
+
+# Data validation
+pydantic[v2]==2.7.*
+pydantic-settings==2.3.*
+
+# Database
+asyncpg==0.29.*           # Neon PostgreSQL (async)
+aiosqlite==0.20.*         # SQLite (lokal test)
+
+# Retry logic
+tenacity==8.3.*
+
+# Product matching
+rapidfuzz==3.9.*
+
+# Anti-bot
+fake-useragent==1.5.*
+
+# Config
+python-dotenv==1.0.*
+PyYAML==6.0.*
+
+# Analytics (lokal)
+duckdb==0.10.*
+
+# Dev / test
+pytest==8.2.*
+pytest-asyncio==0.23.*
