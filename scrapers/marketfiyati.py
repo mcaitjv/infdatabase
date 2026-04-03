@@ -166,6 +166,11 @@ class MarketFiyatiScraper(BaseScraper):
                 "depots":    self._depot_ids,
             },
         )
+        if resp.status_code == 418:
+            import asyncio as _asyncio
+            logger.warning("[marketfiyati] 418 rate-limit alındı — 60s bekleniyor…")
+            await _asyncio.sleep(60)
+            raise httpx.HTTPStatusError("418 Too Many Requests", request=resp.request, response=resp)
         resp.raise_for_status()
         return resp.json()
 
@@ -265,7 +270,7 @@ class MarketFiyatiScraper(BaseScraper):
             if offset >= total or len(items) < _PAGE_SIZE:
                 break
 
-            await self._sleep(1.0, 2.5)
+            await self._sleep(2.0, 5.0)
 
         logger.info(
             "[marketfiyati] keyword=%s konum=%s → %d kayıt",
@@ -292,7 +297,7 @@ class MarketFiyatiScraper(BaseScraper):
         for keyword in keywords:
             records = await self.scrape_keyword(keyword, lat, lng, location_name, distance)
             all_records.extend(records)
-            await self._sleep(1.5, 3.5)
+            await self._sleep(5.0, 10.0)
 
         return all_records
 
@@ -331,7 +336,7 @@ class MarketFiyatiScraper(BaseScraper):
                 if key not in seen:
                     seen.add(key)
                     all_records.append(r)
-            await self._sleep(1.5, 3.5)
+            await self._sleep(5.0, 10.0)
 
         logger.info(
             "[marketfiyati] scan_all_products konum=%s → %d benzersiz ürün (%d kategori)",

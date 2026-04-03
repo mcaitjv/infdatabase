@@ -247,7 +247,7 @@ async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
     )
 
     async with MarketFiyatiScraper() as scraper:
-        for loc in locations:
+        for loc_idx, loc in enumerate(locations):
             city = loc["name"]
             city_branches = branches.get(city, {})
 
@@ -336,6 +336,11 @@ async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
                     loc["name"], market_name, run.status, duration,
                 )
                 runs.append(run)
+
+            # Son şehir değilse sonraki şehre geçmeden önce 10 dakika bekle
+            if loc_idx < len(locations) - 1:
+                logger.info("[full-scan] Sonraki şehre geçmeden önce 10 dakika bekleniyor…")
+                await asyncio.sleep(600)
 
     return runs
 

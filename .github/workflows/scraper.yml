@@ -1,0 +1,44 @@
+name: Günlük Fiyat Tarama
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # Her gün 06:00 Türkiye saati (UTC+3)
+  workflow_dispatch:        # GitHub UI'dan manuel tetikleme
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120   # 55 kategori × 3 şehir × ~5-10s gecikme ≈ 60-90 dakika
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 3.11 kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Bağımlılıkları yükle
+        run: pip install -r requirements.txt
+
+      - name: DB şemasını kur
+        run: python -m pipeline.runner --setup-schema
+        # ON CONFLICT / IF NOT EXISTS → idempotent, her çalışmada güvenli
+
+      - name: Şubeleri keşfet (branches.yaml boşsa)
+        run: |
+          if ! grep -q "depot_id" config/branches.yaml 2>/dev/null; then
+            echo "branches.yaml bulunamadı veya boş — şube keşfi başlatılıyor…"
+            python -m pipeline.runner --discover-branches
+          else
+            echo "branches.yaml zaten dolu — keşif atlanıyor."
+          fi
+
+      - name: Fiyatları çek ve DB'ye yaz
+        run: python -m pipeline.runner
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # DATABASE_URL yoksa pipeline otomatik olarak data/prices.db (SQLite) kullanır
+      # Production için: GitHub repo → Settings → Secrets → DATABASE_URL = postgresql://...
