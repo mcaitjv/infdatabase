@@ -1,41 +1,25 @@
 # Takip edilecek ürünler
-# Her ürün için market bazında SKU tanımlanır.
-# SKU bilgisi ilgili market sitesinin ürün URL'sinden veya API'sinden alınır.
 #
-# Örnek URL yapıları:
-#   Migros:  migros.com.tr/urun-adi-p-{sku}
-#   Şok:     sokmarket.com.tr/urun/{sku}
-#   A101:    a101.com.tr/urunler/{sku}
+# Her ürün için iki kaynak desteklenir:
+#   1. marketfiyati.org.tr API  → "keywords" alanı (önerilen)
+#   2. Market'e özgü scraper    → "markets" altındaki SKU'lar (yedek)
+#
+# marketfiyati API'si TÜBİTAK destekli olduğu için birincil kaynak olarak kullanılır.
+# keywords: API'ye gönderilecek arama terimi (Türkçe, kısa tutun)
 
 products:
-  # ----- GIDA -----
-  - canonical_name: "Selpak Tuvalet Kağıdı 32 Rulo"
-    barcode: "8690804310102"
-    category: "temizlik"
-    unit_type: "adet"
-    unit_size: 32
-    markets:
-      migros:
-        sku: "TODO"
-        url: ""
-      a101:
-        sku: "TODO"
-      sok:
-        sku: "TODO"
-
+  # ----- GIDA — SÜT ÜRÜNLERİ -----
   - canonical_name: "Mis Tam Yağlı Süt 1 lt"
     barcode: ""
     category: "gida"
     subcategory: "sut_urunleri"
     unit_type: "lt"
     unit_size: 1
+    keywords: "mis sut 1 lt"
     markets:
-      migros:
-        sku: "TODO"
-      a101:
-        sku: "TODO"
-      sok:
-        sku: "TODO"
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+      sok:    { sku: "TODO" }
 
   - canonical_name: "Pınar Kaşar Peyniri 400 g"
     barcode: ""
@@ -43,25 +27,106 @@ products:
     subcategory: "peynir"
     unit_type: "g"
     unit_size: 400
+    keywords: "pinar kasar peynir 400"
     markets:
-      migros:
-        sku: "TODO"
-      a101:
-        sku: "TODO"
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+
+  - canonical_name: "Banvit Tavuk Göğsü 1 kg"
+    barcode: ""
+    category: "gida"
+    subcategory: "et_tavuk"
+    unit_type: "kg"
+    unit_size: 1
+    keywords: "banvit tavuk gogsu 1 kg"
+    markets:
+      migros: { sku: "TODO" }
+
+  - canonical_name: "Pınar Yoğurt 1 kg"
+    barcode: ""
+    category: "gida"
+    subcategory: "sut_urunleri"
+    unit_type: "kg"
+    unit_size: 1
+    keywords: "pinar yogurt 1 kg"
+    markets:
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+      sok:    { sku: "TODO" }
+
+  - canonical_name: "Torku Şeker 1 kg"
+    barcode: ""
+    category: "gida"
+    subcategory: "temel_gida"
+    unit_type: "kg"
+    unit_size: 1
+    keywords: "torku seker 1 kg"
+    markets:
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+
+  - canonical_name: "Nuhun Ankara Makarnası Spagetti 500 g"
+    barcode: ""
+    category: "gida"
+    subcategory: "temel_gida"
+    unit_type: "g"
+    unit_size: 500
+    keywords: "nuhun ankara spagetti 500"
+    markets:
+      migros: { sku: "TODO" }
+
+  - canonical_name: "Lezita Çiğ Köfte 330 g"
+    barcode: ""
+    category: "gida"
+    subcategory: "hazir_gida"
+    unit_type: "g"
+    unit_size: 330
+    keywords: "lezita cig kofte 330"
+    markets:
+      a101:   { sku: "TODO" }
+      sok:    { sku: "TODO" }
 
   # ----- TEMİZLİK -----
+  - canonical_name: "Selpak Tuvalet Kağıdı 32 Rulo"
+    barcode: "8690804310102"
+    category: "temizlik"
+    unit_type: "adet"
+    unit_size: 32
+    keywords: "selpak tuvalet kagidi 32"
+    markets:
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+      sok:    { sku: "TODO" }
+
   - canonical_name: "Domestos Çamaşır Suyu 3.5 lt"
     barcode: ""
     category: "temizlik"
     unit_type: "lt"
     unit_size: 3.5
+    keywords: "domestos camasir suyu 3.5"
     markets:
-      migros:
-        sku: "TODO"
-      a101:
-        sku: "TODO"
-      sok:
-        sku: "TODO"
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+      sok:    { sku: "TODO" }
+
+  - canonical_name: "Ariel Toz Çamaşır Deterjanı 6 kg"
+    barcode: ""
+    category: "temizlik"
+    unit_type: "kg"
+    unit_size: 6
+    keywords: "ariel toz deterjan 6 kg"
+    markets:
+      migros: { sku: "TODO" }
+
+  - canonical_name: "Omo Sıvı Deterjan 3 lt"
+    barcode: ""
+    category: "temizlik"
+    unit_type: "lt"
+    unit_size: 3
+    keywords: "omo sivi deterjan 3 lt"
+    markets:
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
 
   # ----- KİŞİSEL BAKIM -----
   - canonical_name: "Dove Duş Jeli 500 ml"
@@ -69,8 +134,16 @@ products:
     category: "kisisel_bakim"
     unit_type: "ml"
     unit_size: 500
+    keywords: "dove dus jeli 500"
     markets:
-      migros:
-        sku: "TODO"
-      a101:
-        sku: "TODO"
+      migros: { sku: "TODO" }
+      a101:   { sku: "TODO" }
+
+  - canonical_name: "Head & Shoulders Şampuan 400 ml"
+    barcode: ""
+    category: "kisisel_bakim"
+    unit_type: "ml"
+    unit_size: 400
+    keywords: "head shoulders sampuan 400"
+    markets:
+      migros: { sku: "TODO" }

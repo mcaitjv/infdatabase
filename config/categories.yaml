@@ -1,0 +1,87 @@
+# Türk market kategorileri — tam ürün taraması için kullanılır
+#
+# Her keyword bir API çağrısı üretir ve o kategorideki tüm ürünler çekilir.
+# Geniş kategori isimleri tercih edilir — fazla spesifik olunursa ürünler atlanır.
+#
+# Yeni kategori eklemek için buraya satır ekle, kodda değişiklik gerekmez.
+
+categories:
+  # Süt & Süt Ürünleri
+  - "süt"
+  - "yoğurt"
+  - "peynir"
+  - "tereyağı"
+  - "kaymak"
+  - "ayran"
+  - "kefir"
+
+  # Yumurta
+  - "yumurta"
+
+  # Ekmek & Unlu Mamuller
+  - "ekmek"
+  - "un"
+  - "bisküvi"
+  - "kraker"
+
+  # Temel Gıda
+  - "şeker"
+  - "tuz"
+  - "makarna"
+  - "pirinç"
+  - "bulgur"
+  - "mercimek"
+  - "nohut"
+  - "fasulye"
+
+  # Yağlar
+  - "zeytinyağı"
+  - "ayçiçek yağı"
+
+  # Konserve & Hazır Gıda
+  - "konserve"
+  - "domates salça"
+  - "ketçap"
+  - "mayonez"
+
+  # Et & Et Ürünleri
+  - "et"
+  - "tavuk"
+  - "balık"
+  - "sucuk"
+  - "salam"
+  - "sosis"
+
+  # İçecekler
+  - "çay"
+  - "kahve"
+  - "su"
+  - "meyve suyu"
+  - "gazlı içecek"
+  - "enerji içeceği"
+
+  # Atıştırmalık & Çikolata
+  - "çikolata"
+  - "gofret"
+  - "cips"
+  - "kuruyemiş"
+
+  # Temizlik
+  - "deterjan"
+  - "çamaşır suyu"
+  - "bulaşık deterjanı"
+  - "tuvalet kağıdı"
+  - "peçete"
+  - "çöp torbası"
+
+  # Kişisel Bakım
+  - "diş macunu"
+  - "şampuan"
+  - "sabun"
+  - "deodorant"
+  - "el kremi"
+
+  # Bebek
+  - "bebek bezi"
+  - "bebek maması"
+  - "ıslak mendil"

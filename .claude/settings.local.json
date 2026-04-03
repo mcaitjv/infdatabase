@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(gh repo:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(cmd.exe /c \"where gh\")",
+      "Bash(cmd.exe /c \"gh --version\")",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Users/mucah/AppData/Local/Programs/**)",
+      "Bash(cmd.exe /c \"winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements\")",
+      "Bash(cmd.exe /c \"refreshenv & gh --version\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Read(//c/Users/mucah/AppData/Local/**)",
+      "Read(//c/Users/mucah/**)",
+      "Bash(powershell.exe -Command \"winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements\")",
+      "Bash(powershell.exe -Command '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '\\\\''https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_windows_amd64.msi'\\\\'' -OutFile \\(Join-Path $env:TEMP '\\\\''gh.msi'\\\\''\\) -UseBasicParsing; Write-Host '\\\\''Downloaded'\\\\''')",
+      "Bash(powershell.exe -Command 'Start-Process msiexec.exe -ArgumentList '\\\\''/i'\\\\'', \\(Join-Path $env:TEMP '\\\\''gh.msi'\\\\''\\), '\\\\''/quiet'\\\\'', '\\\\''/norestart'\\\\'' -Wait; Write-Host '\\\\''Installed'\\\\''')",
+      "Bash(cmd.exe /c \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe --version\")",
+      "Bash(powershell.exe -Command \"& 'C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe' --version\")",
+      "Bash(powershell.exe -Command 'Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; [System.Environment]::GetEnvironmentVariable\\('\\\\''PATH'\\\\'','\\\\''Machine'\\\\''\\) -split '\\\\'';'\\\\'' | Where-Object { $_ -like '\\\\''*github*'\\\\'' -or $_ -like '\\\\''*gh*'\\\\'' }')",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)"
     ]
   }
 }

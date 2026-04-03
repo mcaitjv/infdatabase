@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS market_products (
     market_sku  VARCHAR(100),                      -- markete özgü ürün kodu
     market_name VARCHAR(255) NOT NULL,             -- marketteki görünen ad
     market_url  TEXT,                              -- ürün sayfası URL
+    brand       VARCHAR(100),                      -- marka adı (API'den)
+    volume      VARCHAR(50),                       -- hacim/ağırlık (örn: "1 LT", "500 G")
     is_active   BOOLEAN      DEFAULT TRUE,
     UNIQUE(market, market_sku)
 );
@@ -36,8 +38,9 @@ CREATE TABLE IF NOT EXISTS price_snapshots (
     price             NUMERIC(10,2) NOT NULL,      -- normal (etiket) fiyatı
     discounted_price  NUMERIC(10,2),               -- indirimli fiyat (NULL = indirim yok)
     is_available      BOOLEAN       DEFAULT TRUE,  -- stokta var mı
+    location          VARCHAR(100),                -- konum adı (marketfiyati için: "Istanbul", "Ankara", ...)
     scraped_at        TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(market_product_id, snapshot_date)       -- günde 1 snapshot
+    UNIQUE(market_product_id, snapshot_date, location)  -- aynı ürün farklı konumlarda farklı fiyat olabilir
 );
 
 -- Scraper çalışma logları: her run kaydedilir
@@ -62,6 +65,10 @@ CREATE INDEX IF NOT EXISTS idx_ps_date
 -- Ürün + tarih bazlı sorgular (tek ürünün fiyat geçmişi)
 CREATE INDEX IF NOT EXISTS idx_ps_product_date
     ON price_snapshots(market_product_id, snapshot_date);
+
+-- Konum bazlı filtreler (marketfiyati şube karşılaştırması)
+CREATE INDEX IF NOT EXISTS idx_ps_location
+    ON price_snapshots(location) WHERE location IS NOT NULL;
 
 -- Market bazlı filtreler
 CREATE INDEX IF NOT EXISTS idx_mp_market
