@@ -90,6 +90,7 @@ async def run_marketfiyati(dry_run: bool = False) -> list[ScrapeRun]:
                     lng=loc["lng"],
                     keywords=keywords,
                     location_name=loc["name"],
+                    distance=float(loc.get("distance_km", 10)),
                 )
                 valid = validate_batch(records)
                 run.products_scraped = len(valid)

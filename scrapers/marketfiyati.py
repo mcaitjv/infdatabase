@@ -118,7 +118,11 @@ class MarketFiyatiScraper(BaseScraper):
     async def _get_nearest_depots(
         self, lat: float, lng: float, distance: float
     ) -> list[str]:
-        """Yakın şubelerin depot ID listesini döner."""
+        """
+        Yakın şubelerin depot ID listesini döner.
+        Her market zincirinden birden fazla şube dahil edilir:
+        böylece zincirin o bölgedeki tüm stoğu sorgulanır.
+        """
         resp = await self.client.post(
             _NEAREST,
             json={"latitude": lat, "longitude": lng, "distance": distance},
@@ -126,7 +130,14 @@ class MarketFiyatiScraper(BaseScraper):
         resp.raise_for_status()
         depots = resp.json()
         ids = [d["id"] for d in depots if d.get("id")]
-        logger.info("[marketfiyati] %d şube bulundu.", len(ids))
+        # Market zinciri dağılımını logla
+        from collections import Counter
+        chain_counts = Counter(d.get("marketName", "?") for d in depots)
+        logger.info(
+            "[marketfiyati] %d şube bulundu: %s",
+            len(ids),
+            dict(chain_counts),
+        )
         return ids
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=8, max=90))
