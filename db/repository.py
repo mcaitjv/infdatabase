@@ -96,6 +96,89 @@ async def upsert_scrape_run(conn: asyncpg.Connection, run: ScrapeRun) -> None:
     )
 
 
+async def upsert_market_product(
+    conn: asyncpg.Connection,
+    market: str,
+    sku: str,
+    name: str,
+    brand: str | None = None,
+    volume: str | None = None,
+) -> int:
+    """
+    market_products tablosuna ürünü ekler veya günceller.
+    Döndürür: market_product_id (int)
+    """
+    row = await conn.fetchrow(
+        """
+        INSERT INTO market_products (market, market_sku, market_name, brand, volume)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (market, market_sku)
+        DO UPDATE SET
+            market_name = EXCLUDED.market_name,
+            brand       = EXCLUDED.brand,
+            volume      = EXCLUDED.volume
+        RETURNING id
+        """,
+        market, sku, name, brand, volume,
+    )
+    return row["id"]
+
+
+async def batch_upsert_products_and_snapshots(
+    conn: asyncpg.Connection,
+    records: list[PriceRecord],
+) -> int:
+    """
+    Her unique (market, sku) için market_products'ı upsert eder,
+    ardından price_snapshots'a günlük snapshot ekler.
+    Döndürür: eklenen snapshot sayısı
+    """
+    if not records:
+        return 0
+
+    # Unique ürünler için market_product_id'yi topla
+    sku_to_id: dict[tuple[str, str], int] = {}
+    seen_skus: set[tuple[str, str]] = set()
+    for r in records:
+        key = (r.market, r.market_sku)
+        if key not in seen_skus:
+            seen_skus.add(key)
+            mp_id = await upsert_market_product(
+                conn, r.market, r.market_sku, r.market_name, r.brand, r.volume
+            )
+            sku_to_id[key] = mp_id
+
+    # Snapshot'ları toplu ekle
+    snapshot_rows = [
+        (
+            sku_to_id[(r.market, r.market_sku)],
+            r.snapshot_date,
+            float(r.price),
+            float(r.discounted_price) if r.discounted_price else None,
+            r.is_available,
+            r.location,
+        )
+        for r in records
+        if (r.market, r.market_sku) in sku_to_id
+    ]
+
+    inserted = 0
+    for row in snapshot_rows:
+        result = await conn.execute(
+            """
+            INSERT INTO price_snapshots
+                (market_product_id, snapshot_date, price, discounted_price, is_available, location)
+            VALUES ($1, $2::date, $3::numeric, $4::numeric, $5::boolean, $6::varchar)
+            ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
+            """,
+            *row,
+        )
+        if result == "INSERT 0 1":
+            inserted += 1
+
+    return inserted
+
+
 async def get_last_prices(
     conn: asyncpg.Connection,
     market: str,

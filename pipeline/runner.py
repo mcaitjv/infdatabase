@@ -2,10 +2,11 @@
 Pipeline Runner — Ana Orkestratör
 -----------------------------------
 Kullanım:
-  python -m pipeline.runner                              # tüm marketler (marketfiyati modu)
-  python -m pipeline.runner --source marketfiyati        # marketfiyati.org.tr API (önerilen)
+  python -m pipeline.runner                              # tüm marketler, tüm kategoriler (full-scan)
+  python -m pipeline.runner --source full-scan           # tüm kategorileri tara, tüm ürünleri çek
+  python -m pipeline.runner --source full-scan --dry-run
+  python -m pipeline.runner --source marketfiyati        # yalnızca products.yaml keyword'leri
   python -m pipeline.runner --source scrapers            # tek tek market scraper'ları
-  python -m pipeline.runner --source marketfiyati --dry-run
   python -m pipeline.runner --setup-schema               # DB tablolarını oluştur
 """
 
@@ -18,7 +19,13 @@ from datetime import date, datetime
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import apply_schema, get_connection, insert_price_snapshots, upsert_scrape_run
+from db.repository import (
+    apply_schema,
+    batch_upsert_products_and_snapshots,
+    get_connection,
+    insert_price_snapshots,
+    upsert_scrape_run,
+)
 from pipeline.validator import validate_batch
 from scrapers.a101 import A101Scraper
 from scrapers.bim import BimScraper
@@ -61,6 +68,12 @@ def _load_keywords() -> list[str]:
         products = yaml.safe_load(f).get("products", [])
     keywords = [p["keywords"] for p in products if p.get("keywords")]
     return list(dict.fromkeys(keywords))  # sırayı koruyarak tekrarları kaldır
+
+
+def _load_categories() -> list[str]:
+    path = os.path.join("config", "categories.yaml")
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f).get("categories", [])
 
 
 async def run_marketfiyati(dry_run: bool = False) -> list[ScrapeRun]:
@@ -131,6 +144,105 @@ async def run_marketfiyati(dry_run: bool = False) -> list[ScrapeRun]:
                 loc["name"], run.status, duration
             )
             runs.append(run)
+
+    return runs
+
+
+# ── Tam tarama modu (tüm kategoriler × tüm konumlar) ─────────────────────────
+
+async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
+    """
+    Tüm kategori keyword'lerini tarayarak her marketteki tüm ürünleri çeker.
+    Yeni ürünleri market_products tablosuna upsert eder, ardından günlük
+    price_snapshots ekler.
+    """
+    import collections
+
+    locations   = _load_locations()
+    categories  = _load_categories()
+    runs: list[ScrapeRun] = []
+
+    logger.info(
+        "[full-scan] %d konum × %d kategori başlıyor",
+        len(locations), len(categories),
+    )
+
+    async with MarketFiyatiScraper() as scraper:
+        for loc in locations:
+            logger.info("[full-scan] Konum: %s", loc["name"])
+            try:
+                all_records = await scraper.scan_all_products(
+                    lat           = loc["lat"],
+                    lng           = loc["lng"],
+                    location_name = loc["name"],
+                    distance      = float(loc.get("distance_km", 10)),
+                    categories    = categories,
+                )
+            except Exception as exc:
+                logger.error("[full-scan] %s kritik hata: %s", loc["name"], exc, exc_info=True)
+                runs.append(ScrapeRun(
+                    market       = f"full-scan:{loc['name']}",
+                    run_date     = date.today(),
+                    started_at   = datetime.now(),
+                    finished_at  = datetime.now(),
+                    status       = "failed",
+                    error_details= str(exc),
+                ))
+                continue
+
+            # Markete göre grupla
+            by_market: dict[str, list] = collections.defaultdict(list)
+            for r in all_records:
+                by_market[r.market].append(r)
+
+            for market_name, market_records in by_market.items():
+                run = ScrapeRun(
+                    market     = f"full-scan:{loc['name']}:{market_name}",
+                    run_date   = date.today(),
+                    started_at = datetime.now(),
+                )
+                try:
+                    valid = validate_batch(market_records)
+                    run.products_scraped = len(valid)
+                    run.errors_count     = len(market_records) - len(valid)
+
+                    if dry_run:
+                        logger.info(
+                            "[full-scan] Dry-run %s / %s: %d ürün (DB'ye yazılmadı)",
+                            loc["name"], market_name, len(valid),
+                        )
+                        for r in valid[:3]:
+                            print(f"  [{r.market}] {r.market_name} | {r.price} ₺ | {r.location}")
+                        if len(valid) > 3:
+                            print(f"  ... ve {len(valid) - 3} ürün daha")
+                    else:
+                        async with get_connection() as conn:
+                            inserted = await batch_upsert_products_and_snapshots(conn, valid)
+                            logger.info(
+                                "[full-scan] %s / %s: %d ürün, %d snapshot eklendi",
+                                loc["name"], market_name, len(valid), inserted,
+                            )
+
+                    run.status = "success" if run.errors_count == 0 else "partial"
+
+                except Exception as exc:
+                    logger.error(
+                        "[full-scan] %s / %s hata: %s", loc["name"], market_name, exc, exc_info=True
+                    )
+                    run.status        = "failed"
+                    run.error_details = str(exc)
+
+                run.finished_at = datetime.now()
+                if not dry_run:
+                    async with get_connection() as conn:
+                        await upsert_scrape_run(conn, run)
+
+                duration = (run.finished_at - run.started_at).total_seconds()
+                logger.info(
+                    "[full-scan] %s / %s tamamlandı — %s, %.1fs",
+                    loc["name"], market_name, run.status, duration,
+                )
+                runs.append(run)
 
     return runs
 
@@ -213,7 +325,9 @@ async def main(source: str, dry_run: bool = False, setup_schema: bool = False) -
         logger.info("Schema uygulandı.")
         return
 
-    if source == "marketfiyati":
+    if source == "full-scan":
+        await run_full_scan(dry_run=dry_run)
+    elif source == "marketfiyati":
         await run_marketfiyati(dry_run=dry_run)
     elif source == "scrapers":
         await asyncio.gather(
@@ -221,16 +335,16 @@ async def main(source: str, dry_run: bool = False, setup_schema: bool = False) -
             return_exceptions=True,
         )
     else:
-        logger.error("Geçersiz kaynak: %s. 'marketfiyati' veya 'scrapers' kullanın.", source)
+        logger.error("Geçersiz kaynak: %s. 'full-scan', 'marketfiyati' veya 'scrapers' kullanın.", source)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Market fiyat pipeline")
     parser.add_argument(
         "--source",
-        choices=["marketfiyati", "scrapers"],
-        default="marketfiyati",
-        help="Veri kaynağı (varsayılan: marketfiyati)",
+        choices=["full-scan", "marketfiyati", "scrapers"],
+        default="full-scan",
+        help="Veri kaynağı (varsayılan: full-scan)",
     )
     parser.add_argument("--dry-run", action="store_true", help="DB'ye yazma, sadece ekrana bas")
     parser.add_argument("--setup-schema", action="store_true", help="DB tablolarını oluştur")

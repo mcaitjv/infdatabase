@@ -216,6 +216,8 @@ class MarketFiyatiScraper(BaseScraper):
                     is_available     = True,
                     snapshot_date    = date.today(),
                     location         = location_name,
+                    brand            = item.get("brand") or None,
+                    volume           = item.get("refinedVolumeOrWeight") or None,
                 ))
 
             except (InvalidOperation, TypeError) as exc:
@@ -288,6 +290,39 @@ class MarketFiyatiScraper(BaseScraper):
             all_records.extend(records)
             await self._sleep(1.5, 3.5)
 
+        return all_records
+
+    async def scan_all_products(
+        self,
+        lat: float,
+        lng: float,
+        location_name: str,
+        distance: float,
+        categories: list[str],
+    ) -> list[PriceRecord]:
+        """
+        Tüm kategori keyword'lerini tarar ve tüm market ürünlerini döner.
+        Aynı ürün farklı kategorilerde çıkabilir — (market, product_id) ile dedup yapılır.
+        """
+        if not self._depot_ids:
+            self._depot_ids = await self._get_nearest_depots(lat, lng, distance)
+
+        seen: set[tuple[str, str]] = set()
+        all_records: list[PriceRecord] = []
+
+        for category in categories:
+            records = await self.scrape_keyword(category, lat, lng, location_name, distance)
+            for r in records:
+                key = (r.market, r.market_sku)
+                if key not in seen:
+                    seen.add(key)
+                    all_records.append(r)
+            await self._sleep(1.5, 3.5)
+
+        logger.info(
+            "[marketfiyati] scan_all_products konum=%s → %d benzersiz ürün (%d kategori)",
+            location_name, len(all_records), len(categories),
+        )
         return all_records
 
     # ── BaseScraper ABC (kullanılmaz) ─────────────────────────────────────────

@@ -13,6 +13,8 @@ class PriceRecord(BaseModel):
     is_available: bool = True
     snapshot_date: date
     location: str | None = None   # marketfiyati branch'i için: "Istanbul", "Ankara" vb.
+    brand: str | None = None      # API'den gelen marka bilgisi
+    volume: str | None = None     # refinedVolumeOrWeight: "1 LT", "500 G" vb.
 
     @field_validator("price")
     @classmethod
