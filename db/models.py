@@ -12,6 +12,7 @@ class PriceRecord(BaseModel):
     discounted_price: Decimal | None = None
     is_available: bool = True
     snapshot_date: date
+    location: str | None = None   # marketfiyati branch'i için: "Istanbul", "Ankara" vb.
 
     @field_validator("price")
     @classmethod

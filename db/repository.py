@@ -46,22 +46,24 @@ async def insert_price_snapshots(
             float(r.price),
             float(r.discounted_price) if r.discounted_price else None,
             r.is_available,
+            r.location,
         )
         for r in records
     ]
 
     query = """
         INSERT INTO price_snapshots
-            (market_product_id, snapshot_date, price, discounted_price, is_available)
+            (market_product_id, snapshot_date, price, discounted_price, is_available, location)
         SELECT
             mp.id,
             $3::date,
             $4::numeric,
             $5::numeric,
-            $6::boolean
+            $6::boolean,
+            $7::varchar
         FROM market_products mp
         WHERE mp.market = $1 AND mp.market_sku = $2 AND mp.is_active = true
-        ON CONFLICT (market_product_id, snapshot_date) DO NOTHING
+        ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
     """
 
     inserted = 0
