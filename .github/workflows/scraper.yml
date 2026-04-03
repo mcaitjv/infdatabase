@@ -9,6 +9,8 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     timeout-minutes: 120   # 55 kategori × 3 şehir × ~5-10s gecikme ≈ 60-90 dakika
+    permissions:
+      contents: write       # branches.yaml'ı repo'ya commit edebilmek için
 
     steps:
       - uses: actions/checkout@v4
@@ -24,13 +26,18 @@ jobs:
 
       - name: DB şemasını kur
         run: python -m pipeline.runner --setup-schema
-        # ON CONFLICT / IF NOT EXISTS → idempotent, her çalışmada güvenli
+        # IF NOT EXISTS → idempotent, her çalışmada güvenli
 
       - name: Şubeleri keşfet (branches.yaml boşsa)
         run: |
           if ! grep -q "depot_id" config/branches.yaml 2>/dev/null; then
             echo "branches.yaml bulunamadı veya boş — şube keşfi başlatılıyor…"
             python -m pipeline.runner --discover-branches
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add config/branches.yaml
+            git diff --cached --quiet || git commit -m "config: sabit şubeler otomatik keşfedildi [skip ci]"
+            git push
           else
             echo "branches.yaml zaten dolu — keşif atlanıyor."
           fi
@@ -40,5 +47,3 @@ jobs:
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      # DATABASE_URL yoksa pipeline otomatik olarak data/prices.db (SQLite) kullanır
-      # Production için: GitHub repo → Settings → Secrets → DATABASE_URL = postgresql://...
