@@ -33,6 +33,7 @@ from scrapers.marketfiyati import MarketFiyatiScraper, _MARKET_MAP as _MF_MARKET
 from scrapers.migros import MigrosScraper
 from scrapers.sok import SokScraper
 
+os.makedirs("logs", exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
