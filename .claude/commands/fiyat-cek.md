@@ -1,68 +1,83 @@
 # /fiyat-cek — Tüm Marketlerden Fiyat Çek
 
-Türkiye'deki tüm marketlerin fiyatlarını çekip veritabanına yazar.
+İstanbul, Ankara ve İzmir'deki sabit şubelerden (6 market × 3 şehir) tüm ürün
+fiyatlarını çekip veritabanına yazar.
 
-## Adımlar
+## İlk Kurulum (bir kez)
 
-1. Önce schema'nın kurulu olduğundan emin ol:
-   ```bash
-   python -m pipeline.runner --setup-schema
-   ```
+```bash
+# 1. DB tablolarını oluştur
+python -m pipeline.runner --setup-schema
 
-2. Tam taramayı çalıştır (tüm kategoriler × tüm konumlar):
-   ```bash
-   python -m pipeline.runner --source full-scan
-   ```
+# 2. Her şehir için 1 şube/market keşfet → config/branches.yaml'a yaz
+python -m pipeline.runner --discover-branches
+```
 
-3. Çalışma tamamlandıktan sonra veritabanı özeti göster:
-   ```bash
-   python -c "
-   import asyncio, aiosqlite, os
+## Günlük Çalıştırma
 
-   async def summary():
-       db = 'data/prices.db'
-       if not os.path.exists(db):
-           print('Veritabanı bulunamadı. Önce pipeline çalıştırın.')
-           return
-       async with aiosqlite.connect(db) as conn:
-           conn.row_factory = aiosqlite.Row
-           rows = await (await conn.execute('''
-               SELECT mp.market,
-                      COUNT(DISTINCT mp.id)  AS urun_sayisi,
-                      COUNT(ps.id)           AS snapshot_sayisi,
-                      ROUND(MIN(ps.price),2) AS en_ucuz,
-                      ROUND(MAX(ps.price),2) AS en_pahali,
-                      ROUND(AVG(ps.price),2) AS ortalama
-               FROM market_products mp
-               LEFT JOIN price_snapshots ps ON ps.market_product_id = mp.id
-                   AND ps.snapshot_date = date('now')
-               GROUP BY mp.market
-               ORDER BY urun_sayisi DESC
-           ''')).fetchall()
-           print(f'{'Market':<15} {'Ürün':>6} {'Snapshot':>9} {'En Ucuz':>9} {'En Pahalı':>10} {'Ortalama':>9}')
-           print('-' * 65)
-           for r in rows:
-               print(f\"{r['market']:<15} {r['urun_sayisi']:>6} {r['snapshot_sayisi']:>9} {r['en_ucuz']:>9} {r['en_pahali']:>10} {r['ortalama']:>9}\")
+```bash
+python -m pipeline.runner
+```
 
-   asyncio.run(summary())
-   "
-   ```
+## Dry-run (DB'ye yazmadan test)
 
-## Seçenekler
+```bash
+python -m pipeline.runner --dry-run
+```
 
-- **Dry-run** (DB'ye yazmadan önizleme):
-  ```bash
-  python -m pipeline.runner --source full-scan --dry-run
-  ```
+## Sonuçları Gör
 
-- **Sadece keyword takibi** (products.yaml):
-  ```bash
-  python -m pipeline.runner --source marketfiyati
-  ```
+Çalışma tamamlandıktan sonra veritabanı özetini göster:
+
+```bash
+python -c "
+import asyncio, aiosqlite, os
+
+async def summary():
+    db = 'data/prices.db'
+    if not os.path.exists(db):
+        print('Veritabanı bulunamadı. Önce pipeline çalıştırın.')
+        return
+    async with aiosqlite.connect(db) as conn:
+        conn.row_factory = aiosqlite.Row
+        rows = await (await conn.execute('''
+            SELECT mp.market,
+                   mp.location,
+                   COUNT(DISTINCT mp.id)  AS urun_sayisi,
+                   COUNT(ps.id)           AS snapshot_sayisi,
+                   ROUND(MIN(ps.price),2) AS en_ucuz,
+                   ROUND(MAX(ps.price),2) AS en_pahali,
+                   ROUND(AVG(ps.price),2) AS ortalama
+            FROM market_products mp
+            LEFT JOIN price_snapshots ps ON ps.market_product_id = mp.id
+                AND ps.snapshot_date = date(\"now\")
+            GROUP BY mp.market, ps.location
+            ORDER BY ps.location, urun_sayisi DESC
+        ''')).fetchall()
+        print(f'{\"Şehir\":<12} {\"Market\":<12} {\"Ürün\":>6} {\"Snapshot\":>9} {\"En Ucuz\":>9} {\"En Pahalı\":>10} {\"Ort\":>8}')
+        print('-' * 72)
+        for r in rows:
+            print(f\"{str(r['location'] or ''):<12} {r['market']:<12} {r['urun_sayisi']:>6} {r['snapshot_sayisi']:>9} {str(r['en_ucuz']):>9} {str(r['en_pahali']):>10} {str(r['ortalama']):>8}\")
+
+asyncio.run(summary())
+"
+```
+
+## Mevcut Şubeleri Kontrol Et
+
+```bash
+cat config/branches.yaml
+```
+
+## Şubeleri Yeniden Keşfet (şube kapanırsa)
+
+```bash
+python -m pipeline.runner --discover-branches
+```
 
 ## Notlar
 
-- `DATABASE_URL` ortam değişkeni yoksa → `data/prices.db` (SQLite) kullanılır
-- `DATABASE_URL` set edilmişse → Neon PostgreSQL kullanılır
-- Tarama ~20-40 dakika sürebilir (55 kategori × 3 konum)
-- Her gün sadece 1 kez çalıştır; ikinci çalıştırma `ON CONFLICT DO NOTHING` ile güvenli
+- `branches.yaml` yoksa → proximity search kullanılır (tutarsız tarihsel veri riski)
+- `DATABASE_URL` yoksa → `data/prices.db` (SQLite), varsa → Neon PostgreSQL
+- Tarama ~20-40 dakika sürer (55 kategori × 3 şehir × 6 market)
+- Her gün sadece 1 kez çalıştır — `ON CONFLICT DO NOTHING` ile idempotent
