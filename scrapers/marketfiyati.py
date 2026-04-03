@@ -115,23 +115,27 @@ class MarketFiyatiScraper(BaseScraper):
     # ── Yardımcı metodlar ─────────────────────────────────────────────────────
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=8, max=60))
-    async def _get_nearest_depots(
+    async def _get_full_depot_info(
         self, lat: float, lng: float, distance: float
-    ) -> list[str]:
+    ) -> list[dict]:
         """
-        Yakın şubelerin depot ID listesini döner.
-        Her market zincirinden birden fazla şube dahil edilir:
-        böylece zincirin o bölgedeki tüm stoğu sorgulanır.
+        /api/v2/nearest yanıtının tamamını döner.
+        Her eleman: {id, marketName, name, ...} — mesafeye göre sıralı.
         """
         resp = await self.client.post(
             _NEAREST,
             json={"latitude": lat, "longitude": lng, "distance": distance},
         )
         resp.raise_for_status()
-        depots = resp.json()
-        ids = [d["id"] for d in depots if d.get("id")]
-        # Market zinciri dağılımını logla
+        return resp.json()
+
+    async def _get_nearest_depots(
+        self, lat: float, lng: float, distance: float
+    ) -> list[str]:
+        """Yakın şubelerin depot ID listesini döner (proximity modu)."""
         from collections import Counter
+        depots = await self._get_full_depot_info(lat, lng, distance)
+        ids = [d["id"] for d in depots if d.get("id")]
         chain_counts = Counter(d.get("marketName", "?") for d in depots)
         logger.info(
             "[marketfiyati] %d şube bulundu: %s",
@@ -299,12 +303,22 @@ class MarketFiyatiScraper(BaseScraper):
         location_name: str,
         distance: float,
         categories: list[str],
+        depot_ids: list[str] | None = None,
     ) -> list[PriceRecord]:
         """
         Tüm kategori keyword'lerini tarar ve tüm market ürünlerini döner.
         Aynı ürün farklı kategorilerde çıkabilir — (market, product_id) ile dedup yapılır.
+
+        depot_ids: Sabit şube ID listesi (branches.yaml'dan). Verilirse proximity
+                   search atlanır — sadece bu şubeler sorgulanır.
         """
-        if not self._depot_ids:
+        if depot_ids is not None:
+            self._depot_ids = depot_ids
+            logger.info(
+                "[marketfiyati] %s: %d sabit şube kullanılıyor",
+                location_name, len(depot_ids),
+            )
+        elif not self._depot_ids:
             self._depot_ids = await self._get_nearest_depots(lat, lng, distance)
 
         seen: set[tuple[str, str]] = set()

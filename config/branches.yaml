@@ -1,0 +1,6 @@
+# Sabit şubeler — her market için 1 şube / şehir
+# Bu dosya otomatik oluşturulur:
+#   python -m pipeline.runner --discover-branches
+#
+# Şube kapanırsa sadece depot_id'yi güncelle, kod değişmez.
+# Boş bırakılırsa proximity search kullanılır (tutarsız tarihsel veri riski var).

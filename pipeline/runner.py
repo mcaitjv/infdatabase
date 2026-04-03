@@ -2,12 +2,12 @@
 Pipeline Runner — Ana Orkestratör
 -----------------------------------
 Kullanım:
-  python -m pipeline.runner                              # tüm marketler, tüm kategoriler (full-scan)
-  python -m pipeline.runner --source full-scan           # tüm kategorileri tara, tüm ürünleri çek
-  python -m pipeline.runner --source full-scan --dry-run
+  python -m pipeline.runner --discover-branches          # 1 kez: şubeleri keşfet, branches.yaml oluştur
+  python -m pipeline.runner                              # günlük: tüm marketler, tüm kategoriler
+  python -m pipeline.runner --dry-run                    # DB'ye yazmadan test
+  python -m pipeline.runner --setup-schema               # DB tablolarını oluştur (ilk kurulumda)
   python -m pipeline.runner --source marketfiyati        # yalnızca products.yaml keyword'leri
   python -m pipeline.runner --source scrapers            # tek tek market scraper'ları
-  python -m pipeline.runner --setup-schema               # DB tablolarını oluştur
 """
 
 import argparse
@@ -29,7 +29,7 @@ from db.repository import (
 from pipeline.validator import validate_batch
 from scrapers.a101 import A101Scraper
 from scrapers.bim import BimScraper
-from scrapers.marketfiyati import MarketFiyatiScraper
+from scrapers.marketfiyati import MarketFiyatiScraper, _MARKET_MAP as _MF_MARKET_MAP
 from scrapers.migros import MigrosScraper
 from scrapers.sok import SokScraper
 
@@ -74,6 +74,19 @@ def _load_categories() -> list[str]:
     path = os.path.join("config", "categories.yaml")
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f).get("categories", [])
+
+
+def _load_branches() -> dict:
+    """
+    config/branches.yaml'dan sabit şube tanımlarını yükler.
+    Yapı: {city: {market: {depot_id, name}}}
+    Dosya yoksa boş dict döner (proximity search fallback'e düşer).
+    """
+    path = os.path.join("config", "branches.yaml")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
 
 
 async def run_marketfiyati(dry_run: bool = False) -> list[ScrapeRun]:
@@ -148,6 +161,63 @@ async def run_marketfiyati(dry_run: bool = False) -> list[ScrapeRun]:
     return runs
 
 
+# ── Şube keşif modu ───────────────────────────────────────────────────────────
+
+_TARGET_MARKETS = {"migros", "a101", "bim", "sok", "carrefour", "carrefoursa", "hakmar"}
+
+
+async def discover_branches() -> None:
+    """
+    Her konum için en yakın marketi API'den keşfeder ve config/branches.yaml'a yazar.
+    Her market zincirinden yalnızca 1 şube (en yakın) seçilir.
+    Çalıştırma: python -m pipeline.runner --discover-branches
+    """
+    locations = _load_locations()
+    result: dict[str, dict] = {}
+
+    async with MarketFiyatiScraper() as scraper:
+        for loc in locations:
+            city = loc["name"]
+            logger.info("[discover] %s şubeleri taranıyor...", city)
+
+            depots = await scraper._get_full_depot_info(
+                loc["lat"], loc["lng"], float(loc.get("distance_km", 10))
+            )
+
+            by_market: dict[str, dict] = {}
+            for d in depots:
+                market_raw = str(d.get("marketName", "")).lower().strip()
+                market     = _MF_MARKET_MAP.get(market_raw, market_raw)
+                # Hedef markette değilse atla
+                if market_raw not in _TARGET_MARKETS:
+                    continue
+                # Her marketten yalnızca ilk (en yakın) şube
+                if market not in by_market:
+                    by_market[market] = {
+                        "depot_id": d.get("id", ""),
+                        "name":     d.get("name") or d.get("branchName") or d.get("id", ""),
+                    }
+
+            result[city] = by_market
+
+            # Terminale özet yazdır
+            print(f"\n📍 {city} ({len(by_market)} market):")
+            for market, info in by_market.items():
+                print(f"   {market:<12} → {info['name']} ({info['depot_id']})")
+
+    # YAML'a yaz
+    path = os.path.join("config", "branches.yaml")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("# Sabit şubeler — her market için 1 şube / şehir\n")
+        f.write("# Şube kapanırsa depot_id'yi güncel olanla değiştir.\n")
+        f.write("# Güncelleme: python -m pipeline.runner --discover-branches\n\n")
+        yaml.dump(result, f, allow_unicode=True, default_flow_style=False, sort_keys=True)
+
+    print(f"\n✅  branches.yaml yazıldı → {path}")
+    total = sum(len(v) for v in result.values())
+    print(f"    {len(result)} şehir × toplam {total} sabit şube kaydedildi.")
+
+
 # ── Tam tarama modu (tüm kategoriler × tüm konumlar) ─────────────────────────
 
 async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
@@ -160,7 +230,16 @@ async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
 
     locations   = _load_locations()
     categories  = _load_categories()
+    branches    = _load_branches()
     runs: list[ScrapeRun] = []
+
+    if branches:
+        logger.info(
+            "[full-scan] Sabit şube modu: %d şehir, branches.yaml kullanılıyor",
+            len(branches),
+        )
+    else:
+        logger.info("[full-scan] Proximity modu (branches.yaml yok)")
 
     logger.info(
         "[full-scan] %d konum × %d kategori başlıyor",
@@ -169,19 +248,33 @@ async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
 
     async with MarketFiyatiScraper() as scraper:
         for loc in locations:
-            logger.info("[full-scan] Konum: %s", loc["name"])
+            city = loc["name"]
+            city_branches = branches.get(city, {})
+
+            # Sabit depot ID'leri yükle (yoksa proximity search)
+            depot_ids: list[str] | None = None
+            if city_branches:
+                depot_ids = [b["depot_id"] for b in city_branches.values() if b.get("depot_id")]
+                logger.info(
+                    "[full-scan] %s: %d sabit şube → %s",
+                    city, len(depot_ids),
+                    ", ".join(f"{m}={b['name']}" for m, b in city_branches.items()),
+                )
+
+            logger.info("[full-scan] Konum: %s", city)
             try:
                 all_records = await scraper.scan_all_products(
                     lat           = loc["lat"],
                     lng           = loc["lng"],
-                    location_name = loc["name"],
+                    location_name = city,
                     distance      = float(loc.get("distance_km", 10)),
                     categories    = categories,
+                    depot_ids     = depot_ids,
                 )
             except Exception as exc:
-                logger.error("[full-scan] %s kritik hata: %s", loc["name"], exc, exc_info=True)
+                logger.error("[full-scan] %s kritik hata: %s", city, exc, exc_info=True)
                 runs.append(ScrapeRun(
-                    market       = f"full-scan:{loc['name']}",
+                    market       = f"full-scan:{city}",
                     run_date     = date.today(),
                     started_at   = datetime.now(),
                     finished_at  = datetime.now(),
@@ -316,8 +409,17 @@ async def run_market(market: str, dry_run: bool = False) -> ScrapeRun:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-async def main(source: str, dry_run: bool = False, setup_schema: bool = False) -> None:
+async def main(
+    source: str,
+    dry_run: bool = False,
+    setup_schema: bool = False,
+    do_discover: bool = False,
+) -> None:
     os.makedirs("logs", exist_ok=True)
+
+    if do_discover:
+        await discover_branches()
+        return
 
     if setup_schema:
         async with get_connection() as conn:
@@ -348,6 +450,16 @@ if __name__ == "__main__":
     )
     parser.add_argument("--dry-run", action="store_true", help="DB'ye yazma, sadece ekrana bas")
     parser.add_argument("--setup-schema", action="store_true", help="DB tablolarını oluştur")
+    parser.add_argument(
+        "--discover-branches",
+        action="store_true",
+        help="Her şehir için 1 şube/market keşfeder, config/branches.yaml'a yazar",
+    )
     args = parser.parse_args()
 
-    asyncio.run(main(args.source, dry_run=args.dry_run, setup_schema=args.setup_schema))
+    asyncio.run(main(
+        args.source,
+        dry_run=args.dry_run,
+        setup_schema=args.setup_schema,
+        do_discover=args.discover_branches,
+    ))
