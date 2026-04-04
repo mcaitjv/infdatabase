@@ -41,7 +41,7 @@ import logging
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
-import httpx
+from curl_cffi.requests import AsyncSession
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from db.models import PriceRecord
@@ -103,18 +103,15 @@ class MarketFiyatiScraper(BaseScraper):
         self._depot_ids: list[str] = []
 
     async def __aenter__(self) -> "MarketFiyatiScraper":
-        self._client = httpx.AsyncClient(
-            headers=_HEADERS,
-            follow_redirects=True,
-            timeout=30.0,
-        )
-        # 1. Ana siteyi ziyaret et (tarayıcı gibi davran — cookie + referer zinciri kurar)
-        await self.client.get("https://marketfiyati.org.tr/")
+        # Chrome 124 TLS fingerprint — bot tespitini atlatır
+        self._client = AsyncSession(impersonate="chrome124", timeout=30)
+        await self.client.post(_GENERATE, headers=_HEADERS, json={})
         import asyncio as _ai; await _ai.sleep(3)
-        # 2. Session cookie al
-        await self.client.post(_GENERATE, json={})
-        await _ai.sleep(5)
         return self
+
+    async def __aexit__(self, *args) -> None:
+        if self._client:
+            await self._client.aclose()
 
     # ── Yardımcı metodlar ─────────────────────────────────────────────────────
 
@@ -128,6 +125,7 @@ class MarketFiyatiScraper(BaseScraper):
         """
         resp = await self.client.post(
             _NEAREST,
+            headers=_HEADERS,
             json={"latitude": lat, "longitude": lng, "distance": distance},
         )
         resp.raise_for_status()
@@ -151,7 +149,6 @@ class MarketFiyatiScraper(BaseScraper):
             "[marketfiyati] proximity: %d zincirden 1'er şube seçildi: %s",
             len(seen_chains), list(seen_chains.keys()),
         )
-        import asyncio as _ai; await _ai.sleep(10)  # nearest→search arası bekleme
         return list(seen_chains.values())
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=8, max=90))
@@ -166,6 +163,7 @@ class MarketFiyatiScraper(BaseScraper):
         """Tek sayfa arama isteği."""
         resp = await self.client.post(
             _SEARCH,
+            headers=_HEADERS,
             json={
                 "keywords":  keyword,
                 "latitude":  lat,
@@ -178,13 +176,11 @@ class MarketFiyatiScraper(BaseScraper):
         )
         if resp.status_code == 418:
             import asyncio as _asyncio
-            logger.warning("[marketfiyati] 418 alındı — 120s bekleniyor, session yenileniyor…")
-            await _asyncio.sleep(120)
-            await self.client.get("https://marketfiyati.org.tr/")  # önce siteyi ziyaret et
+            logger.warning("[marketfiyati] 418 alındı — 60s bekleniyor, session yenileniyor…")
+            await _asyncio.sleep(60)
+            await self.client.post(_GENERATE, headers=_HEADERS, json={})
             await _asyncio.sleep(3)
-            await self.client.post(_GENERATE, json={})  # yeni session cookie al
-            await _asyncio.sleep(5)
-            raise httpx.HTTPStatusError("418 Too Many Requests", request=resp.request, response=resp)
+            raise Exception("418 Too Many Requests")
         resp.raise_for_status()
         return resp.json()
 
@@ -337,10 +333,8 @@ class MarketFiyatiScraper(BaseScraper):
                 "[marketfiyati] %s: %d sabit şube kullanılıyor",
                 location_name, len(depot_ids),
             )
-            import asyncio as _ai; await _ai.sleep(10)  # depot set → ilk search arası
         elif not self._depot_ids:
             self._depot_ids = await self._get_nearest_depots(lat, lng, distance)
-            # _get_nearest_depots zaten 10s bekliyor
 
         seen: set[tuple[str, str]] = set()
         all_records: list[PriceRecord] = []
