@@ -63,7 +63,7 @@ def test_different_products():
 
 
 def test_find_best_match():
-    pool = ["Selpak Tuvalet Kagidi 32li", "Pinar Sut 1lt", "Dove Dus Jeli 500ml"]
+    pool = ["Selpak Tuvalet Kagidi 32 Rulo", "Pinar Sut 1lt", "Dove Dus Jeli 500ml"]
     result = find_best_match("Selpak Tuvalet Kağıdı 32 Rulo", pool)
     assert result is not None
     assert "Selpak" in result[0]
