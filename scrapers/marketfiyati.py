@@ -133,17 +133,22 @@ class MarketFiyatiScraper(BaseScraper):
     async def _get_nearest_depots(
         self, lat: float, lng: float, distance: float
     ) -> list[str]:
-        """Yakın şubelerin depot ID listesini döner (proximity modu)."""
-        from collections import Counter
+        """
+        Yakın şubelerin depot ID listesini döner (proximity modu).
+        Her zincirden sadece en yakın 1 şubeyi seçer — 30 değil 6 ID gönderilir,
+        bu sayede 418 rate-limit riski azalır.
+        """
         depots = await self._get_full_depot_info(lat, lng, distance)
-        ids = [d["id"] for d in depots if d.get("id")]
-        chain_counts = Counter(d.get("marketName", "?") for d in depots)
+        seen_chains: dict[str, str] = {}   # chain → depot_id (API mesafeye göre sıralı)
+        for d in depots:
+            chain = _MARKET_MAP.get(d.get("marketName", "").lower(), "")
+            if chain and chain not in seen_chains and d.get("id"):
+                seen_chains[chain] = d["id"]
         logger.info(
-            "[marketfiyati] %d şube bulundu: %s",
-            len(ids),
-            dict(chain_counts),
+            "[marketfiyati] proximity: %d zincirden 1'er şube seçildi: %s",
+            len(seen_chains), list(seen_chains.keys()),
         )
-        return ids
+        return list(seen_chains.values())
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=8, max=90))
     async def _search_page(
