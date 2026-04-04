@@ -148,6 +148,7 @@ class MarketFiyatiScraper(BaseScraper):
             "[marketfiyati] proximity: %d zincirden 1'er şube seçildi: %s",
             len(seen_chains), list(seen_chains.keys()),
         )
+        import asyncio as _ai; await _ai.sleep(10)  # nearest→search arası bekleme
         return list(seen_chains.values())
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=8, max=90))
@@ -331,8 +332,10 @@ class MarketFiyatiScraper(BaseScraper):
                 "[marketfiyati] %s: %d sabit şube kullanılıyor",
                 location_name, len(depot_ids),
             )
+            import asyncio as _ai; await _ai.sleep(10)  # depot set → ilk search arası
         elif not self._depot_ids:
             self._depot_ids = await self._get_nearest_depots(lat, lng, distance)
+            # _get_nearest_depots zaten 10s bekliyor
 
         seen: set[tuple[str, str]] = set()
         all_records: list[PriceRecord] = []
