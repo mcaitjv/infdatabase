@@ -20,9 +20,8 @@ logs/*.log
 # Playwright browser binary'leri
 .playwright/
 
-# Data exports (büyük dosyalar)
+# Data exports — sadece parquet ignore (CSV'ler GitHub'a commit edilir)
 data/exports/*.parquet
-data/exports/*.csv
 
 # IDE
 .vscode/

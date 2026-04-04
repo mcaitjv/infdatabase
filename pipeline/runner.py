@@ -22,7 +22,7 @@ from db.models import ScrapeRun
 from db.repository import (
     apply_schema,
     batch_upsert_products_and_snapshots,
-    cleanup_old_snapshots,
+    export_and_cleanup,
     get_connection,
     insert_price_snapshots,
     upsert_scrape_run,
@@ -237,7 +237,7 @@ async def run_full_scan(dry_run: bool = False) -> list[ScrapeRun]:
 
     if not dry_run:
         async with get_connection() as conn:
-            await cleanup_old_snapshots(conn, days=60)
+            await export_and_cleanup(conn, days=60, export_dir="data/exports")
 
     if branches:
         logger.info(

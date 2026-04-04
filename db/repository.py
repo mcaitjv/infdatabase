@@ -1,3 +1,4 @@
+import csv
 import logging
 import os
 import re
@@ -204,22 +205,95 @@ async def upsert_scrape_run(conn, run: ScrapeRun) -> None:
     )
 
 
-# ── Temizlik ─────────────────────────────────────────────────────────────────
+# ── Export + Temizlik ─────────────────────────────────────────────────────────
 
-async def cleanup_old_snapshots(conn, days: int = 60) -> int:
-    """60 günden eski price_snapshots satırlarını siler."""
+async def export_and_cleanup(
+    conn, days: int = 60, export_dir: str = "data/exports"
+) -> int:
+    """
+    60 günden eski, tamamlanmış ayları CSV olarak data/exports/ klasörüne yazar,
+    ardından DB'den siler. Dosya zaten varsa o ay atlanır (idempotent).
+
+    Döner: silinen toplam satır sayısı.
+    """
     from datetime import timedelta
-    cutoff = str(date.today() - timedelta(days=days))
-    result = await conn.execute(
-        "DELETE FROM price_snapshots WHERE snapshot_date < $1::date",
-        cutoff,
+
+    os.makedirs(export_dir, exist_ok=True)
+    cutoff = date.today() - timedelta(days=days)
+
+    # Cutoff'tan önce snapshot'u olan tüm tarihleri çek, Python'da ay grupla
+    rows = await conn.fetch(
+        "SELECT DISTINCT snapshot_date FROM price_snapshots WHERE snapshot_date < $1::date ORDER BY snapshot_date",
+        str(cutoff),
     )
-    try:
-        deleted = int(str(result).split()[-1])
-    except (ValueError, IndexError):
-        deleted = 0
-    logger.info("[cleanup] %d eski snapshot silindi (cutoff: %s)", deleted, cutoff)
-    return deleted
+
+    # Benzersiz (yıl, ay) çiftlerini topla
+    months: dict[tuple[int, int], None] = {}
+    for row in rows:
+        d_str = str(row[0])[:10]   # "2026-02-14" → "2026-02-14"
+        yr, mo = int(d_str[:4]), int(d_str[5:7])
+        months[(yr, mo)] = None
+    rows = list(months.keys())
+
+    total_deleted = 0
+
+    for yr, mo in rows:
+        month_str = f"{yr:04d}-{mo:02d}"
+        filepath = os.path.join(export_dir, f"prices_{month_str}.csv")
+
+        if os.path.exists(filepath):
+            logger.info("[export] %s zaten mevcut — atlanıyor", filepath)
+        else:
+            # Bu aya ait tüm satırları çek
+            data = await conn.fetch(
+                """
+                SELECT
+                    ps.id, ps.snapshot_date, ps.price, ps.discounted_price,
+                    ps.is_available, ps.location, ps.scraped_at,
+                    mp.market, mp.market_sku, mp.market_name, mp.brand, mp.volume
+                FROM price_snapshots ps
+                JOIN market_products mp ON mp.id = ps.market_product_id
+                WHERE snapshot_date >= $1::date
+                  AND snapshot_date <  $2::date
+                ORDER BY ps.snapshot_date, mp.market
+                """,
+                f"{yr:04d}-{mo:02d}-01",
+                f"{yr+1:04d}-01-01" if mo == 12 else f"{yr:04d}-{mo+1:02d}-01",
+            )
+
+            # CSV'ye yaz
+            with open(filepath, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow([
+                    "id", "snapshot_date", "price", "discounted_price",
+                    "is_available", "location", "scraped_at",
+                    "market", "market_sku", "market_name", "brand", "volume",
+                ])
+                for r in data:
+                    writer.writerow(list(r))
+
+            logger.info("[export] %s → %d satır yazıldı", filepath, len(data))
+
+        # DB'den sil (dosya var olsun ya da olmasın — cutoff geçmiş ay)
+        month_start = f"{yr:04d}-{mo:02d}-01"
+        if mo == 12:
+            month_end = f"{yr+1:04d}-01-01"
+        else:
+            month_end = f"{yr:04d}-{mo+1:02d}-01"
+
+        result = await conn.execute(
+            "DELETE FROM price_snapshots WHERE snapshot_date >= $1::date AND snapshot_date < $2::date",
+            month_start, month_end,
+        )
+        try:
+            deleted = int(str(result).split()[-1])
+        except (ValueError, IndexError):
+            deleted = 0
+
+        total_deleted += deleted
+        logger.info("[cleanup] %s: %d satır silindi", month_str, deleted)
+
+    return total_deleted
 
 
 # ── Sorgular ─────────────────────────────────────────────────────────────────

@@ -52,7 +52,7 @@ jobs:
           echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/last_run.txt
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/last_run.txt
+          git add data/last_run.txt data/exports/ 2>/dev/null || true
           git diff --cached --quiet || git commit -m "ci: keepalive $(date -u +%Y-%m-%d) [skip ci]"
           git push
 
