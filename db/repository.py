@@ -204,6 +204,24 @@ async def upsert_scrape_run(conn, run: ScrapeRun) -> None:
     )
 
 
+# ── Temizlik ─────────────────────────────────────────────────────────────────
+
+async def cleanup_old_snapshots(conn, days: int = 60) -> int:
+    """60 günden eski price_snapshots satırlarını siler."""
+    from datetime import timedelta
+    cutoff = str(date.today() - timedelta(days=days))
+    result = await conn.execute(
+        "DELETE FROM price_snapshots WHERE snapshot_date < $1::date",
+        cutoff,
+    )
+    try:
+        deleted = int(str(result).split()[-1])
+    except (ValueError, IndexError):
+        deleted = 0
+    logger.info("[cleanup] %d eski snapshot silindi (cutoff: %s)", deleted, cutoff)
+    return deleted
+
+
 # ── Sorgular ─────────────────────────────────────────────────────────────────
 
 async def get_last_prices(

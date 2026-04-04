@@ -168,8 +168,9 @@ class MarketFiyatiScraper(BaseScraper):
         )
         if resp.status_code == 418:
             import asyncio as _asyncio
-            logger.warning("[marketfiyati] 418 rate-limit alındı — 60s bekleniyor…")
-            await _asyncio.sleep(60)
+            logger.warning("[marketfiyati] 418 alındı — session yenileniyor, 90s bekleniyor…")
+            await _asyncio.sleep(90)
+            await self.client.post(_GENERATE, json={})  # yeni session cookie al
             raise httpx.HTTPStatusError("418 Too Many Requests", request=resp.request, response=resp)
         resp.raise_for_status()
         return resp.json()
