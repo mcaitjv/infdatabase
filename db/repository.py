@@ -222,24 +222,27 @@ async def export_and_cleanup(
     cutoff = date.today() - timedelta(days=days)
 
     # Cutoff'tan önce snapshot'u olan tüm tarihleri çek, Python'da ay grupla
+    # asyncpg → date nesnesi; _SqliteConn → str kabul eder (her ikisi de çalışır)
     rows = await conn.fetch(
         "SELECT DISTINCT snapshot_date FROM price_snapshots WHERE snapshot_date < $1::date ORDER BY snapshot_date",
-        str(cutoff),
+        cutoff,
     )
 
     # Benzersiz (yıl, ay) çiftlerini topla
     months: dict[tuple[int, int], None] = {}
     for row in rows:
-        d_str = str(row[0])[:10]   # "2026-02-14" → "2026-02-14"
+        d_str = str(row[0])[:10]   # date veya str → "2026-02-14"
         yr, mo = int(d_str[:4]), int(d_str[5:7])
         months[(yr, mo)] = None
-    rows = list(months.keys())
+    months_list = list(months.keys())
 
     total_deleted = 0
 
-    for yr, mo in rows:
+    for yr, mo in months_list:
         month_str = f"{yr:04d}-{mo:02d}"
         filepath = os.path.join(export_dir, f"prices_{month_str}.csv")
+        month_start = date(yr, mo, 1)
+        month_end   = date(yr + 1, 1, 1) if mo == 12 else date(yr, mo + 1, 1)
 
         if os.path.exists(filepath):
             logger.info("[export] %s zaten mevcut — atlanıyor", filepath)
@@ -257,8 +260,8 @@ async def export_and_cleanup(
                   AND snapshot_date <  $2::date
                 ORDER BY ps.snapshot_date, mp.market
                 """,
-                f"{yr:04d}-{mo:02d}-01",
-                f"{yr+1:04d}-01-01" if mo == 12 else f"{yr:04d}-{mo+1:02d}-01",
+                month_start,
+                month_end,
             )
 
             # CSV'ye yaz
@@ -275,12 +278,6 @@ async def export_and_cleanup(
             logger.info("[export] %s → %d satır yazıldı", filepath, len(data))
 
         # DB'den sil (dosya var olsun ya da olmasın — cutoff geçmiş ay)
-        month_start = f"{yr:04d}-{mo:02d}-01"
-        if mo == 12:
-            month_end = f"{yr+1:04d}-01-01"
-        else:
-            month_end = f"{yr:04d}-{mo+1:02d}-01"
-
         result = await conn.execute(
             "DELETE FROM price_snapshots WHERE snapshot_date >= $1::date AND snapshot_date < $2::date",
             month_start, month_end,
