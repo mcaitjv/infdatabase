@@ -108,9 +108,12 @@ class MarketFiyatiScraper(BaseScraper):
             follow_redirects=True,
             timeout=30.0,
         )
-        # Session cookie — generate sonrası 5s bekle (API'nin session'ı tanıması için)
+        # 1. Ana siteyi ziyaret et (tarayıcı gibi davran — cookie + referer zinciri kurar)
+        await self.client.get("https://marketfiyati.org.tr/")
+        import asyncio as _ai; await _ai.sleep(3)
+        # 2. Session cookie al
         await self.client.post(_GENERATE, json={})
-        import asyncio as _ai; await _ai.sleep(5)
+        await _ai.sleep(5)
         return self
 
     # ── Yardımcı metodlar ─────────────────────────────────────────────────────
@@ -177,8 +180,10 @@ class MarketFiyatiScraper(BaseScraper):
             import asyncio as _asyncio
             logger.warning("[marketfiyati] 418 alındı — 120s bekleniyor, session yenileniyor…")
             await _asyncio.sleep(120)
+            await self.client.get("https://marketfiyati.org.tr/")  # önce siteyi ziyaret et
+            await _asyncio.sleep(3)
             await self.client.post(_GENERATE, json={})  # yeni session cookie al
-            await _asyncio.sleep(5)                     # session'ın aktif olması için
+            await _asyncio.sleep(5)
             raise httpx.HTTPStatusError("418 Too Many Requests", request=resp.request, response=resp)
         resp.raise_for_status()
         return resp.json()
