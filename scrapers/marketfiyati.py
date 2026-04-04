@@ -108,8 +108,9 @@ class MarketFiyatiScraper(BaseScraper):
             follow_redirects=True,
             timeout=30.0,
         )
-        # Session cookie
+        # Session cookie — generate sonrası 5s bekle (API'nin session'ı tanıması için)
         await self.client.post(_GENERATE, json={})
+        import asyncio as _ai; await _ai.sleep(5)
         return self
 
     # ── Yardımcı metodlar ─────────────────────────────────────────────────────
@@ -168,9 +169,10 @@ class MarketFiyatiScraper(BaseScraper):
         )
         if resp.status_code == 418:
             import asyncio as _asyncio
-            logger.warning("[marketfiyati] 418 alındı — session yenileniyor, 90s bekleniyor…")
-            await _asyncio.sleep(90)
+            logger.warning("[marketfiyati] 418 alındı — 120s bekleniyor, session yenileniyor…")
+            await _asyncio.sleep(120)
             await self.client.post(_GENERATE, json={})  # yeni session cookie al
+            await _asyncio.sleep(5)                     # session'ın aktif olması için
             raise httpx.HTTPStatusError("418 Too Many Requests", request=resp.request, response=resp)
         resp.raise_for_status()
         return resp.json()
