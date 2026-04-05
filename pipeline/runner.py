@@ -17,6 +17,9 @@ import os
 from datetime import date, datetime
 
 import yaml
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from db.models import ScrapeRun
 from db.repository import (
