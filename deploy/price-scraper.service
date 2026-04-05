@@ -5,9 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=ubuntu
-WorkingDirectory=/home/ubuntu/infdatabase
-ExecStart=/home/ubuntu/.venv/bin/python -m pipeline.runner
-EnvironmentFile=/home/ubuntu/infdatabase/.env
+User=root
+WorkingDirectory=/root/infdatabase
+ExecStart=/root/.venv/bin/python -m pipeline.runner
+EnvironmentFile=/root/infdatabase/.env
 StandardOutput=journal
 StandardError=journal

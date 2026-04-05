@@ -1,9 +1,7 @@
 name: Günlük Fiyat Tarama
 
 on:
-  schedule:
-    - cron: '0 3 * * *'   # Her gün 06:00 Türkiye saati (UTC+3)
-  workflow_dispatch:        # GitHub UI'dan manuel tetikleme
+  workflow_dispatch:        # Sadece manuel tetikleme — VPS'te systemd timer kullanılıyor
 
 jobs:
   scrape:

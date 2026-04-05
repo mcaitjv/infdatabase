@@ -41,7 +41,7 @@ import logging
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
-from curl_cffi.requests import AsyncSession
+import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from db.models import PriceRecord
@@ -103,10 +103,12 @@ class MarketFiyatiScraper(BaseScraper):
         self._depot_ids: list[str] = []
 
     async def __aenter__(self) -> "MarketFiyatiScraper":
-        # Chrome 124 TLS fingerprint — bot tespitini atlatır
-        self._client = AsyncSession(impersonate="chrome124", timeout=30)
-        await self.client.post(_GENERATE, headers=_HEADERS, json={})
-        import asyncio as _ai; await _ai.sleep(3)
+        self._client = httpx.AsyncClient(
+            headers=_HEADERS,
+            follow_redirects=True,
+            timeout=30.0,
+        )
+        await self.client.post(_GENERATE, json={})
         return self
 
     async def __aexit__(self, *args) -> None:
@@ -125,7 +127,6 @@ class MarketFiyatiScraper(BaseScraper):
         """
         resp = await self.client.post(
             _NEAREST,
-            headers=_HEADERS,
             json={"latitude": lat, "longitude": lng, "distance": distance},
         )
         resp.raise_for_status()
@@ -163,7 +164,6 @@ class MarketFiyatiScraper(BaseScraper):
         """Tek sayfa arama isteği."""
         resp = await self.client.post(
             _SEARCH,
-            headers=_HEADERS,
             json={
                 "keywords":  keyword,
                 "latitude":  lat,
@@ -174,13 +174,6 @@ class MarketFiyatiScraper(BaseScraper):
                 "depots":    self._depot_ids,
             },
         )
-        if resp.status_code == 418:
-            import asyncio as _asyncio
-            logger.warning("[marketfiyati] 418 alındı — 60s bekleniyor, session yenileniyor…")
-            await _asyncio.sleep(60)
-            await self.client.post(_GENERATE, headers=_HEADERS, json={})
-            await _asyncio.sleep(3)
-            raise Exception("418 Too Many Requests")
         resp.raise_for_status()
         return resp.json()
 

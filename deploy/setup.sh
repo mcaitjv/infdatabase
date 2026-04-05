@@ -6,16 +6,13 @@ set -e
 
 echo "==> Python ve bağımlılıklar kuruluyor..."
 sudo apt-get update -qq
-sudo apt-get install -y python3.11 python3.11-venv python3-pip git
+sudo apt-get install -y python3 python3-venv python3-pip git
 
 echo "==> Sanal ortam oluşturuluyor..."
-python3.11 -m venv /home/ubuntu/.venv
-source /home/ubuntu/.venv/bin/activate
+python3 -m venv /root/.venv
+source /root/.venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-
-echo "==> Playwright Chromium kuruluyor..."
-playwright install chromium --with-deps
 
 echo "==> Log dizini oluşturuluyor..."
 mkdir -p logs data/exports
@@ -30,4 +27,4 @@ sudo systemctl start   price-scraper.timer
 echo ""
 echo "==> Kurulum tamamlandı."
 echo "    Timer durumu: sudo systemctl status price-scraper.timer"
-echo "    Manuel test:  source /home/ubuntu/.venv/bin/activate && python -m pipeline.runner --dry-run"
+echo "    Manuel test:  source /root/.venv/bin/activate && python -m pipeline.runner --dry-run"
