@@ -59,12 +59,23 @@ _HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
+        "Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
     ),
-    "Accept":          "application/json, text/plain, */*",
-    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-    "Origin":          "https://marketfiyati.org.tr",
-    "Referer":         "https://marketfiyati.org.tr/",
+    "Accept":             "application/json, text/plain, */*",
+    "Accept-Language":    "en-US,en;q=0.9",
+    "Accept-Encoding":    "gzip, deflate, br, zstd",
+    "Cache-Control":      "no-cache",
+    "Pragma":             "no-cache",
+    "Expires":            "0",
+    "Origin":             "https://marketfiyati.org.tr",
+    "Referer":            "https://marketfiyati.org.tr/",
+    "Sec-Ch-Ua":          '"Chromium";v="146", "Not_A Brand";v="24", "Microsoft Edge";v="146"',
+    "Sec-Ch-Ua-Mobile":   "?0",
+    "Sec-Ch-Ua-Platform": '"Windows"',
+    "Sec-Fetch-Dest":     "empty",
+    "Sec-Fetch-Mode":     "cors",
+    "Sec-Fetch-Site":     "same-site",
+    "Timeout":            "20000",
 }
 
 # marketAdi → canonical market adı
@@ -159,7 +170,7 @@ class MarketFiyatiScraper(BaseScraper):
         lat: float,
         lng: float,
         distance: float,
-        offset: int,
+        page: int,
     ) -> dict:
         """Tek sayfa arama isteği."""
         resp = await self.client.post(
@@ -170,7 +181,7 @@ class MarketFiyatiScraper(BaseScraper):
                 "longitude": lng,
                 "distance":  distance,
                 "size":      _PAGE_SIZE,
-                "offset":    offset,
+                "pages":     page,
                 "depots":    self._depot_ids,
             },
         )
@@ -249,15 +260,15 @@ class MarketFiyatiScraper(BaseScraper):
     ) -> list[PriceRecord]:
         """Tek keyword için tüm sayfalardaki tüm market fiyatlarını çeker."""
         all_records: list[PriceRecord] = []
-        offset = 0
+        page = 0
 
         while True:
             try:
-                data = await self._search_page(keyword, lat, lng, distance, offset)
+                data = await self._search_page(keyword, lat, lng, distance, page)
             except Exception as exc:
                 logger.error(
-                    "[marketfiyati] keyword=%s konum=%s offset=%d hata: %s",
-                    keyword, location_name, offset, exc,
+                    "[marketfiyati] keyword=%s konum=%s page=%d hata: %s",
+                    keyword, location_name, page, exc,
                 )
                 break
 
@@ -268,9 +279,9 @@ class MarketFiyatiScraper(BaseScraper):
             for item in items:
                 all_records.extend(self._parse_content_item(item, location_name))
 
-            total  = data.get("numberOfFound", len(items))
-            offset += _PAGE_SIZE
-            if offset >= total or len(items) < _PAGE_SIZE:
+            total = data.get("numberOfFound", len(items))
+            page += 1
+            if page * _PAGE_SIZE >= total or len(items) < _PAGE_SIZE:
                 break
 
             await self._sleep(2.0, 5.0)
