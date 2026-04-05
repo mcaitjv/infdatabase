@@ -159,7 +159,7 @@ async def batch_upsert_products_and_snapshots(
             ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
             """,
             sku_to_id[key],
-            str(r.snapshot_date),
+            r.snapshot_date if isinstance(r.snapshot_date, date) else date.fromisoformat(str(r.snapshot_date)),
             float(r.price),
             float(r.discounted_price) if r.discounted_price else None,
             r.is_available,
@@ -195,9 +195,9 @@ async def upsert_scrape_run(conn, run: ScrapeRun) -> None:
         ON CONFLICT DO NOTHING
         """,
         run.market,
-        str(run.run_date),
-        str(run.started_at) if run.started_at else None,
-        str(run.finished_at) if run.finished_at else None,
+        run.run_date if isinstance(run.run_date, date) else date.fromisoformat(str(run.run_date)),
+        run.started_at,
+        run.finished_at,
         run.status,
         run.products_scraped,
         run.errors_count,
