@@ -10,13 +10,16 @@ locations:
     district: kadikoy
     opet_slug: istanbul-anadolu     # Kadıköy Anadolu yakasındadır
     po_city: "ISTANBUL (ANADOLU)"
+    aygaz_slug: istanbul
 
   - city: ankara
     district: cankaya
     opet_slug: ankara
     po_city: "ANKARA"
+    aygaz_slug: ankara
 
   - city: izmir
     district: merkez
     opet_slug: izmir
     po_city: "IZMIR"
+    aygaz_slug: izmir

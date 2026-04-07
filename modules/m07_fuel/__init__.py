@@ -16,6 +16,7 @@ import yaml
 from db.models import ScrapeRun
 from db.repository import batch_upsert_fuel_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
+from modules.m07_fuel.scrapers.aygaz import AygazScraper
 from modules.m07_fuel.scrapers.opet import OpetScraper
 from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
 
@@ -28,6 +29,20 @@ def _load_locations() -> list[dict]:
     path = os.path.join(_MODULE_DIR, "config", "locations.yaml")
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f).get("locations", [])
+
+
+async def _run_single(provider: str, ScraperClass, locations: list[dict]) -> list:
+    async with ScraperClass() as scraper:
+        return await scraper.scrape(locations)
+
+
+async def _run_opet_with_aygaz(locations: list[dict]) -> list:
+    """Opet (gasoline_95 + diesel) ve Aygaz (lpg) kayıtlarını birleştirir."""
+    async with OpetScraper() as scraper:
+        opet_records = await scraper.scrape(locations)
+    async with AygazScraper() as scraper:
+        aygaz_records = await scraper.scrape(locations)
+    return opet_records + aygaz_records
 
 
 class FuelModule(BaseModule):
@@ -74,21 +89,21 @@ class FuelModule(BaseModule):
         locations = _load_locations()
         runs: list[ScrapeRun] = []
 
-        scrapers = [
-            ("petrolofisi", PetrolOfisiScraper),
-            ("opet",        OpetScraper),
+        # Petrol Ofisi: gasoline_95, diesel, lpg
+        # Opet: gasoline_95, diesel  +  Aygaz LPG (provider="opet")
+        provider_scrapers = [
+            ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
+            ("opet",        lambda: _run_opet_with_aygaz(locations)),
         ]
 
-        for provider, ScraperClass in scrapers:
+        for provider, scrape_fn in provider_scrapers:
             run = ScrapeRun(
                 market     = f"m07:{provider}",
                 run_date   = date.today(),
                 started_at = datetime.now(),
             )
             try:
-                async with ScraperClass() as scraper:
-                    records = await scraper.scrape(locations)
-
+                records = await scrape_fn()
                 run.products_scraped = len(records)
 
                 if dry_run:
