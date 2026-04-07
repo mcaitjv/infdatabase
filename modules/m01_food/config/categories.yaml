@@ -1,4 +1,5 @@
-# Türk market kategorileri — tam ürün taraması için kullanılır
+# Modül 01 — Gıda ve Alkolsüz İçecekler
+# COICOP 2018 kodu: 01  |  Ağırlık: %24.44
 #
 # Her keyword bir API çağrısı üretir ve o kategorideki tüm ürünler çekilir.
 # Geniş kategori isimleri tercih edilir — fazla spesifik olunursa ürünler atlanır.

@@ -56,6 +56,24 @@ CREATE TABLE IF NOT EXISTS scrape_runs (
     error_details    TEXT
 );
 
+-- Yakıt fiyatları (Modül 07 — Ulaştırma)
+CREATE TABLE IF NOT EXISTS fuel_prices (
+    id          SERIAL        PRIMARY KEY,
+    provider    VARCHAR(50)   NOT NULL,              -- 'shell' | 'opet'
+    city        VARCHAR(50)   NOT NULL,              -- 'istanbul' | 'ankara' | 'izmir'
+    district    VARCHAR(100),                        -- 'kadikoy' | 'cankaya' | 'merkez'
+    fuel_type   VARCHAR(50)   NOT NULL,              -- 'gasoline_95' | 'diesel' | 'lpg'
+    price       NUMERIC(8,3)  NOT NULL,
+    date        DATE          NOT NULL,
+    UNIQUE(provider, city, fuel_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fp_date
+    ON fuel_prices(date);
+
+CREATE INDEX IF NOT EXISTS idx_fp_provider_city
+    ON fuel_prices(provider, city);
+
 -- ---- Performans indeksleri ----
 
 -- Tarih bazlı sorgular (enflasyon hesaplama, trend)

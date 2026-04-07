@@ -1,0 +1,22 @@
+# Modül 07 — Yakıt Fiyatları için Konum Listesi
+#
+# city      : DB'deki şehir adı (küçük harf, ingilizce)
+# district  : DB'deki ilçe adı
+# opet_slug : Opet URL'sindeki şehir parametresi
+# po_city   : Petrol Ofisi tablo satırındaki şehir adı (büyük harf)
+
+locations:
+  - city: istanbul
+    district: kadikoy
+    opet_slug: istanbul-anadolu     # Kadıköy Anadolu yakasındadır
+    po_city: "ISTANBUL (ANADOLU)"
+
+  - city: ankara
+    district: cankaya
+    opet_slug: ankara
+    po_city: "ANKARA"
+
+  - city: izmir
+    district: merkez
+    opet_slug: izmir
+    po_city: "IZMIR"

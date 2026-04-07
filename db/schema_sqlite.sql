@@ -52,6 +52,20 @@ CREATE TABLE IF NOT EXISTS scrape_runs (
     error_details    TEXT
 );
 
+-- Yakıt fiyatları (Modül 07 — Ulaştırma)
+CREATE TABLE IF NOT EXISTS fuel_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider    TEXT    NOT NULL,
+    city        TEXT    NOT NULL,
+    district    TEXT,
+    fuel_type   TEXT    NOT NULL,
+    price       REAL    NOT NULL,
+    date        TEXT    NOT NULL,
+    UNIQUE(provider, city, fuel_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fp_date         ON fuel_prices(date);
+CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON fuel_prices(provider, city);
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON price_snapshots(location);

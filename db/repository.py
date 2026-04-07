@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import PriceRecord, ScrapeRun
+from db.models import FuelPriceRecord, PriceRecord, ScrapeRun
 
 logger = logging.getLogger(__name__)
 
@@ -291,6 +291,39 @@ async def export_and_cleanup(
         logger.info("[cleanup] %s: %d satır silindi", month_str, deleted)
 
     return total_deleted
+
+
+# ── Modül 07 — Yakıt fiyatları ───────────────────────────────────────────────
+
+async def upsert_fuel_price(conn, record: FuelPriceRecord) -> bool:
+    """
+    fuel_prices tablosuna yakıt fiyatı ekler.
+    Aynı (provider, city, fuel_type, date) varsa sessizce geçer (idempotent).
+    Döndürür: True → yeni satır eklendi, False → zaten vardı.
+    """
+    result = await conn.execute(
+        """
+        INSERT INTO fuel_prices (provider, city, district, fuel_type, price, date)
+        VALUES ($1, $2, $3, $4, $5::numeric, $6::date)
+        ON CONFLICT (provider, city, fuel_type, date) DO NOTHING
+        """,
+        record.provider,
+        record.city,
+        record.district,
+        record.fuel_type,
+        float(record.price),
+        record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date)),
+    )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_fuel_prices(conn, records: list[FuelPriceRecord]) -> int:
+    """Toplu yakıt fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_fuel_price(conn, r):
+            inserted += 1
+    return inserted
 
 
 # ── Sorgular ─────────────────────────────────────────────────────────────────
