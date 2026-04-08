@@ -19,6 +19,7 @@ from modules.base import BaseModule
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
 from modules.m07_fuel.scrapers.opet import OpetScraper
 from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
+from modules.m07_fuel.scrapers.shell import ShellScraper
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,7 @@ class FuelModule(BaseModule):
         provider_scrapers = [
             ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
             ("opet",        lambda: _run_opet_with_aygaz(locations)),
+            ("shell",       lambda: _run_single("shell", ShellScraper, locations)),
         ]
 
         for provider, scrape_fn in provider_scrapers:

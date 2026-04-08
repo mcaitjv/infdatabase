@@ -11,15 +11,21 @@ locations:
     opet_slug: istanbul-anadolu     # Kadıköy Anadolu yakasındadır
     po_city: "ISTANBUL (ANADOLU)"
     aygaz_slug: istanbul
+    shell_province: "034"
+    shell_county_name: KADIKOY
 
   - city: ankara
     district: cankaya
     opet_slug: ankara
     po_city: "ANKARA"
     aygaz_slug: ankara
+    shell_province: "006"
+    shell_county_name: CANKAYA
 
   - city: izmir
     district: merkez
     opet_slug: izmir
     po_city: "IZMIR"
     aygaz_slug: izmir
+    shell_province: "035"
+    shell_county_name: MERKEZ
