@@ -1,45 +1,64 @@
 # Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)
 # COICOP 2018: 0531 (büyük ev aletleri), 0532 (küçük ev aletleri), 0552 (ampul & pil)
 #
-# Her keyword için: sayfa 0, ilk 10 ürün → günlük snapshot.
+# Kullanım:
+#   Discovery (ilk kurulumda):
+#     python -m pipeline.runner --discover-appliances
+#     → tracked_skus listelerini doldurur (her keyword için en çok satan 5 ürün)
+#
+#   Günlük çalışma:
+#     python -m pipeline.runner --module 05
+#     → tracked_skus'taki sabit SKU'ların güncel fiyatını kaydeder
 
 appliances:
 
   # COICOP 0531 — Büyük ev aletleri
   - coicop: "0531"
     keyword: "buzdolabı"
+    tracked_skus: []
 
   - coicop: "0531"
     keyword: "çamaşır makinesi"
+    tracked_skus: []
 
   - coicop: "0531"
     keyword: "bulaşık makinesi"
+    tracked_skus: []
 
   - coicop: "0531"
     keyword: "fırın"
+    tracked_skus: []
 
   - coicop: "0531"
     keyword: "ocak"
+    tracked_skus: []
 
   # COICOP 0532 — Küçük ev aletleri
   - coicop: "0532"
     keyword: "çaydanlık"
+    tracked_skus: []
 
   - coicop: "0532"
     keyword: "kahve makinesi"
+    tracked_skus: []
 
   - coicop: "0532"
     keyword: "elektrikli süpürge"
+    tracked_skus: []
 
   - coicop: "0532"
     keyword: "blender"
+    tracked_skus: []
 
   # COICOP 0552 — Ampul ve piller
   - coicop: "0552"
     keyword: "LED ampul"
+    tracked_skus: []
 
   - coicop: "0552"
     keyword: "kalem pil"
+    tracked_skus: []
 
   - coicop: "0552"
     keyword: "şarjlı pil"
+    tracked_skus: []

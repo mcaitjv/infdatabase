@@ -23,6 +23,7 @@ load_dotenv()
 from db.repository import get_connection
 from modules import get_modules
 from modules.m01_food import FoodModule
+from modules.m05_household import HouseholdModule
 
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(
@@ -44,9 +45,14 @@ async def main(
     dry_run: bool,
     setup_schema: bool,
     do_discover: bool,
+    do_discover_appliances: bool,
 ) -> None:
     if do_discover:
         await FoodModule().discover_branches()
+        return
+
+    if do_discover_appliances:
+        await HouseholdModule().discover_appliances()
         return
 
     modules = get_modules(module_codes)
@@ -87,13 +93,19 @@ if __name__ == "__main__":
         action="store_true",
         help="Gıda modülü için şube keşfi (config/branches.yaml oluşturur)",
     )
+    parser.add_argument(
+        "--discover-appliances",
+        action="store_true",
+        help="Modül 05 beyaz eşya SKU keşfi (appliances.yaml tracked_skus doldurur)",
+    )
     args = parser.parse_args()
 
     codes = [c.strip() for c in args.module.split(",")] if args.module else None
 
     asyncio.run(main(
-        module_codes  = codes,
-        dry_run       = args.dry_run,
-        setup_schema  = args.setup_schema,
-        do_discover   = args.discover_branches,
+        module_codes           = codes,
+        dry_run                = args.dry_run,
+        setup_schema           = args.setup_schema,
+        do_discover            = args.discover_branches,
+        do_discover_appliances = args.discover_appliances,
     ))

@@ -81,6 +81,54 @@ class HouseholdModule(BaseModule):
         """Modül 01 ile aynı ortak şemayı kullanır (market_products + price_snapshots)."""
         await apply_schema(conn)
 
+    async def discover_appliances(self) -> None:
+        """
+        Her keyword için en çok satan ilk 5 ürünü bulur ve
+        appliances.yaml'daki tracked_skus listelerini günceller.
+
+        Kullanım: python -m pipeline.runner --discover-appliances
+        """
+        entries = _load_appliances()
+        config_path = os.path.join(_MODULE_DIR, "config", "appliances.yaml")
+
+        async with TrendyolScraper() as scraper:
+            for entry in entries:
+                keyword = entry["keyword"]
+                coicop  = entry["coicop"]
+
+                skus = await scraper.discover_keyword(keyword, coicop)
+                entry["tracked_skus"] = skus
+
+                for s in skus:
+                    logger.info(
+                        "[m05:discover] %s → %s | %s",
+                        keyword, s["brand"], s["model"][:50],
+                    )
+
+                await scraper._sleep(3.0, 6.0)
+
+        # YAML'ı güncelle
+        with open(config_path, "w", encoding="utf-8") as f:
+            header = (
+                "# Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)\n"
+                "# Bu dosya --discover-appliances komutuyla otomatik güncellenir.\n"
+                "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
+            )
+            f.write(header)
+            yaml.dump(
+                {"appliances": entries},
+                f,
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
+
+        logger.info(
+            "[m05:discover] appliances.yaml guncellendi — %d keyword, %d toplam SKU",
+            len(entries),
+            sum(len(e.get("tracked_skus", [])) for e in entries),
+        )
+
     async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
         """
         0561 temizlik ürünlerini MarketFiyatiScraper ile çeker.
@@ -201,8 +249,17 @@ class HouseholdModule(BaseModule):
 
         async with TrendyolScraper() as trendyol:
             for entry in appliance_entries:
-                keyword     = entry["keyword"]
-                coicop_code = entry["coicop"]
+                keyword      = entry["keyword"]
+                coicop_code  = entry["coicop"]
+                tracked_skus = entry.get("tracked_skus") or []
+
+                if not tracked_skus:
+                    logger.warning(
+                        "[m05:trendyol] %s icin tracked_skus bos — "
+                        "--discover-appliances calistirin",
+                        keyword,
+                    )
+                    continue
 
                 run = ScrapeRun(
                     market     = f"m05:trendyol:{coicop_code}:{keyword}",
@@ -210,9 +267,10 @@ class HouseholdModule(BaseModule):
                     started_at = datetime.now(),
                 )
                 try:
-                    records = await trendyol.scrape_keyword(
-                        keyword     = keyword,
-                        coicop_code = coicop_code,
+                    records = await trendyol.scrape_tracked(
+                        keyword      = keyword,
+                        coicop_code  = coicop_code,
+                        tracked_skus = tracked_skus,
                     )
 
                     valid: list[AppliancePriceRecord] = []
