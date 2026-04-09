@@ -1,0 +1,50 @@
+# Modül 05 — Ev Bakımı ve Temizlik Ürünleri (COICOP 0561)
+# COICOP 2018 kodu: 05  |  Ağırlık: %7.92
+#
+# Bu keyword'ler MarketFiyatiScraper (TÜBİTAK API) ile çekilir.
+# 0561 alt grubu: Dayanıklı olmayan ev eşyaları (temizlik + kağıt ürünleri)
+#
+# NOT: Deterjan, çamaşır suyu, bulaşık deterjanı gibi ürünler
+#      önceden Modül 01'deydi; COICOP sınıflandırmasına göre buraya taşındı.
+
+categories:
+  # 0561101 — Çamaşır temizlik ürünleri
+  - "deterjan"
+  - "çamaşır suyu"
+  - "yumuşatıcı"
+  - "leke çıkarıcı"
+
+  # 0561102 — Bulaşık temizlik ürünleri
+  - "bulaşık deterjanı"
+  - "bulaşık kapsülü"
+
+  # 0561103 — Zemin ve yüzey temizlik ürünleri
+  - "yüzey temizleyici"
+  - "çok amaçlı temizleyici"
+  - "banyo temizleyici"
+  - "wc temizleyici"
+
+  # 0561106 — Temizlik bezleri
+  - "temizlik bezi"
+  - "mikrofiber bez"
+
+  # 0561198 — Yüzey temizlik havlusu
+  - "yüzey temizlik havlusu"
+  - "ıslak mendil"
+
+  # 0561902 — Saklama ve muhafaza malzemeleri
+  - "alüminyum folyo"
+  - "streç film"
+  - "buzdolabı poşeti"
+  - "saklama kabı"
+
+  # 0561903 — Kağıt sofra malzemeleri
+  - "kağıt havlu"
+  - "kağıt peçete"
+  - "tuvalet kağıdı"
+  - "peçete"
+
+  # 0561915 — Diğer dayanıklı olmayan ev eşyaları
+  - "çöp torbası"
+  - "banyo paspası"
+  - "paspas"
