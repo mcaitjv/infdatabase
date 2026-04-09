@@ -30,9 +30,6 @@ appliances:
   - sku: '925308177'
     brand: Bosch
     model: WGA25202TR 10 Kg 1200 Devir Beyaz Çamaşır Makinesi
-  - sku: '931134852'
-    brand: KUMTEL
-    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
   - sku: '103558743'
     brand: Hoover
     model: HWP 49AMBCR/1-S 9 kg Wi-Fi Bağlantılı 1400 Devir Çamaşır Makinesi
@@ -48,9 +45,6 @@ appliances:
   - sku: '746894720'
     brand: Hoover
     model: HF 3E53E0W-17 5 Programlı Bulaşık Makinesi
-  - sku: '931134852'
-    brand: KUMTEL
-    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
   - sku: '284716808'
     brand: Altus
     model: Bulaşık Makinesi Al 413 P 3 Prog.
