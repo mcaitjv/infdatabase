@@ -64,34 +64,27 @@ appliances:
   - sku: '669865413'
     brand: KUMTEL
     model: LX-9625 Turbo 70 Litre Midi Fırın - Siyah
-  - sku: '1109390496'
-    brand: KUMTEL
-    model: 32 Litre Flash Beyaz Mini Fırın KF-5320
-  - sku: '3212733'
-    brand: Simfer
-    model: 4242 Beyaz 42 LT Turbo Fan Mini/Midi Fırın - 6 Fonksiyon,Yoğurt Yapma,
-      Buz Çözme & İç Aydınlatma
-  - sku: '896790802'
-    brand: KUMTEL
-    model: Piliç Çevirmeli 71 Litre Midi Fırın LX-9645
+  - sku: '1107444354'
+    brand: Akel
+    model: AF340L 34lt Gri Mini/Midi Fırın, Aydınlatmalı, Zaman Ayarlı
 - coicop: '0531'
   keyword: ocak
   tracked_skus:
   - sku: '896791791'
     brand: KUMTEL
     model: Ko-40 Tshdf Set Üstü Ocak Beyaz Cam Doğalgazlı.
-  - sku: '79604490'
-    brand: KUMTEL
-    model: LX-7115 Ayarlanabilir Termostatlı Tekli Elektrikli Ocak - Siyah
-  - sku: '362544362'
-    brand: KUMTEL
-    model: Ankastre Beyaz Violet Ocak
-  - sku: '2711570'
-    brand: KUMTEL
-    model: Elektrikli Setüstü Hotplate Ocak Lx-7021
-  - sku: '3808039'
-    brand: KUMTEL
-    model: Ko-420 F Inox 4 Gözü Gazlı Setüstü Ocak Lpg
+  - sku: '37935553'
+    brand: Optimum
+    model: Xx-133 4 Gözlü Set Üstü Dörtlü Ocak Doğalgazlı Siyah
+  - sku: '1060349700'
+    brand: Sinbo
+    model: SCO-5065 Tekli Elektrikli Ocak – 5 Kademeli Isı Ayarı
+  - sku: '330057422'
+    brand: Ailipu
+    model: 2400 W Lazer Indiksiyonlu Ocak
+  - sku: '76142120'
+    brand: Uğur
+    model: 4 Gözlü Tüplü Ocak Set Üstü Beyaz Ocak
 - coicop: '0532'
   keyword: çaydanlık
   tracked_skus:
@@ -121,17 +114,15 @@ appliances:
   - sku: '5741453'
     brand: Sinbo
     model: SCM-2951 Elektrikli Kahve Makinesi Cezve
-  - sku: '469611709'
-    brand: Karaca
-    model: Hatır Közde Türk Kahvesi ve Türk Kahve Makinesi Kırmızı 5 Fincan Kapasiteli
-      Bol Köpüklü
+  - sku: '1126995838'
+    brand: Altus
+    model: AL 4955 ES Espresso Makinesi
   - sku: '835660881'
     brand: KUMTEL
     model: Dijital Filtre Kahve Makinesi HCFM-02
-  - sku: '770205416'
-    brand: Karaca
-    model: Hatır Hüp Düet 10 Fincan Kapasiteli Bol Köpüklü Aromalı, Közde ve Türk
-      Kahve Makinesi Uzay Gr
+  - sku: '415310'
+    brand: Arzum
+    model: OK004 Okka Minio Türk Kahvesi Makinesi Taşma Önleyici Sistem
 - coicop: '0532'
   keyword: elektrikli süpürge
   tracked_skus:
@@ -162,17 +153,12 @@ appliances:
   - sku: '2543106'
     brand: Sinbo
     model: Shb-3147 3 Fonksiyonlu El Blender Seti - Beyaz / 350Watt
-  - sku: '1089598744'
-    brand: Sinbo
-    model: SHB-7534 Çok Fonksiyonlu El Blender Seti | Doğrayıcı, Çırpıcı ve Rende
-      Aparatlı
-  - sku: '1107438238'
-    brand: Kiwi
-    model: KC-8219H Paslanmaz Çelik Bıçaklı El Blender Seti | 500ml Hazne & DC Motor
-      & 1,5m Kablo
   - sku: '764533886'
     brand: BOLD
     model: Siyah Çubuk Blender
+  - sku: '761686119'
+    brand: Philips
+    model: Hr2041/00 Sürahi Blender
 - coicop: '0552'
   keyword: LED ampul
   tracked_skus:
@@ -199,19 +185,15 @@ appliances:
     brand: Varta
     model: Super Heavy Duty Toplam 24 Adet Özel Pil Paketi(12AA 12AAA)12 Adet Ince
       12 Adet Kalın Pildir
-  - sku: '32428679'
-    brand: Varta
-    model: 24 Adet Özel Pil Paketi (12AA-12AAA) 12 Ince Kalem 12 Adet Kalın Kalem
-      Pil Vardır
   - sku: '80169777'
     brand: Genel Markalar
     model: Superlife Çinko AA Kalem Pil (60'lı Paket)
   - sku: '37866530'
     brand: Duracell
     model: AA Alkalin Kalem Pil (10'lu paket) 1,5 V LR6/MN1500
-  - sku: '82537821'
-    brand: Varta
-    model: Super Heavy Duty 48'li Pil Paketi 24 Adet Kalem Pil + 24 Adet İnce Pil
+  - sku: '731663267'
+    brand: Philips
+    model: AA Alkalin Kalem Pil 12'li Kartela
 - coicop: '0552'
   keyword: şarjlı pil
   tracked_skus:

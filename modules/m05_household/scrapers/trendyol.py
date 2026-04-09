@@ -178,17 +178,22 @@ class TrendyolScraper(BaseScraper):
 
         products = self._extract_products(html)
         result = []
+        seen_brands: set[str] = set()
         today = date.today()
-        for item in products[:top_n]:
+        for item in products:
+            if len(result) >= top_n:
+                break
             rec = self._parse_product(item, coicop_code, today)
-            if rec:
+            if rec and rec.brand.lower() not in seen_brands:
+                seen_brands.add(rec.brand.lower())
                 result.append({
                     "sku":   rec.sku,
                     "brand": rec.brand,
                     "model": rec.model,
                 })
         logger.info(
-            "[trendyol] discovery keyword=%s → %d SKU secildi", keyword, len(result)
+            "[trendyol] discovery keyword=%s → %d SKU secildi (%d marka)",
+            keyword, len(result), len(seen_brands),
         )
         return result
 
