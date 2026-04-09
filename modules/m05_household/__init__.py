@@ -140,7 +140,7 @@ class HouseholdModule(BaseModule):
                             )
                             for r in valid[:3]:
                                 vol = f" | {r.volume}" if r.volume else ""
-                                print(f"  [{r.market}] {r.market_name} | {r.price} ₺{vol}")
+                                print(f"  [{r.market}] {r.market_name} | {r.price} TL{vol}")
                             if len(valid) > 3:
                                 print(f"  ... ve {len(valid) - 3} ürün daha")
                         else:
