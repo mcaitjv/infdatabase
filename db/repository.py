@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import FuelPriceRecord, PriceRecord, ScrapeRun
+from db.models import AppliancePriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
 
 logger = logging.getLogger(__name__)
 
@@ -322,6 +322,46 @@ async def batch_upsert_fuel_prices(conn, records: list[FuelPriceRecord]) -> int:
     inserted = 0
     for r in records:
         if await upsert_fuel_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+# ── Modül 05 Aşama 2 — Beyaz eşya fiyatları ─────────────────────────────────
+
+async def upsert_appliance_price(conn, record: AppliancePriceRecord) -> bool:
+    """
+    appliance_prices tablosuna beyaz eşya fiyatı ekler.
+    Aynı (source, sku, date) varsa sessizce geçer (idempotent).
+    Döndürür: True → yeni satır eklendi, False → zaten vardı.
+    """
+    result = await conn.execute(
+        """
+        INSERT INTO appliance_prices
+            (coicop_code, source, sku, brand, model, category,
+             price, discounted_price, date)
+        VALUES ($1, $2, $3, $4, $5, $6, $7::numeric, $8::numeric, $9::date)
+        ON CONFLICT (source, sku, date) DO NOTHING
+        """,
+        record.coicop_code,
+        record.source,
+        record.sku,
+        record.brand,
+        record.model,
+        record.category,
+        float(record.price),
+        float(record.discounted_price) if record.discounted_price else None,
+        record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date)),
+    )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_appliance_prices(
+    conn, records: list[AppliancePriceRecord]
+) -> int:
+    """Toplu beyaz eşya fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_appliance_price(conn, r):
             inserted += 1
     return inserted
 

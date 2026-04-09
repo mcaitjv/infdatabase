@@ -66,6 +66,27 @@ CREATE TABLE IF NOT EXISTS fuel_prices (
 
 CREATE INDEX IF NOT EXISTS idx_fp_date         ON fuel_prices(date);
 CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON fuel_prices(provider, city);
+
+-- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05 Aşama 2 — Trendyol)
+CREATE TABLE IF NOT EXISTS appliance_prices (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    coicop_code      TEXT    NOT NULL,
+    source           TEXT    NOT NULL DEFAULT 'trendyol',
+    sku              TEXT    NOT NULL,
+    brand            TEXT    NOT NULL,
+    model            TEXT    NOT NULL,
+    category         TEXT,
+    price            REAL    NOT NULL,
+    discounted_price REAL,
+    date             TEXT    NOT NULL,
+    scraped_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(source, sku, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ap_date         ON appliance_prices(date);
+CREATE INDEX IF NOT EXISTS idx_ap_coicop_date  ON appliance_prices(coicop_code, date);
+CREATE INDEX IF NOT EXISTS idx_ap_sku          ON appliance_prices(sku);
+
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON price_snapshots(location);

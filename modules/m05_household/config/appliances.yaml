@@ -1,0 +1,45 @@
+# Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)
+# COICOP 2018: 0531 (büyük ev aletleri), 0532 (küçük ev aletleri), 0552 (ampul & pil)
+#
+# Her keyword için: sayfa 0, ilk 10 ürün → günlük snapshot.
+
+appliances:
+
+  # COICOP 0531 — Büyük ev aletleri
+  - coicop: "0531"
+    keyword: "buzdolabı"
+
+  - coicop: "0531"
+    keyword: "çamaşır makinesi"
+
+  - coicop: "0531"
+    keyword: "bulaşık makinesi"
+
+  - coicop: "0531"
+    keyword: "fırın"
+
+  - coicop: "0531"
+    keyword: "ocak"
+
+  # COICOP 0532 — Küçük ev aletleri
+  - coicop: "0532"
+    keyword: "çaydanlık"
+
+  - coicop: "0532"
+    keyword: "kahve makinesi"
+
+  - coicop: "0532"
+    keyword: "elektrikli süpürge"
+
+  - coicop: "0532"
+    keyword: "blender"
+
+  # COICOP 0552 — Ampul ve piller
+  - coicop: "0552"
+    keyword: "LED ampul"
+
+  - coicop: "0552"
+    keyword: "kalem pil"
+
+  - coicop: "0552"
+    keyword: "şarjlı pil"
