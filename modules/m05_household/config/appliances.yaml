@@ -18,9 +18,9 @@ appliances:
   - sku: '72800976'
     brand: Dijitsu
     model: Dbd200 Tmf A Statik Buzdolabı
-  - sku: '220563560'
-    brand: Vienev
-    model: 3 Adet Kapaklı Buzdolabı Organizeri Orta 6,5 Litre
+  - sku: '1092159058'
+    brand: Arçelik
+    model: 570405 MB Çift Kapılı No Frost Beyaz Buzdolabı
 - coicop: '0531'
   keyword: çamaşır makinesi
   tracked_skus:
@@ -33,9 +33,12 @@ appliances:
   - sku: '103558743'
     brand: Hoover
     model: HWP 49AMBCR/1-S 9 kg Wi-Fi Bağlantılı 1400 Devir Çamaşır Makinesi
-  - sku: '899145760'
-    brand: Altus
-    model: AL KM 954 M 9 kg Isı Pompalı Kurutma Makinesi Beyaz
+  - sku: '826518040'
+    brand: Arçelik
+    model: 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi
+  - sku: '833670806'
+    brand: Beko
+    model: CMX 8100 ÇAMAŞIR MAKİNESİ
 - coicop: '0531'
   keyword: bulaşık makinesi
   tracked_skus:
@@ -173,13 +176,6 @@ appliances:
 - coicop: '0552'
   keyword: LED ampul
   tracked_skus:
-  - sku: '376730755'
-    brand: Şımart Teknoloji
-    model: Akıllı Rgb Led Ampul Bluetooth 16m Renk, Ayarlanabilir Parlaklık
-  - sku: '789991474'
-    brand: Xenon Smart
-    model: Akıllı Wi-Fi Led Akıllı RGB Ampul Mobil Uygulama Google Home ve Alexa Uyumlu
-      Aydınlatma X7021
   - sku: '838177858'
     brand: Philips
     model: LED Ampul 8-60W 2700K Sarı Işık 720 Lümen Tasarruflu Uzun Ömürlü ve Göz
@@ -187,10 +183,15 @@ appliances:
   - sku: '939030555'
     brand: Philips
     model: LED 13-100W E27 6500K - Beyaz Işık - 1521 Lumen Yüksek Işık - E27 Duy
-  - sku: '921867042'
-    brand: garaccu
-    model: Uzaktan Kumandalı Renk Değiştiren Led Ampul Beyaz Dahil 16 Renk Seçenekli
-      Renkli Gece Lambası
+  - sku: '925939668'
+    brand: Heka
+    model: E27 220V 6W 4000K FİLAMENT LED AMPUL ERD-283
+  - sku: '780659250'
+    brand: HOMİNG
+    model: Led Ampul E27 9w 850lm Ayd-3706
+  - sku: '1116531242'
+    brand: PANASONIC
+    model: E27 LED Ampul 4,9W 515 Lümen 4000K Doğal Gün Işığı Tasarruflu
 - coicop: '0552'
   keyword: kalem pil
   tracked_skus:
