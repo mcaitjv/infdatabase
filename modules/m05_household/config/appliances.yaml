@@ -1,64 +1,237 @@
 # Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)
-# COICOP 2018: 0531 (büyük ev aletleri), 0532 (küçük ev aletleri), 0552 (ampul & pil)
-#
-# Kullanım:
-#   Discovery (ilk kurulumda):
-#     python -m pipeline.runner --discover-appliances
-#     → tracked_skus listelerini doldurur (her keyword için en çok satan 5 ürün)
-#
-#   Günlük çalışma:
-#     python -m pipeline.runner --module 05
-#     → tracked_skus'taki sabit SKU'ların güncel fiyatını kaydeder
+# Bu dosya --discover-appliances komutuyla otomatik güncellenir.
+# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.
 
 appliances:
-
-  # COICOP 0531 — Büyük ev aletleri
-  - coicop: "0531"
-    keyword: "buzdolabı"
-    tracked_skus: []
-
-  - coicop: "0531"
-    keyword: "çamaşır makinesi"
-    tracked_skus: []
-
-  - coicop: "0531"
-    keyword: "bulaşık makinesi"
-    tracked_skus: []
-
-  - coicop: "0531"
-    keyword: "fırın"
-    tracked_skus: []
-
-  - coicop: "0531"
-    keyword: "ocak"
-    tracked_skus: []
-
-  # COICOP 0532 — Küçük ev aletleri
-  - coicop: "0532"
-    keyword: "çaydanlık"
-    tracked_skus: []
-
-  - coicop: "0532"
-    keyword: "kahve makinesi"
-    tracked_skus: []
-
-  - coicop: "0532"
-    keyword: "elektrikli süpürge"
-    tracked_skus: []
-
-  - coicop: "0532"
-    keyword: "blender"
-    tracked_skus: []
-
-  # COICOP 0552 — Ampul ve piller
-  - coicop: "0552"
-    keyword: "LED ampul"
-    tracked_skus: []
-
-  - coicop: "0552"
-    keyword: "kalem pil"
-    tracked_skus: []
-
-  - coicop: "0552"
-    keyword: "şarjlı pil"
-    tracked_skus: []
+- coicop: '0531'
+  keyword: buzdolabı
+  tracked_skus:
+  - sku: '948680693'
+    brand: Regal
+    model: STK 28820 288 Lt Çift Kapılı Buzdolabı
+  - sku: '816930077'
+    brand: Regal
+    model: NF 30020 251 Lt No Frost Buzdolabı
+  - sku: '931134852'
+    brand: KUMTEL
+    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
+  - sku: '72800976'
+    brand: Dijitsu
+    model: Dbd200 Tmf A Statik Buzdolabı
+  - sku: '220563560'
+    brand: Vienev
+    model: 3 Adet Kapaklı Buzdolabı Organizeri Orta 6,5 Litre
+- coicop: '0531'
+  keyword: çamaşır makinesi
+  tracked_skus:
+  - sku: '1126329472'
+    brand: Altus
+    model: ALCM71045R ÇAMAŞIR MAKİNESİ
+  - sku: '925308177'
+    brand: Bosch
+    model: WGA25202TR 10 Kg 1200 Devir Beyaz Çamaşır Makinesi
+  - sku: '931134852'
+    brand: KUMTEL
+    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
+  - sku: '103558743'
+    brand: Hoover
+    model: HWP 49AMBCR/1-S 9 kg Wi-Fi Bağlantılı 1400 Devir Çamaşır Makinesi
+  - sku: '899145760'
+    brand: Altus
+    model: AL KM 954 M 9 kg Isı Pompalı Kurutma Makinesi Beyaz
+- coicop: '0531'
+  keyword: bulaşık makinesi
+  tracked_skus:
+  - sku: '842163502'
+    brand: Bosch
+    model: SMS26DW00T 6 Programlı Beyaz Bulaşık Makinesi
+  - sku: '746894720'
+    brand: Hoover
+    model: HF 3E53E0W-17 5 Programlı Bulaşık Makinesi
+  - sku: '931134852'
+    brand: KUMTEL
+    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
+  - sku: '284716808'
+    brand: Altus
+    model: Bulaşık Makinesi Al 413 P 3 Prog.
+  - sku: '98867931'
+    brand: Altus
+    model: AL 445 NX 5 Programlı Bulaşık Makinesi
+- coicop: '0531'
+  keyword: fırın
+  tracked_skus:
+  - sku: '3905947'
+    brand: Simfer
+    model: 3420 Beyaz 34 LT Statik Mini/Midi Fırın - 4 Fonksiyon, Programlanabilir
+      Pişirme & Isı Kontrol Sistem
+  - sku: '669865413'
+    brand: KUMTEL
+    model: LX-9625 Turbo 70 Litre Midi Fırın - Siyah
+  - sku: '1109390496'
+    brand: KUMTEL
+    model: 32 Litre Flash Beyaz Mini Fırın KF-5320
+  - sku: '3212733'
+    brand: Simfer
+    model: 4242 Beyaz 42 LT Turbo Fan Mini/Midi Fırın - 6 Fonksiyon,Yoğurt Yapma,
+      Buz Çözme & İç Aydınlatma
+  - sku: '896790802'
+    brand: KUMTEL
+    model: Piliç Çevirmeli 71 Litre Midi Fırın LX-9645
+- coicop: '0531'
+  keyword: ocak
+  tracked_skus:
+  - sku: '896791791'
+    brand: KUMTEL
+    model: Ko-40 Tshdf Set Üstü Ocak Beyaz Cam Doğalgazlı.
+  - sku: '79604490'
+    brand: KUMTEL
+    model: LX-7115 Ayarlanabilir Termostatlı Tekli Elektrikli Ocak - Siyah
+  - sku: '362544362'
+    brand: KUMTEL
+    model: Ankastre Beyaz Violet Ocak
+  - sku: '2711570'
+    brand: KUMTEL
+    model: Elektrikli Setüstü Hotplate Ocak Lx-7021
+  - sku: '3808039'
+    brand: KUMTEL
+    model: Ko-420 F Inox 4 Gözü Gazlı Setüstü Ocak Lpg
+- coicop: '0532'
+  keyword: çaydanlık
+  tracked_skus:
+  - sku: '1021398708'
+    brand: YUNUSOĞLU HOME
+    model: Aletta Büyük Boy Paslanmaz Çelik Çaydanlık Metal Kulp Aile Boy Kullanım
+      1.6 Litre+2.5 Litre
+  - sku: '121817797'
+    brand: Karaca
+    model: Belinay Indüksiyon Tabanlı Midi Metal Çaydanlık Takımı
+  - sku: '1076090785'
+    brand: Taç
+    model: Panda Orta Boy 4 Parça Paslanmaz Çelik Çaydanlık Takımı 1.25-2.00lt
+  - sku: '778826086'
+    brand: Kahramanlar
+    model: Delux Mega Boy Platin 4 Parça Çaydanlık Takımı
+  - sku: '76013760'
+    brand: Nehir
+    model: Modern Maxi Büyük Boy Paslanmaz Çelik 1.6-2.5 Lt. Çaydanlık Takımı
+- coicop: '0532'
+  keyword: kahve makinesi
+  tracked_skus:
+  - sku: '469609098'
+    brand: Karaca
+    model: Hatır Közde Türk Kahvesi ve Türk Kahve Makinesi Shiny Black 5 Fincan Kapasiteli
+      Bol Köpüklü
+  - sku: '5741453'
+    brand: Sinbo
+    model: SCM-2951 Elektrikli Kahve Makinesi Cezve
+  - sku: '469611709'
+    brand: Karaca
+    model: Hatır Közde Türk Kahvesi ve Türk Kahve Makinesi Kırmızı 5 Fincan Kapasiteli
+      Bol Köpüklü
+  - sku: '835660881'
+    brand: KUMTEL
+    model: Dijital Filtre Kahve Makinesi HCFM-02
+  - sku: '770205416'
+    brand: Karaca
+    model: Hatır Hüp Düet 10 Fincan Kapasiteli Bol Köpüklü Aromalı, Közde ve Türk
+      Kahve Makinesi Uzay Gr
+- coicop: '0532'
+  keyword: elektrikli süpürge
+  tracked_skus:
+  - sku: '35509789'
+    brand: Fantom
+    model: Pratıc-S P1200 Toz Torbasız Dikey Süpürge Antrasit
+  - sku: '2916192'
+    brand: Philips
+    model: PowerPro City Toz Torbasız Elektrikli Süpürge, 650W, PowerCyclone 5, H13
+      Filtre, FC9331/07
+  - sku: '32662332'
+    brand: Samsung
+    model: Toz Torbasız Elektrikli Süpürge VC07R302MVP/TR
+  - sku: '892244537'
+    brand: Karaca
+    model: Vantuz Action Force X10 2 Lt Toz Torbasız Hazneli Elektrikli Süpürge Black
+      899 W
+  - sku: '689273895'
+    brand: Kiwi
+    model: Dikey Elektrikli Süpürge Gri Kvc-4108
+- coicop: '0532'
+  keyword: blender
+  tracked_skus:
+  - sku: '1056953743'
+    brand: Kiwi
+    model: KHB-4416 Paslanmaz Çelik Bıçaklı El Blenderi | 350 Watt & Sessiz Motor
+      & 2 Hız Ayarı
+  - sku: '2543106'
+    brand: Sinbo
+    model: Shb-3147 3 Fonksiyonlu El Blender Seti - Beyaz / 350Watt
+  - sku: '1089598744'
+    brand: Sinbo
+    model: SHB-7534 Çok Fonksiyonlu El Blender Seti | Doğrayıcı, Çırpıcı ve Rende
+      Aparatlı
+  - sku: '1107438238'
+    brand: Kiwi
+    model: KC-8219H Paslanmaz Çelik Bıçaklı El Blender Seti | 500ml Hazne & DC Motor
+      & 1,5m Kablo
+  - sku: '764533886'
+    brand: BOLD
+    model: Siyah Çubuk Blender
+- coicop: '0552'
+  keyword: LED ampul
+  tracked_skus:
+  - sku: '376730755'
+    brand: Şımart Teknoloji
+    model: Akıllı Rgb Led Ampul Bluetooth 16m Renk, Ayarlanabilir Parlaklık
+  - sku: '789991474'
+    brand: Xenon Smart
+    model: Akıllı Wi-Fi Led Akıllı RGB Ampul Mobil Uygulama Google Home ve Alexa Uyumlu
+      Aydınlatma X7021
+  - sku: '838177858'
+    brand: Philips
+    model: LED Ampul 8-60W 2700K Sarı Işık 720 Lümen Tasarruflu Uzun Ömürlü ve Göz
+      Yormayan Aydınlatma
+  - sku: '939030555'
+    brand: Philips
+    model: LED 13-100W E27 6500K - Beyaz Işık - 1521 Lumen Yüksek Işık - E27 Duy
+  - sku: '921867042'
+    brand: garaccu
+    model: Uzaktan Kumandalı Renk Değiştiren Led Ampul Beyaz Dahil 16 Renk Seçenekli
+      Renkli Gece Lambası
+- coicop: '0552'
+  keyword: kalem pil
+  tracked_skus:
+  - sku: '311921074'
+    brand: Varta
+    model: Super Heavy Duty Toplam 24 Adet Özel Pil Paketi(12AA 12AAA)12 Adet Ince
+      12 Adet Kalın Pildir
+  - sku: '32428679'
+    brand: Varta
+    model: 24 Adet Özel Pil Paketi (12AA-12AAA) 12 Ince Kalem 12 Adet Kalın Kalem
+      Pil Vardır
+  - sku: '80169777'
+    brand: Genel Markalar
+    model: Superlife Çinko AA Kalem Pil (60'lı Paket)
+  - sku: '37866530'
+    brand: Duracell
+    model: AA Alkalin Kalem Pil (10'lu paket) 1,5 V LR6/MN1500
+  - sku: '82537821'
+    brand: Varta
+    model: Super Heavy Duty 48'li Pil Paketi 24 Adet Kalem Pil + 24 Adet İnce Pil
+- coicop: '0552'
+  keyword: şarjlı pil
+  tracked_skus:
+  - sku: '28103059'
+    brand: Genel Markalar
+    model: Accu Power Şarj Edilebilir Ni-Mh AA Kalem Pil 2.100 mAh 2 Adet
+  - sku: '41995693'
+    brand: Varta
+    model: Power Şarj Edilebilir Kalem Pil 2100Mah AA 4'Lü Paket
+  - sku: '464903113'
+    brand: Varta
+    model: Plug Pil Şarj Cihazı 4 Adet AA 2100Mah Şarj Edilebilir Pil Hediyeli
+  - sku: '895427627'
+    brand: Duracell
+    model: Şarj Edilebilir Kalem Pil 4'lü 2500 mAh
+  - sku: '967191310'
+    brand: instatech
+    model: USB ile Şarj Edilebilen Kalem Pil Seti – 4 Adet + Kablo 2600mah
