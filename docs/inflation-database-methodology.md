@@ -49,7 +49,22 @@ brand                           is_available
 volume                          location
                                 scraped_at
 
-UNIQUE: (market_product_id, snapshot_date, location)
+UNIQUE(market, market_sku)      UNIQUE(market_product_id, snapshot_date, location)
+→ Günlük çalıştırma idempotent (tekrar yazma yok)
+```
+
+```
+fuel_prices
+───────────
+id (PK)
+provider    VARCHAR(50)   — 'petrolofisi' | 'opet' | 'shell'
+city        VARCHAR(50)   — 'istanbul' | 'ankara' | 'izmir'
+district    VARCHAR(100)  — 'kadikoy' | 'cankaya' | 'merkez'
+fuel_type   VARCHAR(50)   — 'gasoline_95' | 'diesel' | 'lpg'
+price       NUMERIC(8,3)
+date        DATE
+
+UNIQUE(provider, city, fuel_type, date)
 → Günlük çalıştırma idempotent (tekrar yazma yok)
 ```
 
