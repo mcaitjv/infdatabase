@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 _SEARCH_URL      = "https://www.trendyol.com/sr?q={keyword}&pi={page}"
 _BESTSELLER_URL  = "https://www.trendyol.com/sr?q={keyword}&siralama=en-cok-satan&pi={page}"
 _MAX_DISCOVERY   = 5   # discovery basina kaydedilecek SKU sayisi
-_SEARCH_PAGES    = 2   # scrape_tracked icin taranan sayfa sayisi
+_SEARCH_PAGES    = 3   # scrape_tracked icin taranan sayfa sayisi
 
 _HEADERS = {
     "User-Agent": (
@@ -232,6 +232,29 @@ class TrendyolScraper(BaseScraper):
 
             if page < _SEARCH_PAGES - 1:
                 await self._sleep(2.0, 4.0)
+
+        # Hâlâ eksik SKU varsa SKU numarasıyla doğrudan arama yap
+        missing = target_ids - set(found.keys())
+        if missing:
+            logger.info(
+                "[trendyol] %s: %d SKU eksik, SKU bazli arama deneniyor",
+                keyword, len(missing),
+            )
+            for sku in list(missing):
+                if len(found) == len(target_ids):
+                    break
+                try:
+                    url = _SEARCH_URL.format(keyword=quote(sku, safe=""), page=0)
+                    html = await self._fetch_html(url)
+                    for item in self._extract_products(html):
+                        rec = self._parse_product(item, coicop_code, today)
+                        if rec and rec.sku == sku:
+                            found[sku] = rec
+                            logger.info("[trendyol] SKU %s dogrudan arama ile bulundu", sku)
+                            break
+                    await self._sleep(1.5, 3.0)
+                except Exception as exc:
+                    logger.warning("[trendyol] SKU %s arama hatasi: %s", sku, exc)
 
         missing = target_ids - set(found.keys())
         if missing:
