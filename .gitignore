@@ -1,6 +1,9 @@
 # Ortam değişkenleri — asla commit'leme
 .env
 
+# MCP token'ları — commit'leme
+.mcp.json
+
 # Python
 __pycache__/
 *.py[cod]
