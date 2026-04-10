@@ -37,6 +37,9 @@ duckdb==0.10.*
 # Notion entegrasyonu (docs/notion_sync.py)
 notion-client==2.2.*
 
+# E-posta bildirimi (pipeline/notifier.py)
+resend==2.*
+
 # Dev / test
 pytest==8.2.*
 pytest-asyncio==0.23.*

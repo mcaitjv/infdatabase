@@ -67,10 +67,12 @@ async def main(
 
     if do_health_check:
         from pipeline.health import format_report, run_health_check, save_report
+        from pipeline.notifier import send_health_email
         async with get_connection() as conn:
             report = await run_health_check(conn, health_date)
         _print_safe(format_report(report))
         save_report(report)
+        send_health_email(report)
         return
 
     modules = get_modules(module_codes)
@@ -96,14 +98,16 @@ async def main(
             mod.coicop_code, success, failed,
         )
 
-    # Dry-run değilse otomatik sağlık raporu bas
+    # Dry-run değilse otomatik sağlık raporu bas ve mail gönder
     if not dry_run:
         try:
             from pipeline.health import format_report, run_health_check, save_report
+            from pipeline.notifier import send_health_email
             async with get_connection() as conn:
                 report = await run_health_check(conn)
             _print_safe(format_report(report))
             save_report(report)
+            send_health_email(report)
         except Exception as exc:
             logger.warning("[runner] Sağlık raporu oluşturulamadı: %s", exc)
 
