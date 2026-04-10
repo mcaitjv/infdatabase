@@ -84,11 +84,18 @@ class PipelineHealthReport:
 
 
 def _load_appliances_yaml() -> list[dict]:
-    path = Path("modules") / "m05_household" / "config" / "appliances.yaml"
-    if not path.exists():
-        return []
-    with open(path, encoding="utf-8") as f:
-        return yaml.safe_load(f).get("appliances", [])
+    """appliances.yaml + furniture.yaml'ı birleştirerek döner."""
+    result = []
+    for filename, key in [
+        ("appliances.yaml", "appliances"),
+        ("furniture.yaml",  "furniture"),
+    ]:
+        path = Path("modules") / "m05_household" / "config" / filename
+        if not path.exists():
+            continue
+        with open(path, encoding="utf-8") as f:
+            result.extend(yaml.safe_load(f).get(key, []))
+    return result
 
 
 def _load_fuel_locations() -> list[dict]:
@@ -204,32 +211,36 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
 
 async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
-    """M05 Phase 2: appliance_prices bütünlük ve anomali kontrolü."""
+    """M05 Aşama 2+3: appliance_prices bütünlük ve anomali kontrolü."""
     yesterday = target_date - timedelta(days=1)
     report = ModuleHealthReport(
-        module_code="05p2",
-        module_name="Beyaz Eşya & Küçük Aletler (M05 Aşama 2)",
+        module_code="05p2+3",
+        module_name="Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
         date=target_date,
     )
 
-    # YAML'daki beklenen tüm SKU'lar
-    appliances = _load_appliances_yaml()
-    expected_skus: dict[str, dict] = {}  # sku → {brand, model, keyword}
-    for entry in appliances:
+    # YAML'daki beklenen tüm SKU'lar — (source, sku) → {brand, model, keyword}
+    # appliances.yaml'da source alanı yok → "trendyol" varsayılan
+    all_entries = _load_appliances_yaml()
+    expected_skus: dict[tuple[str, str], dict] = {}
+    for entry in all_entries:
+        source = entry.get("source", "trendyol")
         for s in entry.get("tracked_skus", []):
-            expected_skus[str(s["sku"])] = {
+            key = (source, str(s["sku"]))
+            expected_skus[key] = {
                 "brand":   s.get("brand", "?"),
                 "model":   s.get("model", "?")[:40],
                 "keyword": entry["keyword"],
+                "source":  source,
             }
     report.expected = len(expected_skus)
 
-    # Bugün DB'de olan SKU'lar
+    # Bugün DB'de olan (source, sku) çiftleri
     rows_today = await conn.fetch(
-        "SELECT sku FROM appliance_prices WHERE date = $1",
+        "SELECT source, sku FROM appliance_prices WHERE date = $1",
         target_date,
     )
-    found_skus = {str(row[0]) for row in rows_today}
+    found_skus = {(str(row[0]), str(row[1])) for row in rows_today}
     report.records_today = len(found_skus)
 
     # Dün
@@ -241,9 +252,9 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Eksik SKU'lar
     missing_skus = set(expected_skus.keys()) - found_skus
-    for sku in sorted(missing_skus):
-        info = expected_skus[sku]
-        label = f"[{info['keyword']}] {info['brand']} {info['model']} (SKU {sku})"
+    for source, sku in sorted(missing_skus):
+        info = expected_skus[(source, sku)]
+        label = f"[{info['source']}:{info['keyword']}] {info['brand']} {info['model']} (SKU {sku})"
         report.missing.append(label)
         report.add_warning(f"Eksik SKU: {label}")
 

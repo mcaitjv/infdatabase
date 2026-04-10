@@ -8,6 +8,8 @@ Kullanım:
   python -m pipeline.runner --dry-run                # DB'ye yazmadan test
   python -m pipeline.runner --setup-schema           # DB tablolarını oluştur (ilk kurulumda)
   python -m pipeline.runner --discover-branches      # Gıda modülü şube keşfi
+  python -m pipeline.runner --discover-appliances    # Modül 05 beyaz eşya SKU keşfi
+  python -m pipeline.runner --discover-furniture     # Modül 05 mobilya/tekstil SKU keşfi
   python -m pipeline.runner --health-check           # Sağlık raporu (bugün)
   python -m pipeline.runner --health-check --date 2026-04-09  # Belirli tarih
 """
@@ -54,6 +56,7 @@ async def main(
     setup_schema: bool,
     do_discover: bool,
     do_discover_appliances: bool,
+    do_discover_furniture: bool,
     do_health_check: bool,
     health_date: date | None,
 ) -> None:
@@ -63,6 +66,10 @@ async def main(
 
     if do_discover_appliances:
         await HouseholdModule().discover_appliances()
+        return
+
+    if do_discover_furniture:
+        await HouseholdModule().discover_furniture()
         return
 
     if do_health_check:
@@ -132,6 +139,11 @@ if __name__ == "__main__":
         help="Modül 05 beyaz eşya SKU keşfi (appliances.yaml tracked_skus doldurur)",
     )
     parser.add_argument(
+        "--discover-furniture",
+        action="store_true",
+        help="Modül 05 mobilya/tekstil SKU keşfi (furniture.yaml tracked_skus doldurur)",
+    )
+    parser.add_argument(
         "--health-check",
         action="store_true",
         help="Sağlık raporu — DB verisi bütünlük ve anomali kontrolü",
@@ -152,6 +164,7 @@ if __name__ == "__main__":
         setup_schema           = args.setup_schema,
         do_discover            = args.discover_branches,
         do_discover_appliances = args.discover_appliances,
+        do_discover_furniture  = args.discover_furniture,
         do_health_check        = args.health_check,
         health_date            = hdate,
     ))

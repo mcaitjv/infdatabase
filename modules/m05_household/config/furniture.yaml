@@ -1,0 +1,73 @@
+# Modül 05 Aşama 3 — Mobilya & Ev Tekstili (IKEA + Trendyol)
+# Bu dosya --discover-furniture komutuyla otomatik güncellenir.
+# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.
+
+furniture:
+
+  # COICOP 0511 — Mobilya (IKEA TR)
+  - coicop: '0511'
+    source: ikea
+    keyword: koltuk
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: ikea
+    keyword: yemek masası
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: ikea
+    keyword: kitaplık
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: ikea
+    keyword: gardırop
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: ikea
+    keyword: çalışma masası
+    tracked_skus: []
+
+  # COICOP 0511 — Mobilya (Trendyol)
+  - coicop: '0511'
+    source: trendyol
+    keyword: koltuk
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: trendyol
+    keyword: yemek masası
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: trendyol
+    keyword: kitaplık
+    tracked_skus: []
+
+  - coicop: '0511'
+    source: trendyol
+    keyword: gardırop
+    tracked_skus: []
+
+  # COICOP 0521 — Ev Tekstili (Trendyol)
+  - coicop: '0521'
+    source: trendyol
+    keyword: nevresim takımı
+    tracked_skus: []
+
+  - coicop: '0521'
+    source: trendyol
+    keyword: havlu takımı
+    tracked_skus: []
+
+  - coicop: '0521'
+    source: trendyol
+    keyword: battaniye
+    tracked_skus: []
+
+  - coicop: '0521'
+    source: trendyol
+    keyword: halı
+    tracked_skus: []

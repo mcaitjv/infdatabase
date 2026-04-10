@@ -30,6 +30,7 @@ from db.repository import (
 from modules.base import BaseModule
 from pipeline.validator import validate_batch
 from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
+from modules.m05_household.scrapers.ikea import IkeaScraper
 from modules.m05_household.scrapers.trendyol import TrendyolScraper
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,12 @@ def _load_appliances() -> list[dict]:
     path = os.path.join(_MODULE_DIR, "config", "appliances.yaml")
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f).get("appliances", [])
+
+
+def _load_furniture() -> list[dict]:
+    path = os.path.join(_MODULE_DIR, "config", "furniture.yaml")
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f).get("furniture", [])
 
 
 def _validate_appliance(rec: AppliancePriceRecord) -> list[str]:
@@ -125,6 +132,73 @@ class HouseholdModule(BaseModule):
 
         logger.info(
             "[m05:discover] appliances.yaml guncellendi — %d keyword, %d toplam SKU",
+            len(entries),
+            sum(len(e.get("tracked_skus", [])) for e in entries),
+        )
+
+    async def discover_furniture(self) -> None:
+        """
+        furniture.yaml'daki her keyword için kaynak bazında discovery yapar:
+          - source=ikea   → IkeaScraper.discover_keyword()  (top_n=3)
+          - source=trendyol → TrendyolScraper.discover_keyword() (top_n=5)
+        Sonuçları furniture.yaml'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-furniture
+        """
+        entries = _load_furniture()
+        config_path = os.path.join(_MODULE_DIR, "config", "furniture.yaml")
+
+        ikea_entries     = [e for e in entries if e.get("source") == "ikea"]
+        trendyol_entries = [e for e in entries if e.get("source") == "trendyol"]
+
+        # IKEA discovery
+        if ikea_entries:
+            async with IkeaScraper() as scraper:
+                for entry in ikea_entries:
+                    keyword = entry["keyword"]
+                    coicop  = entry["coicop"]
+                    skus = await scraper.discover_keyword(keyword, coicop, top_n=3)
+                    entry["tracked_skus"] = skus
+                    for s in skus:
+                        logger.info(
+                            "[m05:discover:ikea] %s → %s | %s",
+                            keyword, s["brand"], s["model"][:50],
+                        )
+                    await scraper._sleep(2.0, 4.0)
+
+        # Trendyol discovery
+        if trendyol_entries:
+            async with TrendyolScraper() as scraper:
+                for entry in trendyol_entries:
+                    keyword = entry["keyword"]
+                    coicop  = entry["coicop"]
+                    skus = await scraper.discover_keyword(keyword, coicop, top_n=5)
+                    entry["tracked_skus"] = skus
+                    for s in skus:
+                        logger.info(
+                            "[m05:discover:trendyol] %s → %s | %s",
+                            keyword, s["brand"], s["model"][:50],
+                        )
+                    await scraper._sleep(3.0, 6.0)
+
+        # YAML'ı güncelle
+        with open(config_path, "w", encoding="utf-8") as f:
+            header = (
+                "# Modül 05 Aşama 3 — Mobilya & Ev Tekstili (IKEA + Trendyol)\n"
+                "# Bu dosya --discover-furniture komutuyla otomatik güncellenir.\n"
+                "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
+            )
+            f.write(header)
+            yaml.dump(
+                {"furniture": entries},
+                f,
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
+
+        logger.info(
+            "[m05:discover] furniture.yaml guncellendi — %d keyword, %d toplam SKU",
             len(entries),
             sum(len(e.get("tracked_skus", [])) for e in entries),
         )
@@ -329,5 +403,189 @@ class HouseholdModule(BaseModule):
                 runs.append(run)
 
                 await trendyol._sleep(3.0, 7.0)
+
+        # ── Aşama 3: Mobilya & Ev Tekstili ───────────────────────────────────
+        furniture_entries = _load_furniture()
+        if not furniture_entries:
+            logger.info("[m05] furniture.yaml bos — Asama 3 atlaniyor")
+            return runs
+
+        ikea_entries     = [e for e in furniture_entries if e.get("source") == "ikea"]
+        trendyol_f_entries = [e for e in furniture_entries if e.get("source") == "trendyol"]
+
+        logger.info(
+            "[m05] Asama 3 — %d IKEA + %d Trendyol mobilya/tekstil keyword",
+            len(ikea_entries), len(trendyol_f_entries),
+        )
+
+        # IKEA mobilya
+        if ikea_entries:
+            async with IkeaScraper() as ikea:
+                for entry in ikea_entries:
+                    keyword     = entry["keyword"]
+                    coicop_code = entry["coicop"]
+                    tracked_skus = entry.get("tracked_skus") or []
+
+                    if not tracked_skus:
+                        logger.warning(
+                            "[m05:ikea] %s icin tracked_skus bos — "
+                            "--discover-furniture calistirin",
+                            keyword,
+                        )
+                        continue
+
+                    run = ScrapeRun(
+                        market     = f"m05:ikea:{coicop_code}:{keyword}",
+                        run_date   = date.today(),
+                        started_at = datetime.now(),
+                    )
+                    try:
+                        records = await ikea.scrape_tracked(
+                            keyword      = keyword,
+                            coicop_code  = coicop_code,
+                            tracked_skus = tracked_skus,
+                        )
+
+                        valid: list[AppliancePriceRecord] = []
+                        error_count = 0
+                        for rec in records:
+                            errs = _validate_appliance(rec)
+                            if errs:
+                                logger.warning(
+                                    "[m05:ikea] %s / %s gecersiz atildi: %s",
+                                    keyword, rec.sku, "; ".join(errs),
+                                )
+                                error_count += 1
+                            else:
+                                valid.append(rec)
+
+                        run.products_scraped = len(valid)
+                        run.errors_count     = error_count
+
+                        if dry_run:
+                            logger.info(
+                                "[m05:ikea] Dry-run %s (%s): %d urun",
+                                keyword, coicop_code, len(valid),
+                            )
+                            for r in valid[:3]:
+                                disc = f" -> {r.discounted_price} TL" if r.discounted_price else ""
+                                print(f"  [IKEA {r.coicop_code}] {r.brand} {r.model[:40]} | {r.price} TL{disc}")
+                            if len(valid) > 3:
+                                print(f"  ... ve {len(valid) - 3} urun daha")
+                        else:
+                            async with get_connection() as conn:
+                                inserted = await batch_upsert_appliance_prices(conn, valid)
+                                logger.info(
+                                    "[m05:ikea] %s (%s): %d urun, %d yeni eklendi",
+                                    keyword, coicop_code, len(valid), inserted,
+                                )
+
+                        run.status = "success" if error_count == 0 else "partial"
+
+                    except Exception as exc:
+                        logger.error(
+                            "[m05:ikea] %s kritik hata: %s", keyword, exc, exc_info=True
+                        )
+                        run.status        = "failed"
+                        run.error_details = str(exc)
+
+                    run.finished_at = datetime.now()
+                    if not dry_run:
+                        async with get_connection() as conn:
+                            await upsert_scrape_run(conn, run)
+
+                    duration = (run.finished_at - run.started_at).total_seconds()
+                    logger.info(
+                        "[m05:ikea] %s tamamlandi — %s, %.1fs",
+                        keyword, run.status, duration,
+                    )
+                    runs.append(run)
+
+                    await ikea._sleep(2.0, 5.0)
+
+        # Trendyol mobilya & tekstil
+        if trendyol_f_entries:
+            async with TrendyolScraper() as trendyol_f:
+                for entry in trendyol_f_entries:
+                    keyword      = entry["keyword"]
+                    coicop_code  = entry["coicop"]
+                    tracked_skus = entry.get("tracked_skus") or []
+
+                    if not tracked_skus:
+                        logger.warning(
+                            "[m05:trendyol:f] %s icin tracked_skus bos — "
+                            "--discover-furniture calistirin",
+                            keyword,
+                        )
+                        continue
+
+                    run = ScrapeRun(
+                        market     = f"m05:trendyol:{coicop_code}:{keyword}",
+                        run_date   = date.today(),
+                        started_at = datetime.now(),
+                    )
+                    try:
+                        records = await trendyol_f.scrape_tracked(
+                            keyword      = keyword,
+                            coicop_code  = coicop_code,
+                            tracked_skus = tracked_skus,
+                        )
+
+                        valid_f: list[AppliancePriceRecord] = []
+                        error_count = 0
+                        for rec in records:
+                            errs = _validate_appliance(rec)
+                            if errs:
+                                logger.warning(
+                                    "[m05:trendyol:f] %s / %s gecersiz atildi: %s",
+                                    keyword, rec.sku, "; ".join(errs),
+                                )
+                                error_count += 1
+                            else:
+                                valid_f.append(rec)
+
+                        run.products_scraped = len(valid_f)
+                        run.errors_count     = error_count
+
+                        if dry_run:
+                            logger.info(
+                                "[m05:trendyol:f] Dry-run %s (%s): %d urun",
+                                keyword, coicop_code, len(valid_f),
+                            )
+                            for r in valid_f[:3]:
+                                disc = f" -> {r.discounted_price} TL" if r.discounted_price else ""
+                                print(f"  [Trendyol {r.coicop_code}] {r.brand} {r.model[:40]} | {r.price} TL{disc}")
+                            if len(valid_f) > 3:
+                                print(f"  ... ve {len(valid_f) - 3} urun daha")
+                        else:
+                            async with get_connection() as conn:
+                                inserted = await batch_upsert_appliance_prices(conn, valid_f)
+                                logger.info(
+                                    "[m05:trendyol:f] %s (%s): %d urun, %d yeni eklendi",
+                                    keyword, coicop_code, len(valid_f), inserted,
+                                )
+
+                        run.status = "success" if error_count == 0 else "partial"
+
+                    except Exception as exc:
+                        logger.error(
+                            "[m05:trendyol:f] %s kritik hata: %s", keyword, exc, exc_info=True
+                        )
+                        run.status        = "failed"
+                        run.error_details = str(exc)
+
+                    run.finished_at = datetime.now()
+                    if not dry_run:
+                        async with get_connection() as conn:
+                            await upsert_scrape_run(conn, run)
+
+                    duration = (run.finished_at - run.started_at).total_seconds()
+                    logger.info(
+                        "[m05:trendyol:f] %s tamamlandi — %s, %.1fs",
+                        keyword, run.status, duration,
+                    )
+                    runs.append(run)
+
+                    await trendyol_f._sleep(3.0, 7.0)
 
         return runs
