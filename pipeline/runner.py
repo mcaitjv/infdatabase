@@ -20,6 +20,7 @@ import logging
 import os
 from datetime import date
 
+import psutil
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -42,6 +43,39 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
+
+_LOCK_FILE = os.path.join("logs", "pipeline.pid")
+
+
+def _acquire_lock() -> bool:
+    """
+    Eş zamanlı pipeline çalışmasını önler.
+    True → kilit alındı, False → zaten çalışıyor.
+    logs/pipeline.pid dosyasına PID yazar.
+    """
+    if os.path.exists(_LOCK_FILE):
+        try:
+            with open(_LOCK_FILE) as f:
+                old_pid = int(f.read().strip())
+            if psutil.pid_exists(old_pid):
+                logger.warning(
+                    "[runner] Zaten calisıyor (PID %d) — bu instance durduruluyor", old_pid
+                )
+                return False
+            # Eski PID ölmüş → stale lock, sil ve devam et
+            logger.info("[runner] Stale lock temizlendi (PID %d artık yok)", old_pid)
+        except (ValueError, OSError):
+            pass
+    with open(_LOCK_FILE, "w") as f:
+        f.write(str(os.getpid()))
+    return True
+
+
+def _release_lock() -> None:
+    try:
+        os.remove(_LOCK_FILE)
+    except OSError:
+        pass
 
 
 def _print_safe(text: str) -> None:
@@ -81,6 +115,33 @@ async def main(
         save_report(report)
         send_health_email(report)
         return
+
+    # Eş zamanlı çalışmayı önle (Task Scheduler çift tetikleme vs.)
+    if not _acquire_lock():
+        return
+
+    try:
+        await _run_modules(module_codes, dry_run, setup_schema)
+    finally:
+        _release_lock()
+
+
+async def _run_modules(
+    module_codes: list[str] | None,
+    dry_run: bool,
+    setup_schema: bool,
+) -> None:
+    # branches.yaml boşsa uyar
+    _branches_path = os.path.join("config", "branches.yaml")
+    if os.path.exists(_branches_path):
+        import yaml as _yaml
+        with open(_branches_path, encoding="utf-8") as _f:
+            _b = _yaml.safe_load(_f)
+        if not _b:
+            logger.warning(
+                "[runner] config/branches.yaml bos — proximity modunda calisacak. "
+                "Sabit sube listesi icin: python -m pipeline.runner --discover-branches"
+            )
 
     modules = get_modules(module_codes)
 
