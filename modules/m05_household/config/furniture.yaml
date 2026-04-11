@@ -1,73 +1,175 @@
 # Modül 05 Aşama 3 — Mobilya & Ev Tekstili (IKEA + Trendyol)
 # Bu dosya --discover-furniture komutuyla otomatik güncellenir.
+# Run sırasında eksik SKU tespit edilirse otomatik olarak yenilenir.
 # tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.
 
 furniture:
-
-  # COICOP 0511 — Mobilya (IKEA TR)
-  - coicop: '0511'
-    source: ikea
-    keyword: koltuk
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: ikea
-    keyword: yemek masası
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: ikea
-    keyword: kitaplık
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: ikea
-    keyword: gardırop
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: ikea
-    keyword: çalışma masası
-    tracked_skus: []
-
-  # COICOP 0511 — Mobilya (Trendyol)
-  - coicop: '0511'
-    source: trendyol
-    keyword: koltuk
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: trendyol
-    keyword: yemek masası
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: trendyol
-    keyword: kitaplık
-    tracked_skus: []
-
-  - coicop: '0511'
-    source: trendyol
-    keyword: gardırop
-    tracked_skus: []
-
-  # COICOP 0521 — Ev Tekstili (Trendyol)
-  - coicop: '0521'
-    source: trendyol
-    keyword: nevresim takımı
-    tracked_skus: []
-
-  - coicop: '0521'
-    source: trendyol
-    keyword: havlu takımı
-    tracked_skus: []
-
-  - coicop: '0521'
-    source: trendyol
-    keyword: battaniye
-    tracked_skus: []
-
-  - coicop: '0521'
-    source: trendyol
-    keyword: halı
-    tracked_skus: []
+- coicop: '0511'
+  source: ikea
+  keyword: koltuk
+  tracked_skus: []
+- coicop: '0511'
+  source: ikea
+  keyword: yemek masası
+  tracked_skus: []
+- coicop: '0511'
+  source: ikea
+  keyword: kitaplık
+  tracked_skus: []
+- coicop: '0511'
+  source: ikea
+  keyword: gardırop
+  tracked_skus: []
+- coicop: '0511'
+  source: ikea
+  keyword: çalışma masası
+  tracked_skus: []
+- coicop: '0511'
+  source: trendyol
+  keyword: koltuk
+  tracked_skus:
+  - sku: '871528282'
+    brand: Huga Metal
+    model: Relax Dinlenme Koltuğu Yatak Olabilen Kanepe Rahat Kanepe Fittilli Kadife
+      Yıkanır Silinir - Yeşil
+  - sku: '1067014511'
+    brand: Mobidu
+    model: Fold 2’li Aktivite Koltuk – Yatak Olabilen Modüler Kanepe – Fitilli Kadife
+      - Gri
+  - sku: '749524572'
+    brand: Genel Markalar
+    model: Çay Seti Ikili Koltuk Berjer Ve Puf Takımı 3 Lü Takım
+  - sku: '899265063'
+    brand: Gaga Mobilya
+    model: Aktivite koltuğu Kanepe Koltuk Yataklı Kanepe Üçlü Koltuk Üçlü Kanepe (antrasit)
+      (90x200cm)
+  - sku: '1081767292'
+    brand: foamly
+    model: PUZZLE Fitilli Kadife Modüler Çocuk Oyun Minderi Ve Kanepesi Tamamen Sünger
+- coicop: '0511'
+  source: trendyol
+  keyword: yemek masası
+  tracked_skus:
+  - sku: '935435418'
+    brand: BY ORHAN GÜZEL
+    model: Mutfak Masası Takımı 6 Kişilik Masa Takımı Elma Avangarde Yemek Masa Takımı
+  - sku: '127697864'
+    brand: MOBETTO
+    model: Home Arda Masa / Venüs Sandalye Mutfak Masa Takımı- Beyaz
+  - sku: '906228401'
+    brand: asaella mobilya
+    model: Clara Beyaz 80x132 Açılabilir Yemek Odası Takımı 6 Adet Sandalye
+  - sku: '50444383'
+    brand: SANDALİE
+    model: Arda / Venüs Mutfak Masa Takımı 1 Masa 4 Sandalye - Beyaz
+  - sku: '834287002'
+    brand: Royal
+    model: Elısa 4kişilik Mutfak Masası Takımı Teddy01
+- coicop: '0511'
+  source: trendyol
+  keyword: kitaplık
+  tracked_skus:
+  - sku: '49738245'
+    brand: HEREVİM
+    model: Metal Kitaplık 5 Raflı Ofis Kitaplığı Kitap Dosya Rafı Ceviz
+  - sku: '952597774'
+    brand: WANDOO
+    model: Metal Gövdeli 5 Raflı Ahşap Kitaplık Ofis Ev Raf Sistemi Dekoratif Dosya
+      Rafı
+  - sku: '126061018'
+    brand: Morpanya
+    model: Aural Dekoratif 5 Raflı Kitaplık Geniş Metal Kitaplık Dosya Rafı Ofis Salon
+      Raf 90x180cm Ceviz
+  - sku: '121235151'
+    brand: Tree World
+    model: Montessori Çocuk Odası Kitaplığı Ahşap Ham Verniksiz Doğal Kitaplık 100*50*9
+      Ahşap Kitaplık
+  - sku: '33108062'
+    brand: Remaks
+    model: Pınar 5 Raflı Kitaplık - Beyaz
+- coicop: '0511'
+  source: trendyol
+  keyword: gardırop
+  tracked_skus: []
+- coicop: '0521'
+  source: trendyol
+  keyword: nevresim takımı
+  tracked_skus:
+  - sku: '655477600'
+    brand: conzaliza
+    model: Lastikli Çarşaflı Çift Kişilik Nevresim Takımı | Mürdüm Antrasit |
+  - sku: '1064141083'
+    brand: Rimo Home
+    model: ÇARŞAFI LASTİKLİ ÇİFT KİŞİLİK NEVRESİM TAKIMI
+  - sku: '934098058'
+    brand: Bella Maison
+    model: Lauren Pamuklu Çift Kişilik Nevresim Seti Yeşil (200x220 cm)
+  - sku: '987072310'
+    brand: Sheri Home
+    model: KIRÇİÇEK MODEL Çift Kişilik Nevresim (Yorgan Kılıfı+2 Adet Yastık Kılıfı)ZÜMRÜT8886567
+  - sku: '1093152941'
+    brand: İQON
+    model: Lastikli Çarşaflı Nevresim Takımı Çift Kişilik Bouquet Somon
+- coicop: '0521'
+  source: trendyol
+  keyword: havlu takımı
+  tracked_skus:
+  - sku: '89212340'
+    brand: Mürdüm Home
+    model: Banyo Havlu Seti Hamam Takımı 4'lü
+  - sku: '846973733'
+    brand: Özdilek
+    model: Point Havlu Seti
+  - sku: '469316399'
+    brand: Güvenal
+    model: Lara Kutulu 4'lü Banyo Havlusu | Havlu Takımı | Havlu | Havlu Seti I Hamam
+      Seti I Çeyiz Havlusu
+  - sku: '1026455164'
+    brand: DNZGÜLCAN
+    model: 4 Parça Lüks Banyo Havlu Seti (2 Adet 70x140cm & 2 Adet 50x90cm) | Leopar
+      Desenli Hamam Takımı
+  - sku: '805388339'
+    brand: Zeynep Tekstil
+    model: Range | 10'lu 50x90 cm El&Yüz Havlu Seti
+- coicop: '0521'
+  source: trendyol
+  keyword: battaniye
+  tracked_skus:
+  - sku: '743555309'
+    brand: Mulberry
+    model: Tek Kişilik Fitilli Yumuşak Dokulu Tv Battaniye 120x170 cm
+  - sku: '837361140'
+    brand: Soley
+    model: '| Panthera | %100 Pamuk Leopar Desenli Kadife Bornoz'
+  - sku: '987386232'
+    brand: Penelope
+    model: Microfiber Kumaş Çift Kişilik Yeşil Yastık Yorgan Seti - Colors in Comfort
+  - sku: '822032359'
+    brand: BEYAZLALE
+    model: Çift Kişilik Kuzu Yünü %100 Doğal Yorgan | Özel Çantalı Organik Merinos
+      Yün Yorgan
+  - sku: '319167536'
+    brand: Yataş
+    model: Holly Wellsoft Çift Kişilik Battaniye - Şampanya
+- coicop: '0521'
+  source: trendyol
+  keyword: halı
+  tracked_skus:
+  - sku: '971387037'
+    brand: venucci home & living
+    model: Nora Yumuşak Dokulu Yolluk %100 Polyester Makina Halısı Oturma Odası Salon
+      Mutfak Yatak Odası Halısı
+  - sku: '826520508'
+    brand: Lorente Home
+    model: Moreno Viskon Dokuma Halı Kaymaz Taban Yıkanabilir Açık Kahve Koridor Halısı
+      1285
+  - sku: '930297250'
+    brand: Nun Halı
+    model: Nun Halı Kolay Temizlenen Yıkanabilir Bordürlü Halı
+  - sku: '803918393'
+    brand: Red Halı
+    model: Düz Renk Bej Sisal Yumuşak Polipropilen Jüt Halı Salon Oturma Odası Yolluk
+      Mutfak Koridor Halısı
+  - sku: '1019305067'
+    brand: Raschel Carpet
+    model: Bohem Emboss Premium Seri Kaymaz Taban Jel Taban Halı Yolluk Koyu Gri

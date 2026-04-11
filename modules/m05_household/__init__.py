@@ -5,11 +5,16 @@ COICOP 2018 kodu: 05  |  Ağırlık: %7.92
 Aşama 1 (tamamlandı): COICOP 0561 — Dayanıklı olmayan ev eşyaları
   Veri kaynağı: marketfiyati.org.tr (TÜBİTAK API)
 
-Aşama 2 (şu an): COICOP 0531/0532/0552 — Beyaz eşya & küçük aletler (Trendyol)
+Aşama 2 (tamamlandı): COICOP 0531/0532/0552 — Beyaz eşya & küçük aletler (Trendyol)
   Veri kaynağı: public.trendyol.com arama API'si
   DB tablosu: appliance_prices
 
-Aşama 3 (ileride): COICOP 0511/0521 — Mobilya/tekstil (IKEA + Trendyol)
+Aşama 3 (tamamlandı): COICOP 0511/0521 — Mobilya/tekstil (IKEA TR + Trendyol)
+  Veri kaynağı: sik.ikea.com + api.ikea.com/price/v2 + Trendyol
+
+Otomatik self-heal: Günlük run'da herhangi bir SKU bulunamazsa discovery
+yeniden çağrılır ve eksikler yeni SKU'larla değiştirilir. YAML dosyası
+otomatik güncellenir, bir sonraki gün tam çalışır.
 """
 
 import collections
@@ -70,6 +75,112 @@ def _load_furniture() -> list[dict]:
         return yaml.safe_load(f).get("furniture", [])
 
 
+_APPLIANCES_HEADER = (
+    "# Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)\n"
+    "# Bu dosya --discover-appliances komutuyla otomatik güncellenir.\n"
+    "# Run sırasında eksik SKU tespit edilirse otomatik olarak yenilenir.\n"
+    "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
+)
+
+_FURNITURE_HEADER = (
+    "# Modül 05 Aşama 3 — Mobilya & Ev Tekstili (IKEA + Trendyol)\n"
+    "# Bu dosya --discover-furniture komutuyla otomatik güncellenir.\n"
+    "# Run sırasında eksik SKU tespit edilirse otomatik olarak yenilenir.\n"
+    "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
+)
+
+
+def _write_appliances_yaml(entries: list[dict]) -> None:
+    path = os.path.join(_MODULE_DIR, "config", "appliances.yaml")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(_APPLIANCES_HEADER)
+        yaml.dump(
+            {"appliances": entries},
+            f,
+            allow_unicode=True,
+            default_flow_style=False,
+            sort_keys=False,
+        )
+
+
+def _write_furniture_yaml(entries: list[dict]) -> None:
+    path = os.path.join(_MODULE_DIR, "config", "furniture.yaml")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(_FURNITURE_HEADER)
+        yaml.dump(
+            {"furniture": entries},
+            f,
+            allow_unicode=True,
+            default_flow_style=False,
+            sort_keys=False,
+        )
+
+
+async def _heal_missing_skus(
+    entry: dict,
+    found_records: list[AppliancePriceRecord],
+    scraper,
+    default_top_n: int,
+) -> bool:
+    """
+    Bir keyword için eksik SKU'ları discovery ile yenileriyle değiştirir.
+    Değişiklik yapıldıysa True döner — caller YAML'ı yeniden yazmalıdır.
+
+    Mantık: discover_keyword ile default_top_n + eksik sayısı kadar aday al,
+    mevcut tracked_sku setinde olmayanlardan eksik sayısı kadarını seç ve
+    eksikleri aynı sırayla replace et.
+    """
+    tracked = entry.get("tracked_skus") or []
+    if not tracked:
+        return False
+
+    found_set = {str(r.sku) for r in found_records}
+    missing_positions = [
+        i for i, s in enumerate(tracked) if str(s["sku"]) not in found_set
+    ]
+    if not missing_positions:
+        return False
+
+    keyword = entry["keyword"]
+    coicop = entry["coicop"]
+
+    try:
+        candidates = await scraper.discover_keyword(
+            keyword, coicop, top_n=default_top_n + len(missing_positions)
+        )
+    except Exception as exc:
+        logger.warning("[m05:heal] %s discovery hatasi: %s", keyword, exc)
+        return False
+
+    existing_ids = {str(s["sku"]) for s in tracked}
+    replacements = [c for c in candidates if str(c["sku"]) not in existing_ids]
+
+    if not replacements:
+        logger.warning(
+            "[m05:heal] %s: %d SKU eksik ama discovery yeni aday donmedi",
+            keyword, len(missing_positions),
+        )
+        return False
+
+    replaced = 0
+    for pos in missing_positions:
+        if replaced >= len(replacements):
+            break
+        old = tracked[pos]
+        new = replacements[replaced]
+        logger.info(
+            "[m05:heal] %s | %s (%s) -> %s (%s)",
+            keyword,
+            old.get("brand", "?"), old.get("sku"),
+            new.get("brand", "?"), new.get("sku"),
+        )
+        tracked[pos] = new
+        replaced += 1
+
+    entry["tracked_skus"] = tracked
+    return replaced > 0
+
+
 def _validate_appliance(rec: AppliancePriceRecord) -> list[str]:
     errors: list[str] = []
     if rec.price <= 0:
@@ -96,7 +207,6 @@ class HouseholdModule(BaseModule):
         Kullanım: python -m pipeline.runner --discover-appliances
         """
         entries = _load_appliances()
-        config_path = os.path.join(_MODULE_DIR, "config", "appliances.yaml")
 
         async with TrendyolScraper() as scraper:
             for entry in entries:
@@ -114,21 +224,7 @@ class HouseholdModule(BaseModule):
 
                 await scraper._sleep(3.0, 6.0)
 
-        # YAML'ı güncelle
-        with open(config_path, "w", encoding="utf-8") as f:
-            header = (
-                "# Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)\n"
-                "# Bu dosya --discover-appliances komutuyla otomatik güncellenir.\n"
-                "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
-            )
-            f.write(header)
-            yaml.dump(
-                {"appliances": entries},
-                f,
-                allow_unicode=True,
-                default_flow_style=False,
-                sort_keys=False,
-            )
+        _write_appliances_yaml(entries)
 
         logger.info(
             "[m05:discover] appliances.yaml guncellendi — %d keyword, %d toplam SKU",
@@ -146,7 +242,6 @@ class HouseholdModule(BaseModule):
         Kullanım: python -m pipeline.runner --discover-furniture
         """
         entries = _load_furniture()
-        config_path = os.path.join(_MODULE_DIR, "config", "furniture.yaml")
 
         ikea_entries     = [e for e in entries if e.get("source") == "ikea"]
         trendyol_entries = [e for e in entries if e.get("source") == "trendyol"]
@@ -181,21 +276,7 @@ class HouseholdModule(BaseModule):
                         )
                     await scraper._sleep(3.0, 6.0)
 
-        # YAML'ı güncelle
-        with open(config_path, "w", encoding="utf-8") as f:
-            header = (
-                "# Modül 05 Aşama 3 — Mobilya & Ev Tekstili (IKEA + Trendyol)\n"
-                "# Bu dosya --discover-furniture komutuyla otomatik güncellenir.\n"
-                "# tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.\n\n"
-            )
-            f.write(header)
-            yaml.dump(
-                {"furniture": entries},
-                f,
-                allow_unicode=True,
-                default_flow_style=False,
-                sort_keys=False,
-            )
+        _write_furniture_yaml(entries)
 
         logger.info(
             "[m05:discover] furniture.yaml guncellendi — %d keyword, %d toplam SKU",
@@ -319,6 +400,7 @@ class HouseholdModule(BaseModule):
 
         # ── Aşama 2: Trendyol Beyaz Eşya ────────────────────────────────────
         appliance_entries = _load_appliances()
+        appliances_changed = False
         logger.info("[m05] Asama 2 — %d Trendyol keyword basliyor", len(appliance_entries))
 
         async with TrendyolScraper() as trendyol:
@@ -402,7 +484,24 @@ class HouseholdModule(BaseModule):
                 )
                 runs.append(run)
 
+                # Eksik SKU'lari otomatik doldur (bir sonraki gun calissin diye)
+                if not dry_run and run.status in ("success", "partial"):
+                    try:
+                        changed = await _heal_missing_skus(
+                            entry, valid, trendyol, default_top_n=5
+                        )
+                        if changed:
+                            appliances_changed = True
+                    except Exception as exc:
+                        logger.warning(
+                            "[m05:heal] %s heal hatasi: %s", keyword, exc
+                        )
+
                 await trendyol._sleep(3.0, 7.0)
+
+        if appliances_changed:
+            _write_appliances_yaml(appliance_entries)
+            logger.info("[m05:heal] appliances.yaml guncellendi (eksik SKU'lar yenilendi)")
 
         # ── Aşama 3: Mobilya & Ev Tekstili ───────────────────────────────────
         furniture_entries = _load_furniture()
@@ -412,6 +511,7 @@ class HouseholdModule(BaseModule):
 
         ikea_entries     = [e for e in furniture_entries if e.get("source") == "ikea"]
         trendyol_f_entries = [e for e in furniture_entries if e.get("source") == "trendyol"]
+        furniture_changed = False
 
         logger.info(
             "[m05] Asama 3 — %d IKEA + %d Trendyol mobilya/tekstil keyword",
@@ -501,6 +601,18 @@ class HouseholdModule(BaseModule):
                     )
                     runs.append(run)
 
+                    if not dry_run and run.status in ("success", "partial"):
+                        try:
+                            changed = await _heal_missing_skus(
+                                entry, valid, ikea, default_top_n=3
+                            )
+                            if changed:
+                                furniture_changed = True
+                        except Exception as exc:
+                            logger.warning(
+                                "[m05:heal] %s heal hatasi: %s", keyword, exc
+                            )
+
                     await ikea._sleep(2.0, 5.0)
 
         # Trendyol mobilya & tekstil
@@ -586,6 +698,22 @@ class HouseholdModule(BaseModule):
                     )
                     runs.append(run)
 
+                    if not dry_run and run.status in ("success", "partial"):
+                        try:
+                            changed = await _heal_missing_skus(
+                                entry, valid_f, trendyol_f, default_top_n=5
+                            )
+                            if changed:
+                                furniture_changed = True
+                        except Exception as exc:
+                            logger.warning(
+                                "[m05:heal] %s heal hatasi: %s", keyword, exc
+                            )
+
                     await trendyol_f._sleep(3.0, 7.0)
+
+        if furniture_changed:
+            _write_furniture_yaml(furniture_entries)
+            logger.info("[m05:heal] furniture.yaml guncellendi (eksik SKU'lar yenilendi)")
 
         return runs
