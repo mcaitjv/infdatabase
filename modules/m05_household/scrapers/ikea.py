@@ -1,22 +1,23 @@
 """
 IKEA TR Fiyat Scraper
 ---------------------
-Kaynak: sik.ikea.com (keşif) + api.ikea.com/price/v2 (günlük fiyat takibi)
-Playwright gerektirmez — JSON API, httpx ile.
+Kaynak: www.ikea.com.tr (franchise — Maya Mobilya)
 
 İki mod:
-  1. Discovery:  discover_keyword() → keyword arar, ilk top_n ürünü döner
-  2. Günlük:     scrape_tracked()   → article ID'ye göre doğrudan fiyat çeker
+  1. Discovery:  discover_keyword() → urun sitemap'i indirir, keyword'a göre filtreler
+  2. Günlük:     scrape_tracked()   → /_ws/general.aspx/CheckPrice ile tek tek fiyat çeker
 
-API yanıt yapısı:
-  sik.ikea.com/tr/tr/search/products/:
-    searchResultPage.products.main.items[].product.{id, name, typeName, salesPrice.numeral}
-
-  api.ikea.com/price/v2/TR/tr:
-    [{itemNo, prices:[{price:{inclTax}, previousPrice?}]}]
+NEDEN BU YAKLAŞIM:
+  IKEA TR, global sik.ikea.com / api.ikea.com endpoint'lerini kullanmıyor. Franchise
+  MagiClick tabanlı ASP.NET site; arama API'si (/api/search/products) F5 WAF tarafından
+  bloklanıyor. Ancak:
+    - robots.txt'de izinli sitemap: /sitemap/urun.sitemap.xml (~19.5K ürün, tek indirme)
+    - CheckPrice web metodu: /_ws/general.aspx/CheckPrice  (stockCode → TL)
+  Bu ikili, key/session/WAF bypass gerektirmeden discovery + günlük takip sağlar.
 """
 
 import logging
+import re
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
@@ -28,17 +29,15 @@ from scrapers.base import BaseScraper
 
 logger = logging.getLogger(__name__)
 
-_SEARCH_URL = "https://sik.ikea.com/tr/tr/search/products/?q={keyword}&size=24"
-_PRICE_URL  = "https://api.ikea.com/price/v2/TR/tr"
+_SITEMAP_URL = "https://www.ikea.com.tr/sitemap/urun.sitemap.xml"
+_PRICE_URL   = "https://www.ikea.com.tr/_ws/general.aspx/CheckPrice"
+_BASE        = "https://www.ikea.com.tr"
 
-_MAX_DISCOVERY = 3   # discovery başına kaydedilecek SKU sayısı
-_BATCH_SIZE    = 10  # price API'ye toplu gönderim boyutu
+_MAX_DISCOVERY = 3
 
 _HEADERS = {
-    "Accept":          "application/json",
+    "Accept":          "application/json, text/plain, */*",
     "Accept-Language": "tr-TR,tr;q=0.9",
-    "Origin":          "https://www.ikea.com",
-    "Referer":         "https://www.ikea.com/tr/tr/",
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -46,33 +45,66 @@ _HEADERS = {
     ),
 }
 
+# Türkçe → ASCII slug eşlemesi (sitemap slug'ları ASCII)
+_TR_MAP = str.maketrans({
+    "ı": "i", "İ": "i", "I": "i",
+    "ğ": "g", "Ğ": "g",
+    "ü": "u", "Ü": "u",
+    "ş": "s", "Ş": "s",
+    "ö": "o", "Ö": "o",
+    "ç": "c", "Ç": "c",
+})
+
+
+def _slugify(text: str) -> str:
+    """Türkçe keyword'ü sitemap URL slug'ına uyumlu hale getirir."""
+    s = text.lower().translate(_TR_MAP)
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s
+
 
 class IkeaScraper(BaseScraper):
     """
-    IKEA TR arama + fiyat API'sinden veri çeker.
-    httpx.AsyncClient ile JSON parse — Playwright gerekmez.
+    IKEA TR sitemap + CheckPrice web metodu ile veri çeker.
+    httpx.AsyncClient — Playwright gerekmez, WAF bypass gerekmez.
     """
 
     market_name = "ikea"
+
+    def __init__(self) -> None:
+        self._client: httpx.AsyncClient | None = None
+        self._sitemap_urls: list[str] | None = None  # lazy cache
 
     async def __aenter__(self) -> "IkeaScraper":
         self._client = httpx.AsyncClient(
             headers=_HEADERS,
             follow_redirects=True,
-            timeout=30.0,
+            timeout=60.0,
         )
         return self
 
     async def __aexit__(self, *args) -> None:
         if self._client:
             await self._client.aclose()
+            self._client = None
+
+    # ── Sitemap indirme + parse ───────────────────────────────────────────────
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=3, max=15))
-    async def _get_json(self, url: str, **params) -> dict | list:
-        resp = self._client.build_request("GET", url, params=params)
-        r = await self._client.send(resp)
+    async def _load_sitemap(self) -> list[str]:
+        """Ürün sitemap'ini indirip URL listesini döner. Oturum başına bir kez."""
+        if self._sitemap_urls is not None:
+            return self._sitemap_urls
+        logger.info("[ikea] sitemap indiriliyor…")
+        r = await self._client.get(_SITEMAP_URL)
         r.raise_for_status()
-        return r.json()
+        urls = re.findall(
+            r"<loc>(https://www\.ikea\.com\.tr/urun/[^<]+)</loc>",
+            r.text,
+        )
+        self._sitemap_urls = urls
+        logger.info("[ikea] sitemap yüklendi: %d ürün", len(urls))
+        return urls
 
     # ── Discovery modu ────────────────────────────────────────────────────────
 
@@ -80,48 +112,33 @@ class IkeaScraper(BaseScraper):
         self, keyword: str, coicop_code: str, top_n: int = _MAX_DISCOVERY
     ) -> list[dict]:
         """
-        Keyword'ü arar ve ilk top_n ürünü {sku, brand, model} sözlüğü olarak döner.
-        furniture.yaml tracked_skus listesine yazılmak üzere kullanılır.
+        Keyword'ü sitemap'te arar, ilk top_n ürünü {sku, brand, model} olarak döner.
+        furniture.yaml tracked_skus listesine yazılır.
         """
-        from urllib.parse import quote
-        url = _SEARCH_URL.format(keyword=quote(keyword, safe=""))
         try:
-            data = await self._get_json(url)
+            urls = await self._load_sitemap()
         except Exception as exc:
-            logger.error("[ikea] discovery fetch hatası %s: %s", keyword, exc)
+            logger.error("[ikea] sitemap indirilemedi (%s): %s", keyword, exc)
             return []
 
-        # IKEA search API yanıt yapısı: searchResultPage.products.main.items
-        try:
-            items = (
-                data.get("searchResultPage", {})
-                    .get("products", {})
-                    .get("main", {})
-                    .get("items", [])
-            )
-        except (AttributeError, TypeError):
-            logger.warning("[ikea] %s: beklenmedik search yanıt yapısı", keyword)
-            return []
+        slug = _slugify(keyword)
+        matches = [u for u in urls if slug in u.lower()]
 
-        result = []
-        today = date.today()
-        for item in items:
+        result: list[dict] = []
+        seen: set[str] = set()
+        for url in matches:
             if len(result) >= top_n:
                 break
-            product = item.get("product") or {}
-            sku = str(product.get("id") or "").strip()
-            name = str(product.get("name") or "").strip()
-            type_name = str(product.get("typeName") or "").strip()
-
-            if not sku or not name:
+            # URL yapısı: https://www.ikea.com.tr/urun/<slug>-<sku>
+            m = re.search(r"/urun/(.+?)-(\d+)/?$", url)
+            if not m:
                 continue
-
-            # Fiyat kontrolü: fiyatsız ürünleri atla (henüz satışa çıkmamış vs.)
-            sales_price = product.get("salesPrice") or {}
-            if not _parse_price(sales_price):
+            product_slug, sku = m.group(1), m.group(2)
+            if sku in seen:
                 continue
+            seen.add(sku)
 
-            model = f"{name} — {type_name}" if type_name else name
+            model = product_slug.replace("-", " ").strip()
             result.append({
                 "sku":   sku,
                 "brand": "IKEA",
@@ -129,8 +146,8 @@ class IkeaScraper(BaseScraper):
             })
 
         logger.info(
-            "[ikea] discovery keyword=%s → %d SKU seçildi",
-            keyword, len(result),
+            "[ikea] discovery keyword=%s (slug=%s) → %d/%d SKU seçildi",
+            keyword, slug, len(result), len(matches),
         )
         return result
 
@@ -142,127 +159,78 @@ class IkeaScraper(BaseScraper):
         coicop_code: str,
         tracked_skus: list[dict],
     ) -> list[AppliancePriceRecord]:
-        """
-        Tracked article ID'leri toplu fiyat API'sine gönderir.
-        Bulunamayan article'lar sessizce atlanır (stok dışı olabilir).
-        """
+        """Tracked SKU'lar için CheckPrice metoduna tek tek istek atar."""
         if not tracked_skus:
             return []
 
         today = date.today()
-        target_ids = [str(s["sku"]) for s in tracked_skus]
-        found: dict[str, AppliancePriceRecord] = {}
+        records: list[AppliancePriceRecord] = []
+        missing: list[str] = []
 
-        # 10'ar ID'lik batch'lerle fiyat API'si çağrısı
-        for i in range(0, len(target_ids), _BATCH_SIZE):
-            batch = target_ids[i : i + _BATCH_SIZE]
-            try:
-                data = await self._get_json(
-                    _PRICE_URL,
-                    ids=",".join(batch),
-                    consumer="DOTCOM-BROWSER-MOBILE",
-                )
-            except Exception as exc:
-                logger.warning("[ikea] batch fiyat hatası keyword=%s: %s", keyword, exc)
-                continue
-
-            if not isinstance(data, list):
-                logger.warning("[ikea] %s: price API beklenmedik yanıt tipi", keyword)
-                continue
-
-            sku_info = {str(s["sku"]): s for s in tracked_skus}
-            for item in data:
-                rec = self._parse_price_item(item, coicop_code, today)
-                if rec:
-                    info = sku_info.get(rec.sku, {})
-                    rec = rec.model_copy(update={
-                        "brand": info.get("brand", "IKEA"),
-                        "model": info.get("model", rec.sku),
-                    })
-                    found[rec.sku] = rec
-
-            if i + _BATCH_SIZE < len(target_ids):
-                await self._sleep(1.0, 2.5)
-
-        missing = set(target_ids) - set(found.keys())
-        if missing:
-            logger.warning(
-                "[ikea] %s: %d article bulunamadı: %s",
-                keyword, len(missing), missing,
-            )
-
-        logger.info(
-            "[ikea] scrape_tracked keyword=%s → %d/%d article bulundu",
-            keyword, len(found), len(target_ids),
-        )
-        return list(found.values())
-
-    def _parse_price_item(
-        self, item: dict, coicop_code: str, today: date
-    ) -> AppliancePriceRecord | None:
-        """api.ikea.com/price/v2 yanıtından AppliancePriceRecord oluşturur."""
-        try:
-            sku = str(item.get("itemNo") or "").strip()
+        for info in tracked_skus:
+            sku = str(info.get("sku") or "").strip()
             if not sku:
-                return None
-
-            prices_list = item.get("prices") or []
-            if not prices_list:
-                return None
-
-            price_obj = prices_list[0].get("price") or {}
-            raw_price = price_obj.get("inclTax")
-            if raw_price is None:
-                return None
-
-            price = Decimal(str(raw_price))
-            if price <= 0:
-                return None
-
-            # IKEA indirimleri inclTax'a yansır; previousPrice eski normal fiyat
-            prev_obj = prices_list[0].get("previousPrice") or {}
-            raw_prev = prev_obj.get("inclTax") if prev_obj else None
-            discounted: Decimal | None = None
-            if raw_prev is not None:
-                try:
-                    prev = Decimal(str(raw_prev))
-                    if prev > price:
-                        discounted = price
-                        price = prev
-                except InvalidOperation:
-                    pass
-
-            # Model bilgisi: tracked_skus'tan alınacak, API'de yok
-            # brand sabit "IKEA", model sku bazında bilinmiyor (discovery'de kaydedildi)
-            return AppliancePriceRecord(
+                continue
+            price = await self._check_price(sku)
+            if price is None:
+                missing.append(sku)
+                continue
+            records.append(AppliancePriceRecord(
                 coicop_code      = coicop_code,
                 source           = "ikea",
                 sku              = sku,
-                brand            = "IKEA",
-                model            = sku,   # __init__.py track loop'unda model override edilir
+                brand            = info.get("brand", "IKEA"),
+                model            = info.get("model", sku),
                 category         = None,
                 price            = price,
-                discounted_price = discounted,
+                discounted_price = None,
+                is_available     = True,
                 date             = today,
+            ))
+            await self._sleep(0.3, 0.8)
+
+        if missing:
+            logger.warning(
+                "[ikea] %s: %d article fiyatı alınamadı: %s",
+                keyword, len(missing), missing,
             )
-        except (InvalidOperation, TypeError, ValueError, KeyError) as exc:
-            logger.debug("[ikea] parse hatası: %s | item=%s", exc, item.get("itemNo"))
+        logger.info(
+            "[ikea] scrape_tracked keyword=%s → %d/%d article bulundu",
+            keyword, len(records), len(tracked_skus),
+        )
+        return records
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
+    async def _check_price(self, sku: str) -> Decimal | None:
+        """CheckPrice web metoduna POST atar, TL fiyatı döner."""
+        try:
+            r = await self._client.post(
+                _PRICE_URL,
+                json={"stockCode": sku},
+                headers={
+                    "Content-Type":     "application/json; charset=utf-8",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Referer":          f"{_BASE}/",
+                },
+            )
+            r.raise_for_status()
+            data = r.json()
+        except Exception as exc:
+            logger.debug("[ikea] CheckPrice hata sku=%s: %s", sku, exc)
+            return None
+
+        payload = (data or {}).get("d") or {}
+        if payload.get("StatusCode") != 200:
+            return None
+        raw = payload.get("Data")
+        if raw in (None, "", "0"):
+            return None
+        try:
+            val = Decimal(str(raw).replace(",", "."))
+            return val if val > 0 else None
+        except InvalidOperation:
             return None
 
     # BaseScraper ABC uyumu
     async def scrape_product(self, sku: str) -> None:
         raise NotImplementedError("discover_keyword() veya scrape_tracked() kullanın.")
-
-
-def _parse_price(sales_price: dict) -> Decimal | None:
-    """salesPrice objesinden TL fiyatı çıkarır."""
-    numeral = str(sales_price.get("numeral") or "").strip()
-    if not numeral:
-        return None
-    # "25 999" → "25999", "1.299" → "1299"
-    cleaned = numeral.replace(" ", "").replace(".", "").replace(",", ".")
-    try:
-        val = Decimal(cleaned)
-        return val if val > 0 else None
-    except InvalidOperation:
-        return None
