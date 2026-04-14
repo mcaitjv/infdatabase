@@ -74,6 +74,26 @@ CREATE INDEX IF NOT EXISTS idx_fp_date
 CREATE INDEX IF NOT EXISTS idx_fp_provider_city
     ON fuel_prices(provider, city);
 
+-- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05 Aşama 2 — Trendyol)
+CREATE TABLE IF NOT EXISTS appliance_prices (
+    id               BIGSERIAL     PRIMARY KEY,
+    coicop_code      VARCHAR(10)   NOT NULL,
+    source           VARCHAR(50)   NOT NULL DEFAULT 'trendyol',
+    sku              VARCHAR(100)  NOT NULL,
+    brand            VARCHAR(100)  NOT NULL,
+    model            TEXT          NOT NULL,
+    category         VARCHAR(255),
+    price            NUMERIC(12,2) NOT NULL,
+    discounted_price NUMERIC(12,2),
+    date             DATE          NOT NULL,
+    scraped_at       TIMESTAMP     DEFAULT NOW(),
+    UNIQUE(source, sku, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ap_date        ON appliance_prices(date);
+CREATE INDEX IF NOT EXISTS idx_ap_coicop_date ON appliance_prices(coicop_code, date);
+CREATE INDEX IF NOT EXISTS idx_ap_sku         ON appliance_prices(sku);
+
 -- ---- Performans indeksleri ----
 
 -- Tarih bazlı sorgular (enflasyon hesaplama, trend)
