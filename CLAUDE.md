@@ -63,14 +63,6 @@ infdatabase/
 │   │       ├── a101.py
 │   │       ├── bim.py
 │   │       └── sok.py
-│   ├── m05_household/
-│   │   ├── __init__.py             # HouseholdModule (COICOP 05, %6.38) — 3 Aşama
-│   │   ├── config/
-│   │   │   ├── appliances.yaml     # Aşama 2: beyaz eşya keyword + tracked_skus
-│   │   │   └── furniture.yaml      # Aşama 3: mobilya/tekstil (IKEA + Trendyol)
-│   │   └── scrapers/
-│   │       ├── trendyol.py         # Trendyol mobil API (beyaz eşya + mobilya/tekstil)
-│   │       └── ikea.py             # IKEA TR JSON API (search + price/v2 batch)
 │   └── m07_fuel/
 │       ├── __init__.py             # FuelModule (COICOP 07, %16.62)
 │       ├── config/
@@ -115,12 +107,10 @@ infdatabase/
 | Komut | Açıklama |
 |-------|----------|
 | `python -m pipeline.runner` | Tüm kayıtlı modülleri çalıştır |
-| `--module 01` | Sadece belirtilen modül(ler) — virgülle: `--module 01,05,07` |
+| `--module 01` | Sadece belirtilen modül(ler) — virgülle: `--module 01,07` |
 | `--dry-run` | DB'ye yazmadan önizleme |
 | `--setup-schema` | Tüm modüllerin DB tablolarını oluştur |
 | `--discover-branches` | M01: şube keşfi, `config/branches.yaml` oluşturur |
-| `--discover-appliances` | M05: beyaz eşya SKU keşfi, `appliances.yaml` tracked_skus doldurur |
-| `--discover-furniture` | M05: mobilya/tekstil SKU keşfi, `furniture.yaml` tracked_skus doldurur |
 | `--health-check` | Sağlık raporu — DB bütünlük + anomali kontrolü + e-posta bildirimi |
 | `--health-check --date YYYY-MM-DD` | Belirli tarih için rapor |
 
@@ -131,7 +121,6 @@ infdatabase/
 | Kod | Ad | Ağırlık | Veri Kaynağı |
 |-----|----|---------|--------------|
 | 01 | Gıda ve Alkolsüz İçecekler | %24.44 | marketfiyati.org.tr (TÜBİTAK API) |
-| 05 | Ev Eşyası (Aşama 1+2+3) | %6.38 | Trendyol (mobil API) + IKEA TR JSON API |
 | 07 | Ulaştırma — Akaryakıt | %16.62 | Petrol Ofisi + Opet (Playwright) |
 
 ---
@@ -151,26 +140,6 @@ volume                   location
                          scraped_at
 UNIQUE(market, market_sku)   UNIQUE(market_product_id, snapshot_date, location)
 ```
-
-**Modül 05** — `appliance_prices` (Aşama 2 + 3 birlikte):
-```
-appliance_prices
-────────────────
-id (PK)
-source          -- 'trendyol' | 'ikea'
-sku             -- provider ürün ID
-brand
-model
-category        -- 'beyaz_esya' | 'mobilya' | 'tekstil'
-coicop_code     -- '0513' | '0511' | '0521'
-price
-discounted_price
-is_available
-date
-UNIQUE(source, sku, date)
-```
-
-Tracked SKU listeleri `modules/m05_household/config/appliances.yaml` ve `furniture.yaml` içinde tutulur. Her keyword için discovery fazında top-N SKU seçilir, sonraki günler sabit sepet olarak fiyatlanır.
 
 **Modül 07** — `fuel_prices`:
 ```

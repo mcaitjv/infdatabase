@@ -8,12 +8,10 @@ Yeni modül eklemek:
 
 from modules.base import BaseModule
 from modules.m01_food import FoodModule
-# from modules.m05_household import HouseholdModule  # geçici devre dışı — feature/module-05-household üzerinde değişiklik yapılıyor
 from modules.m07_fuel import FuelModule
 
 ALL_MODULES: dict[str, type[BaseModule]] = {
     "01": FoodModule,
-    # "05": HouseholdModule,  # geçici devre dışı
     "07": FuelModule,
 }
 
