@@ -33,7 +33,7 @@ _SITEMAP_URL = "https://www.ikea.com.tr/sitemap/urun.sitemap.xml"
 _PRICE_URL   = "https://www.ikea.com.tr/_ws/general.aspx/CheckPrice"
 _BASE        = "https://www.ikea.com.tr"
 
-_MAX_DISCOVERY = 3
+_MAX_DISCOVERY = 15
 
 _HEADERS = {
     "Accept":          "application/json, text/plain, */*",

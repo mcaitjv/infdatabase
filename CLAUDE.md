@@ -220,12 +220,19 @@ UNIQUE(provider, city, fuel_type, date)
 
 ---
 
-## Yeni Modül Ekleme
+## Modül Üzerinde Çalışma — Session Akışı
 
-1. `modules/mXX_<ad>/` klasörü oluştur
-2. `config/` ve `scrapers/` alt klasörlerini ekle
-3. `BaseModule` alt sınıfı yaz (`coicop_code`, `name`, `weight`, `run()`, `setup_schema()`)
-4. `modules/__init__.py` içindeki `ALL_MODULES` sözlüğüne ekle
+Her modül `feature/module-XX-<slug>` dalında geliştirilir. Yeni bir Claude session'ı açtığında:
+
+1. `main` dalında `/modul-ekle` komutunu çalıştır — komut interaktif olarak sorar:
+   - **(a) Yeni modül ekle** → COICOP kodu/ad/tip sorar, dal oluşturur, scaffold kurar.
+   - **(b) Mevcut modülde çalış** → modülü seçtirir, ilgili dala geçer, durumu özetler.
+2. Her durumda komut önce **`docs/MODULE_CONVENTIONS.md`**'yi okur — tüm modül kuralları orada.
+3. Context'i dar tutmak için yalnızca seçilen modülün klasörünü yükler; diğer modüllere dokunmaz.
+
+**Önemli:** Tüm modül kuralları (BaseModule pattern, discovery+tracked, Türkçe relevance filter,
+marka çeşitliliği, YAML şeması, commit scope) tek yerde: [docs/MODULE_CONVENTIONS.md](docs/MODULE_CONVENTIONS.md).
+Yeni bir modül yazmadan önce oradaki referans modül (M01/M05/M07) tipini seç.
 
 ---
 

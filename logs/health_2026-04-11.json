@@ -1,0 +1,272 @@
+{
+  "date": "2026-04-11",
+  "overall_status": "error",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "error",
+      "records_today": 4527,
+      "records_yesterday": 4719,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 20,
+      "anomalies": [
+        {
+          "identifier": "carrefour / Koroplast Küçük Boy Mandarin Kokulu Çöp ",
+          "yesterday": 35.0,
+          "today": 121.0,
+          "change_pct": 245.7
+        },
+        {
+          "identifier": "carrefour / Macromax Extra Güçlü Çöp Torbası Küçük B",
+          "yesterday": 30.0,
+          "today": 68.5,
+          "change_pct": 128.3
+        },
+        {
+          "identifier": "carrefour / Parex %30 Mikrofiber Sarı Temizlik Bezi ",
+          "yesterday": 94.98999786376953,
+          "today": 201.89999389648438,
+          "change_pct": 112.5
+        },
+        {
+          "identifier": "carrefour / Efsina İyotlu Deniz Tuzu 750 Gr",
+          "yesterday": 24.0,
+          "today": 50.75,
+          "change_pct": 111.5
+        },
+        {
+          "identifier": "carrefour / Duru Kuru Fasulye 1 Kg",
+          "yesterday": 71.98999786376953,
+          "today": 137.25,
+          "change_pct": 90.7
+        },
+        {
+          "identifier": "carrefour / Duru Dermason Fasulye 1 Kg",
+          "yesterday": 76.98999786376953,
+          "today": 144.5,
+          "change_pct": 87.7
+        },
+        {
+          "identifier": "carrefour / Duru Yeşil Mercimek 1 Kg",
+          "yesterday": 91.98999786376953,
+          "today": 163.5,
+          "change_pct": 77.7
+        },
+        {
+          "identifier": "carrefour / Doğadan Sade Beyaz Çay 18 Adet",
+          "yesterday": 65.98999786376953,
+          "today": 116.0,
+          "change_pct": 75.8
+        },
+        {
+          "identifier": "carrefour / Duru Koçbaşı Nohut 8 mm 1 Kg",
+          "yesterday": 71.98999786376953,
+          "today": 126.25,
+          "change_pct": 75.4
+        },
+        {
+          "identifier": "bim / Blade Deodorant 150 Ml",
+          "yesterday": 109.0,
+          "today": 189.0,
+          "change_pct": 73.4
+        },
+        {
+          "identifier": "bim / Emotion Deodorant 150 Ml",
+          "yesterday": 109.0,
+          "today": 189.0,
+          "change_pct": 73.4
+        },
+        {
+          "identifier": "carrefour / Knorr Et Bulyon 12 Adet",
+          "yesterday": 37.45000076293945,
+          "today": 62.5,
+          "change_pct": 66.9
+        },
+        {
+          "identifier": "migros / İçim Laktozsuz Yoğurt 750 Gr",
+          "yesterday": 50.34000015258789,
+          "today": 83.9000015258789,
+          "change_pct": 66.7
+        },
+        {
+          "identifier": "migros / İçim Yoğurt 750 Gr",
+          "yesterday": 42.900001525878906,
+          "today": 71.5,
+          "change_pct": 66.7
+        },
+        {
+          "identifier": "migros / Eker Süzme Yoğurt 500 Gr",
+          "yesterday": 71.97000122070312,
+          "today": 119.94999694824219,
+          "change_pct": 66.7
+        },
+        {
+          "identifier": "carrefour / Reis Pilavlık Bulgur 1 Kg",
+          "yesterday": 44.0,
+          "today": 70.9000015258789,
+          "change_pct": 61.1
+        },
+        {
+          "identifier": "carrefour / Rinso Argan Sıvı Deterjan 2.5 Lt",
+          "yesterday": 230.99000549316406,
+          "today": 368.5,
+          "change_pct": 59.5
+        },
+        {
+          "identifier": "carrefour / Reis Kırmızı Mercimek 1 Kg",
+          "yesterday": 105.98999786376953,
+          "today": 165.9499969482422,
+          "change_pct": 56.6
+        },
+        {
+          "identifier": "a101 / Fairy Bulaşık Deterjanı 2.6 Lt",
+          "yesterday": 219.89999389648438,
+          "today": 339.8999938964844,
+          "change_pct": 54.6
+        },
+        {
+          "identifier": "carrefour / Disney Muz Aromalı Süt 1.08 Lt",
+          "yesterday": 149.89999389648438,
+          "today": 79.94999694824219,
+          "change_pct": -46.7
+        }
+      ],
+      "warnings": [
+        "Fiyat değişimi: carrefour / Disney Muz Aromalı Süt 1.08 Lt -46.7%"
+      ],
+      "errors": [
+        "Kritik fiyat değişimi: carrefour / Koroplast Küçük Boy Mandarin Kokulu Çöp  +245.7%",
+        "Kritik fiyat değişimi: carrefour / Macromax Extra Güçlü Çöp Torbası Küçük B +128.3%",
+        "Kritik fiyat değişimi: carrefour / Parex %30 Mikrofiber Sarı Temizlik Bezi  +112.5%",
+        "Kritik fiyat değişimi: carrefour / Efsina İyotlu Deniz Tuzu 750 Gr +111.5%",
+        "Kritik fiyat değişimi: carrefour / Duru Kuru Fasulye 1 Kg +90.7%",
+        "Kritik fiyat değişimi: carrefour / Duru Dermason Fasulye 1 Kg +87.7%",
+        "Kritik fiyat değişimi: carrefour / Duru Yeşil Mercimek 1 Kg +77.7%",
+        "Kritik fiyat değişimi: carrefour / Doğadan Sade Beyaz Çay 18 Adet +75.8%",
+        "Kritik fiyat değişimi: carrefour / Duru Koçbaşı Nohut 8 mm 1 Kg +75.4%",
+        "Kritik fiyat değişimi: bim / Blade Deodorant 150 Ml +73.4%",
+        "Kritik fiyat değişimi: bim / Emotion Deodorant 150 Ml +73.4%",
+        "Kritik fiyat değişimi: carrefour / Knorr Et Bulyon 12 Adet +66.9%",
+        "Kritik fiyat değişimi: migros / İçim Laktozsuz Yoğurt 750 Gr +66.7%",
+        "Kritik fiyat değişimi: migros / İçim Yoğurt 750 Gr +66.7%",
+        "Kritik fiyat değişimi: migros / Eker Süzme Yoğurt 500 Gr +66.7%",
+        "Kritik fiyat değişimi: carrefour / Reis Pilavlık Bulgur 1 Kg +61.1%",
+        "Kritik fiyat değişimi: carrefour / Rinso Argan Sıvı Deterjan 2.5 Lt +59.5%",
+        "Kritik fiyat değişimi: carrefour / Reis Kırmızı Mercimek 1 Kg +56.6%",
+        "Kritik fiyat değişimi: a101 / Fairy Bulaşık Deterjanı 2.6 Lt +54.6%"
+      ]
+    },
+    {
+      "module_code": "05p2+3",
+      "module_name": "Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
+      "status": "warning",
+      "records_today": 52,
+      "records_yesterday": 46,
+      "expected": 55,
+      "missing_count": 3,
+      "missing": [
+        "[trendyol:LED ampul] PANASONIC E27 LED Ampul 4,9W 515 Lümen 4000K Doğal (SKU 1116531242)",
+        "[trendyol:çamaşır makinesi] Arçelik 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi (SKU 826518040)",
+        "[trendyol:çamaşır makinesi] Beko CMX 8100 ÇAMAŞIR MAKİNESİ (SKU 833670806)"
+      ],
+      "anomaly_count": 1,
+      "anomalies": [
+        {
+          "identifier": "Varta Super Heavy Duty Toplam 24 Adet Öze",
+          "yesterday": 160.0,
+          "today": 133.42,
+          "change_pct": -16.6
+        }
+      ],
+      "warnings": [
+        "Eksik SKU: [trendyol:LED ampul] PANASONIC E27 LED Ampul 4,9W 515 Lümen 4000K Doğal (SKU 1116531242)",
+        "Eksik SKU: [trendyol:çamaşır makinesi] Arçelik 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi (SKU 826518040)",
+        "Eksik SKU: [trendyol:çamaşır makinesi] Beko CMX 8100 ÇAMAŞIR MAKİNESİ (SKU 833670806)",
+        "Fiyat değişimi: Varta Super Heavy Duty Toplam 24 Adet Öze -16.6%"
+      ],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "warning",
+      "records_today": 27,
+      "records_yesterday": 27,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 9,
+      "anomalies": [
+        {
+          "identifier": "petrolofisi / istanbul / diesel",
+          "yesterday": 72.28,
+          "today": 76.42,
+          "change_pct": 5.7
+        },
+        {
+          "identifier": "petrolofisi / ankara / diesel",
+          "yesterday": 73.56,
+          "today": 77.69,
+          "change_pct": 5.6
+        },
+        {
+          "identifier": "petrolofisi / izmir / diesel",
+          "yesterday": 73.84,
+          "today": 77.97,
+          "change_pct": 5.6
+        },
+        {
+          "identifier": "opet / istanbul / diesel",
+          "yesterday": 72.31,
+          "today": 76.43,
+          "change_pct": 5.7
+        },
+        {
+          "identifier": "opet / ankara / diesel",
+          "yesterday": 73.55,
+          "today": 77.67,
+          "change_pct": 5.6
+        },
+        {
+          "identifier": "opet / izmir / diesel",
+          "yesterday": 73.83,
+          "today": 77.95,
+          "change_pct": 5.6
+        },
+        {
+          "identifier": "shell / istanbul / diesel",
+          "yesterday": 72.26,
+          "today": 76.43,
+          "change_pct": 5.8
+        },
+        {
+          "identifier": "shell / ankara / diesel",
+          "yesterday": 73.54,
+          "today": 77.69,
+          "change_pct": 5.6
+        },
+        {
+          "identifier": "shell / izmir / diesel",
+          "yesterday": 73.82,
+          "today": 77.96,
+          "change_pct": 5.6
+        }
+      ],
+      "warnings": [
+        "Yakıt fiyat değişimi: petrolofisi / istanbul / diesel +5.7%",
+        "Yakıt fiyat değişimi: petrolofisi / ankara / diesel +5.6%",
+        "Yakıt fiyat değişimi: petrolofisi / izmir / diesel +5.6%",
+        "Yakıt fiyat değişimi: opet / istanbul / diesel +5.7%",
+        "Yakıt fiyat değişimi: opet / ankara / diesel +5.6%",
+        "Yakıt fiyat değişimi: opet / izmir / diesel +5.6%",
+        "Yakıt fiyat değişimi: shell / istanbul / diesel +5.8%",
+        "Yakıt fiyat değişimi: shell / ankara / diesel +5.6%",
+        "Yakıt fiyat değişimi: shell / izmir / diesel +5.6%"
+      ],
+      "errors": []
+    }
+  ]
+}

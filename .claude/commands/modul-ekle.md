@@ -1,110 +1,170 @@
-# /modul-ekle — Yeni COICOP Modülü Scaffold
+# /modul-ekle — Modül Session Başlatıcı
 
-Yeni bir COICOP modülü için klasör yapısı + BaseModule iskeleti oluşturur. Kayıt satırını `modules/__init__.py`'ye ekler.
+Tek bir komut, iki iş yapar:
+- **(a)** Yeni COICOP modülü ekle (scaffold + dal + scraper referansı)
+- **(b)** Mevcut bir modül üzerinde çalışmaya başla (dal + context)
 
 ## Kullanım
 
 ```
-/modul-ekle 03 giyim 6.91
-/modul-ekle            → interaktif sor
+/modul-ekle              → interaktif (önerilen)
+/modul-ekle 03 giyim 6.91   → yeni modül, parametreler hazır
+/modul-ekle 05               → mevcut modülde çalış
 ```
+
+---
 
 ## Talimatlar
 
-### 1. Argümanları al
-- COICOP kodu (örn: `03`)
-- Ad (örn: `giyim`) — slug, küçük harf, Türkçe karakter yok
-- Ağırlık (örn: `6.91`) — TÜİK 2026 COICOP ağırlıkları
-- Uzun ad (örn: "Giyim ve Ayakkabı") — metodolojide kullanılır
+### 0. Ön koşul
 
-Eksik argüman varsa AskUserQuestion ile sor.
+`git branch --show-current` çalıştır. `main` değilse kullanıcıyı uyar:
 
-### 2. Var olan modülleri incele
+> "Şu an `<dal>` dalındasın. Bu komut `main`'de çalıştırılmalı. Devam edeyim mi, yoksa
+> önce `main`'e geçeyim mi?"
 
-Önce `modules/base.py` oku — `BaseModule` ABC arayüzünü kontrol et. Sonra benzer bir modülü (örn. `modules/m01_food/__init__.py`) referans olarak oku.
+Kullanıcı onay verirse `git checkout main && git pull` (pull başarısızsa uyar, devam et).
 
-### 3. Klasör + dosyaları oluştur
+### 1. Niyet belirle
+
+Kullanıcı argüman vermemişse `AskUserQuestion` ile sor:
+
+- Soru: **"Ne yapmak istiyorsun?"**
+- Seçenekler:
+  - `a) Yeni modül ekle` — henüz eklenmemiş bir COICOP grubu için iskelet kur
+  - `b) Mevcut modülde çalış` — mevcut modülün dalına geç ve context hazırla
+
+Tek sayısal argüman verilmişse (`/modul-ekle 05`) ve `modules/m05_*/` varsa **(b)**'ye geç.
+Üç argüman verilmişse (kod/ad/ağırlık) **(a)**'ya geç.
+
+### 2. (a) Yeni modül ekle
+
+#### 2.1 Parametreleri topla
+
+Eksik olanları `AskUserQuestion` ile sor:
+- **COICOP kodu** (2 haneli): `03`, `04`, `06`, `08` vb. Mevcut modüllerin kodları alınamaz.
+- **Slug** (ASCII, küçük harf, Türkçe karaktersiz): `giyim`, `saglik`, `egitim`
+- **Uzun ad**: `"Giyim ve Ayakkabı"`
+- **Ağırlık** (TÜİK 2026 COICOP ağırlığı, %)
+- **Modül tipi**:
+  - **A — Keyword-arama** (M01 Gıda gibi; her gün aynı keyword, SKU sabit değil)
+  - **B — Discovery + Tracked** (M05 Ev Eşyası gibi; YAML'a sabitlenen SKU sepeti)
+  - **C — Location-based** (M07 Yakıt gibi; şehir+ilçe+provider matrix)
+
+#### 2.2 Konvansiyonları yükle
+
+**Zorunlu:** `docs/MODULE_CONVENTIONS.md` dosyasını oku. Tüm iskelet oradaki pattern'lere uymalı.
+
+#### 2.3 Referans modülü oku
+
+Seçilen tipe göre **sadece bir modül** oku (token tasarrufu):
+- Tip A → `modules/m01_food/__init__.py` ve bir scraper
+- Tip B → `modules/m05_household/__init__.py` + `scrapers/trendyol.py`
+- Tip C → `modules/m07_fuel/__init__.py` + `scrapers/petrolofisi.py`
+
+#### 2.4 Dal oluştur
+
+```bash
+git checkout -b feature/module-<KOD>-<slug>
+```
+
+#### 2.5 Scaffold oluştur
 
 ```
-modules/m<KOD>_<ad>/
-├── __init__.py           # <Ad>Module sınıfı
+modules/m<KOD>_<slug>/
+├── __init__.py           # <PascalAd>Module(BaseModule)
 ├── config/
-│   └── categories.yaml   # Boş template
+│   └── <uygun>.yaml      # tip A: categories.yaml, tip B: <alan>.yaml, tip C: locations.yaml
 └── scrapers/
-    └── __init__.py       # Boş
+    └── __init__.py
 ```
 
-**`modules/mXX_<ad>/__init__.py` şablonu:**
+**`__init__.py` iskeleti** — referans modülden kopyala, şunları güncelle:
+- Sınıf adı → `<PascalAd>Module`
+- `coicop_code`, `name`, `weight`
+- Tip B ise: `discover_<alan>()` ve tracked scrape metodları
+- Yorumlardan modül-spesifik içeriği temizle
+
+`config/*.yaml` için yorum-only boş template üret (kullanıcı dolduracak).
+
+#### 2.6 Kayıt
+
+`modules/__init__.py` içindeki `ALL_MODULES` dict'ine ekle:
 
 ```python
-"""
-Modül XX — <Uzun Ad>
-COICOP: XX — Ağırlık: %X.XX
-"""
-import logging
-from datetime import date
-
-from modules.base import BaseModule
-from db.models import ScrapeRun
-
-logger = logging.getLogger(__name__)
-
-
-class <PascalAd>Module(BaseModule):
-    coicop_code = "XX"
-    name = "<Uzun Ad>"
-    weight = X.XX
-
-    async def setup_schema(self, conn) -> None:
-        # TODO: Modüle özgü tablolar burada create edilir
-        pass
-
-    async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
-        runs: list[ScrapeRun] = []
-        # TODO: scraper çağrıları
-        return runs
-```
-
-`config/categories.yaml` için yorum-only template:
-```yaml
-# <Uzun Ad> — COICOP XX keyword listesi
-# Her keyword: 'kategori: [keyword1, keyword2]' formatında
-```
-
-### 4. `modules/__init__.py` güncelle
-
-Var olan içeriği oku. `ALL_MODULES` dict'ine yeni modülü ekle:
-
-```python
-from modules.m<KOD>_<ad> import <PascalAd>Module
-# ...
+from modules.m<KOD>_<slug> import <PascalAd>Module
 ALL_MODULES = {
-    "01": FoodModule,
-    "05": HouseholdModule,
-    "07": FuelModule,
-    "XX": <PascalAd>Module,   # <-- yeni
+    ...,
+    "<KOD>": <PascalAd>Module,
 }
 ```
 
-### 5. CLAUDE.md "Aktif Modüller" tablosunu güncelle
+`CLAUDE.md` → "Aktif Modüller" tablosuna satır ekle.
 
-İlgili satırı ekle.
+#### 2.7 İlk commit
 
-### 6. Doğrulama
+Sor: "İlk commit'i atayım mı?"
+```
+feat(m<KOD>): <Uzun Ad> modülü iskeleti (COICOP <KOD>, Tip <A/B/C>)
+```
+
+#### 2.8 Sonraki adım
+
+Kullanıcıya sor: **"Hangi kısımdan başlayalım?"**
+- Scraper yazımı (kaynak URL'leri sor)
+- Keyword/lokasyon listesi doldurma
+- DB schema (yeni tablo gerekiyor mu?)
+
+### 3. (b) Mevcut modülde çalış
+
+#### 3.1 Modül seç
+
+Argüman yoksa `modules/m*_*/` klasörlerini listele, `AskUserQuestion` ile seçtir.
+
+#### 3.2 Dala geç
 
 ```bash
-python -c "from modules.m<KOD>_<ad> import <PascalAd>Module; m=<PascalAd>Module(); print(m.coicop_code, m.name, m.weight)"
-python -m pipeline.runner --module <KOD> --dry-run
+git rev-parse --verify feature/module-<KOD>-<slug> 2>/dev/null \
+  && git checkout feature/module-<KOD>-<slug> \
+  || git checkout -b feature/module-<KOD>-<slug>
 ```
 
-### 7. Commit (kullanıcı onayıyla)
+#### 3.3 Context yükle (dar tut!)
 
+Sadece şunları oku:
+- `docs/MODULE_CONVENTIONS.md` — ortak kurallar
+- `modules/m<KOD>_<slug>/__init__.py`
+- `modules/m<KOD>_<slug>/scrapers/` içindeki dosyalar (ls + her birini oku)
+- `modules/m<KOD>_<slug>/config/` içindeki YAML'lar (küçükse, büyükse sadece ilk 50 satır)
+
+**Okuma:** `pipeline/`, `db/`, `scrapers/base.py`, diğer modüller — ihtiyaç olmadıkça OKUMA.
+
+#### 3.4 Durum özeti
+
+Şunları çalıştır:
+```bash
+git log --oneline -5 -- modules/m<KOD>_<slug>/
+ls logs/health_*.json | tail -1   # varsa en yeni health JSON
 ```
-feat(mXX): <Uzun Ad> modülü iskeleti (COICOP XX)
-```
 
-### Notlar
+Health JSON varsa yalnızca bu modülün bölümünü oku.
 
-- Slug'da Türkçe karakter KULLANMA (`giyim`, `saglik`, `egitim`).
-- Ağırlığı TÜİK 2026 ağırlıklarına göre ver.
-- Scraper dosyaları bu komut tarafından oluşturulmaz — modül-spesifik mantık kullanıcıya bırakılır.
+#### 3.5 Kullanıcıya sor
+
+Kısa özet ver (5-10 satır):
+- Dal: `feature/module-<KOD>-<slug>`
+- Son 3 commit
+- YAML'daki keyword/SKU sayıları
+- Son health durumu (varsa)
+
+Sonra: **"Bu modülde ne yapacağız?"**
+
+---
+
+## Notlar
+
+- **Slug Türkçe karakter içeremez** (`giyim`, `saglik` — `giyim_ayakkabı` yanlış).
+- **Ağırlığı TÜİK 2026 ağırlıklarına göre** ver, uydurma.
+- **Scraper dosyalarının içeriği bu komutla oluşturulmaz** — modül tipine göre referansı kullanıcıyla birlikte yaz.
+- **Diğer modülleri context'e yükleme.** Seçilen modül dışındakileri okuma — token ekonomisi.
+- Commit yapmadan önce mutlaca kullanıcı onayı al.

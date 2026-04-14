@@ -1,6 +1,52 @@
 # Sabit şubeler — her market için 1 şube / şehir
-# Bu dosya otomatik oluşturulur:
-#   python -m pipeline.runner --discover-branches
-#
-# Şube kapanırsa sadece depot_id'yi güncelle, kod değişmez.
-# Boş bırakılırsa proximity search kullanılır (tutarsız tarihsel veri riski var).
+# Şube kapanırsa depot_id'yi güncel olanla değiştir.
+# Güncelleme: python -m pipeline.runner --discover-branches
+
+Ankara:
+  a101:
+    depot_id: a101-B221
+    name: a101-B221
+  bim:
+    depot_id: bim-U645
+    name: bim-U645
+  carrefour:
+    depot_id: carrefour-3593
+    name: carrefour-3593
+  migros:
+    depot_id: migros-9293
+    name: migros-9293
+  sok:
+    depot_id: sok-5869
+    name: sok-5869
+Istanbul:
+  a101:
+    depot_id: a101-9300
+    name: a101-9300
+  bim:
+    depot_id: bim-J251
+    name: bim-J251
+  carrefour:
+    depot_id: carrefour-5027
+    name: carrefour-5027
+  migros:
+    depot_id: migros-4453
+    name: migros-4453
+  sok:
+    depot_id: sok-7101
+    name: sok-7101
+Izmir:
+  a101:
+    depot_id: a101-0386
+    name: a101-0386
+  bim:
+    depot_id: bim-D455
+    name: bim-D455
+  carrefour:
+    depot_id: carrefour-5345
+    name: carrefour-5345
+  migros:
+    depot_id: migros-4821
+    name: migros-4821
+  sok:
+    depot_id: sok-7551
+    name: sok-7551

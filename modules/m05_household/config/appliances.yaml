@@ -1,5 +1,6 @@
 # Modül 05 Aşama 2 — Beyaz Eşya & Küçük Ev Aletleri (Trendyol)
 # Bu dosya --discover-appliances komutuyla otomatik güncellenir.
+# Run sırasında eksik SKU tespit edilirse otomatik olarak yenilenir.
 # tracked_skus: sabit takip listesi — fiyat karşılaştırması için tutarlı.
 
 appliances:
@@ -12,15 +13,83 @@ appliances:
   - sku: '816930077'
     brand: Regal
     model: NF 30020 251 Lt No Frost Buzdolabı
-  - sku: '931134852'
-    brand: KUMTEL
-    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
   - sku: '72800976'
     brand: Dijitsu
     model: Dbd200 Tmf A Statik Buzdolabı
+  - sku: '931325483'
+    brand: Dijitsu
+    model: Dbd250k Buzdolabı
+  - sku: '947586761'
+    brand: Regal
+    model: NFK 33020 330 Lt No Frost Kombi Buzdolabı
+  - sku: '864974369'
+    brand: Altus
+    model: Al 365 Ne E Enerji Sınıfı 357 L Üstten Donduruculu No- Frost Buzdolabı
+      Beyaz
+  - sku: '35827675'
+    brand: DOMOL
+    model: Kokusuz Buzdolabı Deodorantı Kartuş Ve Karbon Filtre 40 gr.
   - sku: '1092159058'
     brand: Arçelik
     model: 570405 MB Çift Kapılı No Frost Beyaz Buzdolabı
+  - sku: '1039276120'
+    brand: DOMOL
+    model: Kokusuz Buzdolabı Deodorantı Kartuş Ve Karbon Filtre 40 gr. X3 Adet
+  - sku: '807277522'
+    brand: Profilo
+    model: Nofrost Buzdolabı E Enerji Sınıfı 453 Litre
+  - sku: '220563560'
+    brand: Vienev
+    model: 3 Adet Kapaklı Buzdolabı Organizeri Orta 6,5 Litre
+  - sku: '1031593263'
+    brand: YILDIRIM OYUNCAK
+    model: Led Işıklı Buhar Sprey Atan Açılabilir Çift Kapılı Buzdolabı 20 Parça Aksesuarlı
+      Sesli Müzikli 26 Cm
+  - sku: '729845232'
+    brand: Vienev
+    model: 3x Kapaksız Buzdolabı Organizeri Büyük 9,1 Litre
+  - sku: '931134852'
+    brand: KUMTEL
+    model: 87L MİNİ BUZDOLABI BEYAZ HTMF-90EW
+  - sku: '922966914'
+    brand: Meleni Home
+    model: 9'lu Kapaklı Buzdolabı Düzenleyici Set - Meyve Sebze Saklama Kabı Dolap
+      İçi Organizer 3x(4-6-8) Lt
+  - sku: '776392830'
+    brand: Vienev
+    model: Plastik 6Lı B Buzdolabı Düzenleyici 2X (3,5 Litre) 4X(1,65 Litre) 6 Parça
+      Çok Ren
+  - sku: '924205992'
+    brand: Meleni Home
+    model: 3 Adet Kapaklı Dolap İçi Buzdolabı Düzenleyici - Meyve Sebze Saklama Kabı
+      Buzdolabı Organizer 6 Lt
+  - sku: '1014560263'
+    brand: Kiwi
+    model: KRF-2586 86 Lt Mini Buzdolabı – 30 Litre Buzluk Enerji Tasarruflu & Düşük
+      Gürültü
+  - sku: '886706672'
+    brand: Beko
+    model: 970477 MB No Frost Buzdolabı
+  - sku: '860671350'
+    brand: Grundig
+    model: GRNE No-Frost Çift Kapılı Buzdolabı
+  - sku: '801748403'
+    brand: MİHEL
+    model: Gloss AirControl 6'lı Mix Süzgeçli Havalandırmalı Kapaklı Buzdolabı & Dolap
+      İçi Düzenleyici 18 Parça
+  - sku: '960335786'
+    brand: DOMOL
+    model: Bulaşık Makinesi Koku Giderici, 2 Adet + Kokusuz Buzdolabı Deodorantı Kartuş
+      ve Karbon Filtre 40 gr
+  - sku: '758825509'
+    brand: Uğur
+    model: Ues 204 D2K Statik Buzdolabı
+  - sku: '931326334'
+    brand: Dijitsu
+    model: Dbd150 Buzdolabı
+  - sku: '1120134027'
+    brand: KUMTEL
+    model: Çift Kapılı Dijital Buzdolabı 204L HTMF-210
 - coicop: '0531'
   keyword: çamaşır makinesi
   tracked_skus:
@@ -30,33 +99,201 @@ appliances:
   - sku: '925308177'
     brand: Bosch
     model: WGA25202TR 10 Kg 1200 Devir Beyaz Çamaşır Makinesi
-  - sku: '103558743'
+  - sku: '899145760'
+    brand: Altus
+    model: AL KM 954 M 9 kg Isı Pompalı Kurutma Makinesi Beyaz
+  - sku: '2169367'
+    brand: Finish
+    model: Bulaşık Makinesi Temizleyici Sıvı Normal 250 ml + Limon 250 ml
+  - sku: '831564899'
     brand: Hoover
-    model: HWP 49AMBCR/1-S 9 kg Wi-Fi Bağlantılı 1400 Devir Çamaşır Makinesi
-  - sku: '826518040'
+    model: HRE H9A2TE-17 9 kg Wi-Fi Bağlantılı Isı Pompalı Kurutma Makinesi
+  - sku: '95469772'
+    brand: Hoover
+    model: HWP 414AMBC/1-17 14 kg Wi-Fi Bağlantılı 1400 Devir Çamaşır Makinesi
+  - sku: '981527810'
+    brand: Altus
+    model: AL CM 91050 MC A Enerji Sınıfı 9 kg 1000 Devir Çamaşır Makinesi Beyaz
+  - sku: '965827617'
+    brand: Just Green Organic
+    model: Bitkisel Çamaşır Yumuşatıcı Lilyum Çiçeği - %100 Doğal Ve Ferahlatıcı Yumuşaklık
+      (1000 ML) 32 Yıkama
+  - sku: '1045181245'
+    brand: Grundig
+    model: GNWM 81612 A Çamaşır Makinesi
+  - sku: '776182561'
+    brand: Hoover
+    model: H3WPS2106TAB6-17 10 Kg 1200 Devir Wi-Fi  Bağlantılı Çamaşır Makinesi
+  - sku: '836947966'
     brand: Arçelik
-    model: 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi
-  - sku: '833670806'
+    model: 10120 MX 1200 Devir 10 Kg Çamaşır Makinesi
+  - sku: '979080723'
+    brand: Profilo
+    model: CGA242X3TR 1200 Devir 9 kg Çamaşır Makinesi
+  - sku: '332706630'
+    brand: Top Cleaner
+    model: Domol Çamaşır Makinesi Hijyenik Temizleyici 250 Ml
+  - sku: '1122701357'
+    brand: Pril
+    model: Prill Duo Power Experts Yoğun Bulaşık Makinesi Temizleyici 250 ml x 3 Adet
+  - sku: '903845443'
+    brand: Rani Mobilya
+    model: Rani KD113 Çamaşır Ve Kurutma Makinesi Dolabı Çekmeceli Banyo Dolabı Beyaz
+  - sku: '4921975'
+    brand: Artema
+    model: A45228 Filtreli Çamaşır Musluğu, Krom
+  - sku: '778206413'
+    brand: assell
+    model: Beyaz Eşya Altlığı Ayağı 4 Adet Çamaşır Bulaşık Makinası Yükseltici Titreşim
+      Önleyici ayaklık
+  - sku: '934293587'
+    brand: Bofigo
+    model: Çamaşır Makinesi Dolabı Kurutma Makinesi Dolabı Metal Banyo Dolabı Mısra
+      Beyaz
+  - sku: '969284549'
+    brand: ALFAGİFT
+    model: 11 Litre Katlanır Mini Çamaşır Makinesi– Taşınabilir Sessiz Bebek Çamaşırı
+      Kamp Seyahat
+  - sku: '32560192'
+    brand: DOMOL
+    model: Kettle Kahve Makinesi Kireç Çözücü Toz 2'li Paket
+  - sku: '148549579'
+    brand: Alibo
+    model: Çamaşır Makinası Üstü Düzenleyici Raf Beyaz 3 Raflı Banyo Düzenleyici
+  - sku: '948712046'
+    brand: Profilo
+    model: CGA25202TR A Enerji Sınıfı 10 kg 1200 Devir Çamaşır Makinesi
+  - sku: '961765046'
+    brand: Bosch
+    model: WGK264Z0TR 11 Kg 1400 Devir Serie 6 Beyaz Çamaşır Makinesi
+  - sku: '887309471'
+    brand: ROBO
+    model: Katlanır Çamaşır Kurutma Makinesi Mor
+  - sku: '932620065'
     brand: Beko
-    model: CMX 8100 ÇAMAŞIR MAKİNESİ
+    model: CMXT 9120 9 Kg Çamaşır Makinesi
+  - sku: '786367816'
+    brand: Samsung
+    model: WW90CGC04DAEAH 9 Kg 1400 Devir Beyaz Çamaşır Makinesi
+  - sku: '444745338'
+    brand: Buffer
+    model: 2'li Kirpi Model Tüy Toplayıcı Kırışık Önleyici Çamaşır Kurutma Topu
+  - sku: '869188156'
+    brand: Stain İt Zero
+    model: Hepsi Bir Arada Bulaşık Makinesi Tableti & Güçlü Temizlik Üstün Parlaklık-
+      30 Yıkama
+  - sku: '813661975'
+    brand: Going Zeero
+    model: Bulaşık Makinesi Deterjanı - 2'li Ekonomik Paket - 100 Yıkama Doğal Bulaşık
+      Makinesi Deterjanı
 - coicop: '0531'
   keyword: bulaşık makinesi
   tracked_skus:
   - sku: '842163502'
     brand: Bosch
     model: SMS26DW00T 6 Programlı Beyaz Bulaşık Makinesi
+  - sku: '279874075'
+    brand: Altus
+    model: Al 404 MP 4 Programlı Bulaşık Makinesi E Enerji
   - sku: '746894720'
     brand: Hoover
     model: HF 3E53E0W-17 5 Programlı Bulaşık Makinesi
   - sku: '284716808'
     brand: Altus
     model: Bulaşık Makinesi Al 413 P 3 Prog.
-  - sku: '98867931'
+  - sku: '279873816'
     brand: Altus
-    model: AL 445 NX 5 Programlı Bulaşık Makinesi
+    model: Al 403 Mp 3 Programlı Bulaşık Makinesi
+  - sku: '769273190'
+    brand: Hoover
+    model: Hf 3E9L0W-17 5 Programlı Wi-Fi Bağlantılı Bulaşık Makinesi
+  - sku: '379206684'
+    brand: Grundig
+    model: Gpdf 5701 Silver 5 Programlı Bulaşık Makinesi
+  - sku: '1061100793'
+    brand: Arçelik
+    model: A 600 B Programlı Bulaşık Makinesi
+  - sku: '843791730'
+    brand: Profilo
+    model: Bulaşık Makinesi D Enerji Sınıfı 6 Programlı 13 Kişilik
+  - sku: '96126604'
+    brand: Regal
+    model: BM 310 3 Programlı Bulaşık Makinesi
+  - sku: '1098131915'
+    brand: Arçelik
+    model: A 710 B Programlı Bulaşık Makinesi
+  - sku: '757337959'
+    brand: Dijitsu
+    model: Dsb 7000 Tezgah Üstü 7 Program Bulaşık Makinesi
+  - sku: '736898178'
+    brand: Hoover
+    model: HF 3E9L0X2-17 H-DISH 300 5 Programlı Bulaşık Makinesi İnox
+  - sku: '379197116'
+    brand: Grundig
+    model: Gpdf 5701 5 Programlı Bulaşık Makinesi Özellikleri
+  - sku: '949530249'
+    brand: Bosch
+    model: SMS4EKW63T Bulaşık Makinesi Solo Beyaz
+  - sku: '852392043'
+    brand: Bosch
+    model: SMS26DI00T D Enerji Sınıfı 6 Program 13 Kişilik Bulaşık Makinesi
+  - sku: '1085842571'
+    brand: Beko
+    model: B 600 B Classic 4 Programlı Bulaşık Makinesi
+  - sku: '1099330000'
+    brand: Arçelik
+    model: A 710 I Programlı Bulaşık Makinesi
+  - sku: '1071820188'
+    brand: Vestel
+    model: BM 42012 WIFI Bulaşık Makinesi
+  - sku: '375332674'
+    brand: Regal
+    model: Bm 424 4 Program Bulaşık Makinesi
+  - sku: '1019813041'
+    brand: Profilo
+    model: BM6320MA D Enerji Sınıfı 6 Programlı Bulaşık Makinesi
+  - sku: '1121841673'
+    brand: Beko
+    model: B 710 B 3 Programlı Wi-Fi Bulaşık Makinesi (+6 Ilave Indirilebilir Program)
+  - sku: '1093111144'
+    brand: Grundig
+    model: GDF 5104 E Bulaşık Makinesi
+  - sku: '831625123'
+    brand: Samsung
+    model: DW60DG540FSR, 4 Programlı Solo Bulaşık Makinesi Inoks
+  - sku: '979081388'
+    brand: Profilo
+    model: BMS623V1 6 Programlı Bulaşık Makinesi
+  - sku: '762728174'
+    brand: Vestel
+    model: BULAŞIK MAKİNESİ BM 4212 WİFİ
+  - sku: '873074179'
+    brand: kochler
+    model: Küçük Alan Uyumlu Pratik Bulaşık Makinesi – Tiny House ve Karavanlar İçin
+      İdeal
+  - sku: '859025329'
+    brand: Siemens
+    model: Sn216w00dt 6 Programlı 13 Kişilik Bulaşık Makinesi
+  - sku: '862107666'
+    brand: Beko
+    model: Bm 4144 Ok A Bulaşık Makinesi
+  - sku: '834033105'
+    brand: Samsung
+    model: DW60DG540FWQ, 4 Programlı Solo Bulaşık Makinesi Beyaz
 - coicop: '0531'
   keyword: fırın
   tracked_skus:
+  - sku: '892605924'
+    brand: NINJA
+    model: Combi All-in-One Multicooker, Fırın ve Az Yağlı Pişirici - Shark Ninja
+  - sku: '821623339'
+    brand: Fressi
+    model: Mini Fırın Akıllı Kore Fırını Süre Ve Derece Ayarlı Airfryer Fonksiyonlu
+      13 Litre Fritöz Af-01
+  - sku: '797610863'
+    brand: Fressi
+    model: Mini Fırın Akıllı Kore Fırını Süre Ve Derece Ayarlı Airfryer Fonksiyonlu
+      13 Litre Fritöz Af-01
   - sku: '3905947'
     brand: Simfer
     model: 3420 Beyaz 34 LT Statik Mini/Midi Fırın - 4 Fonksiyon, Programlanabilir
@@ -64,46 +301,199 @@ appliances:
   - sku: '669865413'
     brand: KUMTEL
     model: LX-9625 Turbo 70 Litre Midi Fırın - Siyah
+  - sku: '3212733'
+    brand: Simfer
+    model: 4242 Beyaz 42 LT Turbo Fan Mini/Midi Fırın - 6 Fonksiyon,Yoğurt Yapma,
+      Buz Çözme & İç Aydınlatma
+  - sku: '59103426'
+    brand: Genel Markalar
+    model: Ankastre Dolabı Ankastre Modül Dolap Fırın Ocak Dolabı
+  - sku: '1109390496'
+    brand: KUMTEL
+    model: 32 Litre Flash Beyaz Mini Fırın KF-5320
+  - sku: '119315990'
+    brand: ThePinkStuff
+    model: Mucizevi Temizlik Macunu 850 g – Çok Amaçlı, Ocak-Fırın, Lavabo & Banyo
+      Yüzeyleri Leke & Yağ Çözücü
+  - sku: '38613955'
+    brand: Simfer
+    model: 3495 Retro Bej 34 LT Statik Mini/Midi Fırın - 4 Fonksiyon, Programlanabilir
+      Pişirme & Isı Kontrol
+  - sku: '896790802'
+    brand: KUMTEL
+    model: Piliç Çevirmeli 71 Litre Midi Fırın LX-9645
+  - sku: '32350301'
+    brand: Genel Markalar
+    model: Davul Fırın Marka Küçük Boy Tek Tepsi Termostatsız
+  - sku: '790956660'
+    brand: KORKMAZ
+    model: Ankastre Fırın Ocak Dolabı Fırın Dolabı Ankastre Ocak Dolabı Ankastre Modül
   - sku: '1107444354'
     brand: Akel
-    model: AF340L 34lt Gri Mini/Midi Fırın, Aydınlatmalı, Zaman Ayarlı
+    model: AF340L 34lt Gri Mini/Midi Fırın, Aydınlatmalı, Zaman Ayarlı, Izgara & Fırın,
+      2 Tepsi 1 Tel Izgara
+  - sku: '34471421'
+    brand: DOMOL
+    model: Fırın & Izgara Temizleyici Köpük 500 ml x3 Adet
+  - sku: '827154473'
+    brand: Akel
+    model: AF950L 50 lt Gri Midi Fırın, İç aydınlatmalı, Zaman Ayarlı, Izgara ve Fırın,
+      2 Tepsi 1 Tel Izgara
+  - sku: '676273911'
+    brand: Akel
+    model: Lambalı, Termostatlı, Çift Tepsili 32 Litre Midi Fırın Af280l
+  - sku: '810086831'
+    brand: Genel Markalar
+    model: Hatay Usulü Az Acılı Katıklı Ekmek 10 Adet – Yöresel Taş Fırın Lezzeti
+      – Taze Üretim
+  - sku: '36332811'
+    brand: BioBellinda
+    model: Doğal Fırın Ve Yanmış Yağ Temizleyici 750 ml
+  - sku: '60872771'
+    brand: Arçelik
+    model: 8 Parça Fırın Bek ve Kapak Takımı Büyük Markalara Uyumlu (PROFİLO-BOSCH-SİEMENS
+      UYUMSUZ) Set
+  - sku: '841994080'
+    brand: Samsung
+    model: MS23K3614AK 23L Mikrodalga Fırın - Siyah
 - coicop: '0531'
   keyword: ocak
   tracked_skus:
   - sku: '896791791'
     brand: KUMTEL
     model: Ko-40 Tshdf Set Üstü Ocak Beyaz Cam Doğalgazlı.
+  - sku: '1123078692'
+    brand: ROBO
+    model: 2200W Dijital Dokunmatik Tekli Elektrikli Ocak - Tüm Tencere Tiplerine
+      Uyumlu Siyah Kristal
+  - sku: '79604490'
+    brand: KUMTEL
+    model: LX-7115 Ayarlanabilir Termostatlı Tekli Elektrikli Ocak - Siyah
+  - sku: '1123120049'
+    brand: ROBO
+    model: 2200W Dijital Dokunmatik Tekli Elektrikli Ocak – Tüm Tencere Tiplerine
+      Uyumlu Beyaz Kristal Cam
+  - sku: '3668021'
+    brand: KUMTEL
+    model: KO 420F Doğalgazlı Set Üstü Ocak - Beyaz
   - sku: '37935553'
     brand: Optimum
-    model: Xx-133 4 Gözlü Set Üstü Dörtlü Ocak Doğalgazlı Siyah
+    model: Xx-133 4 Gözlü Set Üstü Dörtlü Ocak Doğalgazlı Siyah ocak abone açılmaz
+  - sku: '76142120'
+    brand: Uğur
+    model: 4 Gözlü Tüplü Ocak Set Üstü Beyaz Ocak
   - sku: '1060349700'
     brand: Sinbo
     model: SCO-5065 Tekli Elektrikli Ocak – 5 Kademeli Isı Ayarı
   - sku: '330057422'
     brand: Ailipu
     model: 2400 W Lazer Indiksiyonlu Ocak
-  - sku: '76142120'
+  - sku: '2337449'
+    brand: Genel Markalar
+    model: 4 Gözlü Tüplü Set Üstü Ocak Beyaz Lpg
+  - sku: '3079450'
+    brand: Eminçelik
+    model: EC-AH 2250 BW X70 DNG INOX 70 CM ANKASTRE GÖMMELİ OCAK
+  - sku: '34702874'
     brand: Uğur
-    model: 4 Gözlü Tüplü Ocak Set Üstü Beyaz Ocak
+    model: 4 Gözlü 4lü Set Üstü Siyah Ocak Tüplü
+  - sku: '134311570'
+    brand: Beko
+    model: Ankastre Cam Ocak Izgarası Set Üstü Izgara Takımı Ocak Izgarası Emaye Izgara
+      Yuvarlak Izgara
+  - sku: '946561685'
+    brand: Hoover
+    model: HH64CC/TK Siyah Vitro Seramik Ankastre Ocak
+  - sku: '79780807'
+    brand: Ferre
+    model: 2240 Ce Beyaz Cam Emaye Izgara Setüstü Ocak ( Tezgah Üstü )
+  - sku: '705918723'
+    brand: Altus
+    model: Ala 181 Gıd Ankastre Ocak Inox Gaz Emniyetli Doğalgazlı
+  - sku: '897116770'
+    brand: abnturk
+    model: 1 Adet Ocak Arkası Yağ Koruyucu Katlanır Plaka halinde Alüminyum Levha
+      85x33m Büyük Boy
 - coicop: '0532'
   keyword: çaydanlık
   tracked_skus:
+  - sku: '121817797'
+    brand: Karaca
+    model: Belinay Indüksiyon Tabanlı Midi Metal Çaydanlık Takımı
+  - sku: '76013760'
+    brand: Nehir
+    model: Modern Maxi Büyük Boy Paslanmaz Çelik 1.6-2.5 Lt. Çaydanlık Takımı
   - sku: '1021398708'
     brand: YUNUSOĞLU HOME
     model: Aletta Büyük Boy Paslanmaz Çelik Çaydanlık Metal Kulp Aile Boy Kullanım
       1.6 Litre+2.5 Litre
-  - sku: '121817797'
-    brand: Karaca
-    model: Belinay Indüksiyon Tabanlı Midi Metal Çaydanlık Takımı
   - sku: '1076090785'
     brand: Taç
     model: Panda Orta Boy 4 Parça Paslanmaz Çelik Çaydanlık Takımı 1.25-2.00lt
+  - sku: '713103'
+    brand: KORKMAZ
+    model: Provita Maxi Çaydanlık Takımı 2 lt A105
+  - sku: '892292521'
+    brand: YUNUSOĞLU HOME
+    model: Siyah Granit Kaplama Cam Kapaklı Gold Kulplu Çaydanlık
+  - sku: '349141065'
+    brand: YUNUSOĞLU HOME
+    model: Antonio Mini Boy Siyah Çaydanlık Takımı
+  - sku: '84599076'
+    brand: Nehir
+    model: Modern Midi Orta Boy 1-2 Lt. Paslanmaz Çelik Çaydanlık Takımı
+  - sku: '164025932'
+    brand: KORKMAZ
+    model: A029 Perla Mega Çaydanlık Takımı
+  - sku: '41256047'
+    brand: Nehir
+    model: Modern Mini Küçük Boy 0.8-1.6 Lt. Paslanmaz Çelik Çaydanlık Takımı
   - sku: '778826086'
     brand: Kahramanlar
     model: Delux Mega Boy Platin 4 Parça Çaydanlık Takımı
-  - sku: '76013760'
-    brand: Nehir
-    model: Modern Maxi Büyük Boy Paslanmaz Çelik 1.6-2.5 Lt. Çaydanlık Takımı
+  - sku: '3749327'
+    brand: KORKMAZ
+    model: Riva Bej Çaydanlık Takımı 1.9 lt A189-02
+  - sku: '809658315'
+    brand: EMAYlab
+    model: Cupid Kalp Desenli Emaye Çaydanlık Takımı (Özel Zamak Tepeli)
+  - sku: '312921'
+    brand: Bambum
+    model: Taşev T2764 Linden - Sümbül 750 ml Siyah Döküm (DEMLİK) Çaydanlık
+  - sku: '1109354464'
+    brand: ALLEGRI
+    model: Fiore Serisi Emaye Çaydanlık Şık Çizgi Desen Detaylar Geniş Hacim 2.1 +
+      1.3 Litre Gold Kulp
+  - sku: '130018864'
+    brand: Karaca
+    model: Adelya İndüksiyon Tabanlı Mini Boy Metal Çaydanlık Takımı
+  - sku: '1093156600'
+    brand: Kahramanlar
+    model: Delux Mega Boy Black 4 Parça Çelik Çaydanlık Takımı
+  - sku: '786633241'
+    brand: Aryıldız
+    model: Solid Büyük Boy Çaydanlık Takımı 2 Litre
+  - sku: '674392141'
+    brand: Karaca
+    model: Lori Borosilikat Cam Mini Çaydanlık
+  - sku: '37344490'
+    brand: Genel Markalar
+    model: Küre Paslanmaz Çelik Kendinden Süzgeçli Çaydanlık Takımı Orta Boy
+  - sku: '900138262'
+    brand: Taç
+    model: Hera Black Çaydanlık Takımı Bakalit Saplı
+  - sku: '1076091072'
+    brand: Taç
+    model: Panda Maxi Boy 4 Parça Paslanmaz Çelik Çaydanlık Takımı 1.75-2.75lt
+  - sku: '3338303'
+    brand: Jumbo
+    model: Metalix Full Metal Çaydanlık
+  - sku: '778297719'
+    brand: OLİKA
+    model: 'Lina 4 Parça Çelik Çaydanlık Seti Üst demlik: 1.20L Alt demlik: 2.25L.'
+  - sku: '765029152'
+    brand: Lines
+    model: Piramit Soft Kulp Paslanmaz Çaydanlık Mini Boy
 - coicop: '0532'
   keyword: kahve makinesi
   tracked_skus:
@@ -114,15 +504,103 @@ appliances:
   - sku: '5741453'
     brand: Sinbo
     model: SCM-2951 Elektrikli Kahve Makinesi Cezve
+  - sku: '1076045102'
+    brand: Aymer prime
+    model: Philips Lattego Ep5547 Ep3246 Ep2231 Ep 2220 Tüm EP Serisi Kahve Makinelerine
+      Uygun 20g Gres Yağı
+  - sku: '770205416'
+    brand: Karaca
+    model: Hatır Hüp Düet 10 Fincan Kapasiteli Bol Köpüklü Aromalı, Közde ve Türk
+      Kahve Makinesi Uzay Gr
+  - sku: '835117028'
+    brand: KUMTEL
+    model: LatteNow Tam Otomatik Espresso Makinesi - Kahve Öğütücülü Dokunmatik Renkli
+      Ekranlı
+  - sku: '469611709'
+    brand: Karaca
+    model: Hatır Közde Türk Kahvesi ve Türk Kahve Makinesi Kırmızı 5 Fincan Kapasiteli
+      Bol Köpüklü
+  - sku: '782563217'
+    brand: Philips
+    model: 5000 Serisi Türk Kahvesi Makinesi, Közde Türk Kahvesi Pişirme Fonksiyonu,
+      HDA150/60
   - sku: '1126995838'
     brand: Altus
     model: AL 4955 ES Espresso Makinesi
+  - sku: '903711192'
+    brand: Avesta
+    model: PREMİUM ELEKTRİKLİ KÖZDE VE NORMAL KAHVE MAKİNESİ LÜX
+  - sku: '1066177921'
+    brand: Sinbo
+    model: Cappuccino Latte Espresso 20 Bar 1.5L Profesyonel Otomatik Espresso Makinesi
+      SCM-2996Pro
+  - sku: '900296456'
+    brand: Omnex
+    model: Ox-Pro Espresso Kapsül Kahve Makinesi – 20 Bar Basınç, Gri
+  - sku: '415310'
+    brand: Arzum
+    model: OK004 Okka Minio Türk Kahvesi Makinesi Taşma Önleyici Sistem, 4 Fincan
+      Kapasiteli, Krom
+  - sku: '892048878'
+    brand: Shark
+    model: Stainstriker Taşınabilir Halı ve Koltuk Temizleme Makinesi
+  - sku: '777119876'
+    brand: Kiwi
+    model: Kcm-7570 Siyah Otomatik Türk Kahve Makinesi Bol Köpüklü
+  - sku: '825162534'
+    brand: Philips
+    model: 5500 Serisi LatteGo Tam Otomatik Espresso Makinesi, 20 Sıcak ve Soğuk İçecek,
+      EP5543/80
   - sku: '835660881'
     brand: KUMTEL
     model: Dijital Filtre Kahve Makinesi HCFM-02
-  - sku: '415310'
+  - sku: '58773016'
+    brand: Sinbo
+    model: Scm-2954 Elektrikli Türk Kahvesi Makinesi Cezve
+  - sku: '947648678'
     brand: Arzum
-    model: OK004 Okka Minio Türk Kahvesi Makinesi Taşma Önleyici Sistem
+    model: FL397 Felix Jet Türk Kahvesi Makinesi, 5 Fincan Kapasiteli, Taşma Önleyici
+      Sistem, Bol Köpüklü Kahve
+  - sku: '1041108440'
+    brand: KUMTEL
+    model: Elektrikli Kahve Demleme Su Isıtıcı Gooseneck Dripper Kettle HCK-02
+  - sku: '683475602'
+    brand: Altus
+    model: Al 4763 G Kahve Makinesi
+  - sku: '146157'
+    brand: Arzum
+    model: OK004 Okka Minio Türk Kahvesi Makinesi Taşma Önleyici Sistem, 4 Fincan
+      Kapasiteli, Bakır
+  - sku: '46746912'
+    brand: Kiwi
+    model: Kcm 7512 Çelik Cezve Türk Kahve Makinesi Inox
+  - sku: '1055950817'
+    brand: Fressi
+    model: Türk Kahve Makinesi Sesli Uyarı Sistemi
+  - sku: '822489334'
+    brand: Philips
+    model: EP5547/90 Tam Otomatik Espresso ve Kahve Makinesi
+  - sku: '903852133'
+    brand: SILVERMAX
+    model: Alman Teknolojisi 350w Profesyonel Baharat Kahve Kaya Tuzu Hurma Çekirdeği
+      Iğde Çekirdeği Öğütücü
+  - sku: '1080770232'
+    brand: CVS
+    model: KAVVEM Türk Kahvesi Makinesi
+  - sku: '123924027'
+    brand: Grundig
+    model: TCM 7061 Bio Türk Kahvesi Makinesi
+  - sku: '384120970'
+    brand: Fakir
+    model: Kaave Plus Türk Kahvesi Makinesi Silver – Közde Pişirme 4 Fincan Sesli
+      Işıklı Kahve Makinesi
+  - sku: '5771274'
+    brand: GOLDMASTER
+    model: Altıntelve Yıkanabilir Ve Temizlenebilir Filtreli Çift Kupalı Filtre Kahve
+      Makinesi
+  - sku: '673000605'
+    brand: Arçelik
+    model: TKM 3341 Telve X Türk Kahvesi Makinesi
 - coicop: '0532'
   keyword: elektrikli süpürge
   tracked_skus:
@@ -133,82 +611,186 @@ appliances:
     brand: Philips
     model: PowerPro City Toz Torbasız Elektrikli Süpürge, 650W, PowerCyclone 5, H13
       Filtre, FC9331/07
-  - sku: '32662332'
-    brand: Samsung
-    model: Toz Torbasız Elektrikli Süpürge VC07R302MVP/TR
   - sku: '892244537'
     brand: Karaca
     model: Vantuz Action Force X10 2 Lt Toz Torbasız Hazneli Elektrikli Süpürge Black
       899 W
+  - sku: '455844265'
+    brand: Altus
+    model: Al 615 Toz Torbasız Süpürge
+  - sku: '773813127'
+    brand: Simfer
+    model: SK-6302 Yatay Süpürge Rose
+  - sku: '31132276'
+    brand: Arzum
+    model: AR4075 Pronto Lux 2‘si 1 Arada Dikey Elektrikli Süpürge 800W, 1,5 L Toz
+      Haznesi, Mürdüm
   - sku: '689273895'
     brand: Kiwi
     model: Dikey Elektrikli Süpürge Gri Kvc-4108
-- coicop: '0532'
-  keyword: blender
-  tracked_skus:
-  - sku: '1056953743'
-    brand: Kiwi
-    model: KHB-4416 Paslanmaz Çelik Bıçaklı El Blenderi | 350 Watt & Sessiz Motor
-      & 2 Hız Ayarı
-  - sku: '2543106'
+  - sku: '985825714'
+    brand: Karcher
+    model: VCC 4 CycloneX Toz torbasız Süpürge
+  - sku: '787007985'
+    brand: ONVO
+    model: Ovdss01 Şarjlı Dikey Süpürge
+  - sku: '740919826'
+    brand: Philips
+    model: 7000 Serisi Marathon Daily Torbasız Elektrikli Süpürge, 750W, PowerCyclone
+      8, XB7150/07
+  - sku: '32662332'
+    brand: Samsung
+    model: Toz Torbasız Elektrikli Süpürge VC07R302MVP/TR
+  - sku: '310921579'
+    brand: Philips
+    model: 7000 Serisi Torbasız Elektrikli Süpürge, 750 W, PowerCyclone 8 Teknolojisi,
+      FC9749/07
+  - sku: '754897096'
+    brand: TEFAL
+    model: TW3719 Compact Power Cyclonic 750 Watt Toz Torbasız Elektrikli Süpürge
+      - 4300007989
+  - sku: '1121133668'
+    brand: ROBO
+    model: Hiking Serisi HD15 Şarjlı Dikey süpürge Gri
+  - sku: '777946685'
+    brand: Fantom
+    model: Pratic Aır Power P 1250 Antrasit Torbasız Dönebilen Turbo Başlıklı Dikey
+      Süpürge
+  - sku: '753504709'
+    brand: Arzum
+    model: AR4087 Gırgır 2’si1 Arada 550W Dikey Elektrikli Süpürge, El Süpürgesi Özellikli,
+      Yıkanabilir Filtre
+  - sku: '823617926'
+    brand: Karcher
+    model: WD 6 P S V-30/6/22/T + DDC (YSY) Islak Kuru Süpürge
+  - sku: '260033'
+    brand: Fantom
+    model: Pratıc-S P1200 Toz Torbasız Dikey Süpürge Kırmızı
+  - sku: '852722526'
     brand: Sinbo
-    model: Shb-3147 3 Fonksiyonlu El Blender Seti - Beyaz / 350Watt
-  - sku: '764533886'
-    brand: BOLD
-    model: Siyah Çubuk Blender
-  - sku: '761686119'
-    brand: Philips
-    model: Hr2041/00 Sürahi Blender
-- coicop: '0552'
-  keyword: LED ampul
+    model: SVC-8613 Elektrikli Süpürge – Yüksek Emiş Gücü, Kompakt ve Hafif Tasarım
+  - sku: '1064502591'
+    brand: PiranTech
+    model: ES-511 Katlanabilir Şarjlı Süpürge – HEPA Filtreli
+  - sku: '857805733'
+    brand: Kiwi
+    model: Kvc-4040 Kablosuz Dikey Süpürge Gri
+  - sku: '890035564'
+    brand: herevdeinova
+    model: İnova Starman 800w Dikey Süpürge 18kpa Emiş Gücü 1lt Hazne 3 Kat Filtre
+      Evcil Tüy Için
+  - sku: '367708'
+    brand: Arnica
+    model: Pika Et14410 Toz Torbasız Elektrikli Süpürge Mor
+  - sku: '68973019'
+    brand: Electrolux
+    model: EUFC81DB UltraFlex Turbo Cyclonic™ 650W Toz Torbasız Elektrikli Süpürge
+  - sku: '726075184'
+    brand: Altus
+    model: Al 606 Sg Toz Torbasız Süpürge
+  - sku: '874837418'
+    brand: Yui
+    model: Vc90 Torbasız Kablolu Dikey Süpürge Ve El Süpürgesi
+  - sku: '952228549'
+    brand: ROBO
+    model: HIKİNG Serisi Şarjlı Dikey Süpürge Beyaz
+  - sku: '69041508'
+    brand: Samsung
+    model: Vc07t357mhb Vc3500tm Cycloneforce Mavi 750 W Toz Torbasız Süpürge
+  - sku: '6897438'
+    brand: Fakir
+    model: Darky Comfort Dikey Kablolu Süpürge – 800W 2’si 1 Arada Pratik Temizlik
+  - sku: '1053733739'
+    brand: MOVA
+    model: V50 Ultra Complete Robot Süpürge, 24.000 PA Emiş Gücü, 3 Yıl Garanti
+- coicop: '0531'
+  keyword: kurutma makinesi
   tracked_skus:
-  - sku: '838177858'
-    brand: Philips
-    model: LED Ampul 8-60W 2700K Sarı Işık 720 Lümen Tasarruflu Uzun Ömürlü ve Göz
-      Yormayan Aydınlatma
-  - sku: '939030555'
-    brand: Philips
-    model: LED 13-100W E27 6500K - Beyaz Işık - 1521 Lumen Yüksek Işık - E27 Duy
-  - sku: '925939668'
-    brand: Heka
-    model: E27 220V 6W 4000K FİLAMENT LED AMPUL ERD-283
-  - sku: '780659250'
-    brand: HOMİNG
-    model: Led Ampul E27 9w 850lm Ayd-3706
-  - sku: '1116531242'
-    brand: PANASONIC
-    model: E27 LED Ampul 4,9W 515 Lümen 4000K Doğal Gün Işığı Tasarruflu
-- coicop: '0552'
-  keyword: kalem pil
-  tracked_skus:
-  - sku: '311921074'
-    brand: Varta
-    model: Super Heavy Duty Toplam 24 Adet Özel Pil Paketi(12AA 12AAA)12 Adet Ince
-      12 Adet Kalın Pildir
-  - sku: '80169777'
-    brand: Genel Markalar
-    model: Superlife Çinko AA Kalem Pil (60'lı Paket)
-  - sku: '37866530'
-    brand: Duracell
-    model: AA Alkalin Kalem Pil (10'lu paket) 1,5 V LR6/MN1500
-  - sku: '731663267'
-    brand: Philips
-    model: AA Alkalin Kalem Pil 12'li Kartela
-- coicop: '0552'
-  keyword: şarjlı pil
-  tracked_skus:
-  - sku: '28103059'
-    brand: Genel Markalar
-    model: Accu Power Şarj Edilebilir Ni-Mh AA Kalem Pil 2.100 mAh 2 Adet
-  - sku: '41995693'
-    brand: Varta
-    model: Power Şarj Edilebilir Kalem Pil 2100Mah AA 4'Lü Paket
-  - sku: '464903113'
-    brand: Varta
-    model: Plug Pil Şarj Cihazı 4 Adet AA 2100Mah Şarj Edilebilir Pil Hediyeli
-  - sku: '895427627'
-    brand: Duracell
-    model: Şarj Edilebilir Kalem Pil 4'lü 2500 mAh
-  - sku: '967191310'
-    brand: instatech
-    model: USB ile Şarj Edilebilen Kalem Pil Seti – 4 Adet + Kablo 2600mah
+  - sku: '899145760'
+    brand: Altus
+    model: AL KM 954 M 9 kg Isı Pompalı Kurutma Makinesi Beyaz
+  - sku: '831564899'
+    brand: Hoover
+    model: HRE H9A2TE-17 9 kg Wi-Fi Bağlantılı Isı Pompalı Kurutma Makinesi
+  - sku: '906552606'
+    brand: Altus
+    model: AL KM 1160 11 kg Isı Pompalı Kurutma Makinesi
+  - sku: '991343331'
+    brand: Grundig
+    model: GDH 9655 Kurutma Makinesi
+  - sku: '151149212'
+    brand: Hoover
+    model: HLEH10A2TCEX-17 10 kg Wi-Fi  Bağlantılı Isı Pompalı Kurutma Makinesi
+  - sku: '887309471'
+    brand: ROBO
+    model: Katlanır Çamaşır Kurutma Makinesi Mor
+  - sku: '901425739'
+    brand: Altus
+    model: AL KM 1054 E 10 Kg Isı Pompalı Kurutma Makinesi
+  - sku: '898674722'
+    brand: Bosch
+    model: WQA24201TR 9 Kg  Uyumlu Beyaz Kurutma Makinesi
+  - sku: '963106573'
+    brand: Grundig
+    model: GDH 9664 9 KG Kurutma Makinesi
+  - sku: '150690528'
+    brand: Hoover
+    model: HLE H9A2TE-17 Beyaz Kurutma Makinesi
+  - sku: '904416773'
+    brand: Arçelik
+    model: 901 KMX 9 kg Çamaşır Kurutma Makinesi
+  - sku: '926907174'
+    brand: Beko
+    model: KMX 91 9 KG KURUTMA MAKİNESİ
+  - sku: '1000055037'
+    brand: Bosch
+    model: WQG25201TR Serie 4 10 Kg Beyaz Kurutma Makinesi
+  - sku: '741747749'
+    brand: LG
+    model: RH80T2SP7RM 8 kg Çamaşır Kurutma Makinesi
+  - sku: '1093115127'
+    brand: Beko
+    model: KMX82 8KG KURUTMA MAKİNESİ
+  - sku: '887227427'
+    brand: ROBO
+    model: Katlanır Çamaşır Kurutma Makinesi Pembe
+  - sku: '920759060'
+    brand: Siemens
+    model: WQ42A201TR iQ300 Isı Pompalı Kurutma Makinesi 9 kg Beyaz
+  - sku: '1114233974'
+    brand: Beko
+    model: KMX 1002 10 kg Çamaşır Kurutma Makinesi
+  - sku: '1076983524'
+    brand: Bosch
+    model: WQJ24200TR Serie 6 Isı Pompalı Kurutma Makinesi 9 kg
+  - sku: '1118086002'
+    brand: Weisre
+    model: Taşınabilir Kıyafet Kurutma Makinesi UV Sterilizasyonlu Katlanabilir Ayakkabı
+      & Çamaşır Kurutucu
+  - sku: '705013114'
+    brand: LG
+    model: RH80T2AP6RM 8 kg Çamaşır Kurutma Makinesi
+  - sku: '897425310'
+    brand: Profilo
+    model: KM8612HTR A++ ISI POMPALI KURUTMA MAKİNESİ
+  - sku: '904383180'
+    brand: Arçelik
+    model: 1001 KMX 10 kg Çamaşır Kurutma Makinesi
+  - sku: '917839389'
+    brand: Regal
+    model: KM 91132 G 9 kg Kurutma Makinesi
+  - sku: '1078730534'
+    brand: Arçelik
+    model: 802 KMX 8 Kg Kurutma Makinesi
+  - sku: '887128360'
+    brand: ROBO
+    model: Katlanır Çamaşır Kurutma Makinesi Mor
+  - sku: '896476062'
+    brand: LG
+    model: W4W8BVKKWHM WashTower 1400 Devir 12 / 10 Kurutmalı Çamaşır Makinesi
+  - sku: '872412626'
+    brand: Regal
+    model: KM 80221 8 kg Kurutma Makinesi
+  - sku: '130138778'
+    brand: Regal
+    model: Km 9212 Isı Pompalı 9 Kg Kurutma Makinesi

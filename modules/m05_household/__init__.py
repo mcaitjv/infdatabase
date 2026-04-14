@@ -235,8 +235,8 @@ class HouseholdModule(BaseModule):
     async def discover_furniture(self) -> None:
         """
         furniture.yaml'daki her keyword için kaynak bazında discovery yapar:
-          - source=ikea   → IkeaScraper.discover_keyword()  (top_n=3)
-          - source=trendyol → TrendyolScraper.discover_keyword() (top_n=5)
+          - source=ikea   → IkeaScraper.discover_keyword()  (top_n=15)
+          - source=trendyol → TrendyolScraper.discover_keyword() (top_n=30)
         Sonuçları furniture.yaml'a yazar.
 
         Kullanım: python -m pipeline.runner --discover-furniture
@@ -252,7 +252,7 @@ class HouseholdModule(BaseModule):
                 for entry in ikea_entries:
                     keyword = entry["keyword"]
                     coicop  = entry["coicop"]
-                    skus = await scraper.discover_keyword(keyword, coicop, top_n=3)
+                    skus = await scraper.discover_keyword(keyword, coicop, top_n=15)
                     entry["tracked_skus"] = skus
                     for s in skus:
                         logger.info(
@@ -267,7 +267,7 @@ class HouseholdModule(BaseModule):
                 for entry in trendyol_entries:
                     keyword = entry["keyword"]
                     coicop  = entry["coicop"]
-                    skus = await scraper.discover_keyword(keyword, coicop, top_n=5)
+                    skus = await scraper.discover_keyword(keyword, coicop, top_n=30)
                     entry["tracked_skus"] = skus
                     for s in skus:
                         logger.info(
@@ -488,7 +488,7 @@ class HouseholdModule(BaseModule):
                 if not dry_run and run.status in ("success", "partial"):
                     try:
                         changed = await _heal_missing_skus(
-                            entry, valid, trendyol, default_top_n=5
+                            entry, valid, trendyol, default_top_n=30
                         )
                         if changed:
                             appliances_changed = True
@@ -604,7 +604,7 @@ class HouseholdModule(BaseModule):
                     if not dry_run and run.status in ("success", "partial"):
                         try:
                             changed = await _heal_missing_skus(
-                                entry, valid, ikea, default_top_n=3
+                                entry, valid, ikea, default_top_n=15
                             )
                             if changed:
                                 furniture_changed = True
@@ -701,7 +701,7 @@ class HouseholdModule(BaseModule):
                     if not dry_run and run.status in ("success", "partial"):
                         try:
                             changed = await _heal_missing_skus(
-                                entry, valid_f, trendyol_f, default_top_n=5
+                                entry, valid_f, trendyol_f, default_top_n=30
                             )
                             if changed:
                                 furniture_changed = True

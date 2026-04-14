@@ -1,0 +1,276 @@
+{
+  "date": "2026-04-10",
+  "overall_status": "error",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "error",
+      "records_today": 4719,
+      "records_yesterday": 4254,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 20,
+      "anomalies": [
+        {
+          "identifier": "carrefour / Coffee Mate Kahve Beyazlatıcısı 500 Gr",
+          "yesterday": 204.4499969482422,
+          "today": 317.75,
+          "change_pct": 55.4
+        },
+        {
+          "identifier": "carrefour / Uni Baby Şampuan 700 Ml",
+          "yesterday": 107.98999786376953,
+          "today": 165.9499969482422,
+          "change_pct": 53.7
+        },
+        {
+          "identifier": "carrefour / Hasata Mardin Kırmızı Mercimek 1 Kg",
+          "yesterday": 114.9000015258789,
+          "today": 168.5,
+          "change_pct": 46.6
+        },
+        {
+          "identifier": "carrefour / Banvit Kokteyl Piliç Sosis 500 Gr",
+          "yesterday": 130.25,
+          "today": 69.9000015258789,
+          "change_pct": -46.3
+        },
+        {
+          "identifier": "carrefour / Milka Rüyası Çikolata 100 Gr",
+          "yesterday": 161.5,
+          "today": 89.9000015258789,
+          "change_pct": -44.3
+        },
+        {
+          "identifier": "carrefour / Milka Beyaz Çikolata 80 Gr",
+          "yesterday": 161.5,
+          "today": 89.9000015258789,
+          "change_pct": -44.3
+        },
+        {
+          "identifier": "migros / Danone Disney Kakaolu Süt 6x180 Ml",
+          "yesterday": 104.9000015258789,
+          "today": 149.89999389648438,
+          "change_pct": 42.9
+        },
+        {
+          "identifier": "carrefour / Disney Muz Aromalı Süt 1.08 Lt",
+          "yesterday": 104.9000015258789,
+          "today": 149.89999389648438,
+          "change_pct": 42.9
+        },
+        {
+          "identifier": "carrefour / Uni Baby Aile Islak Mendil 156 Adet",
+          "yesterday": 70.62999725341797,
+          "today": 100.9000015258789,
+          "change_pct": 42.9
+        },
+        {
+          "identifier": "migros / Disney Çilek Aromalı Süt 180 Ml",
+          "yesterday": 19.5,
+          "today": 27.75,
+          "change_pct": 42.3
+        },
+        {
+          "identifier": "carrefour / Makaroma Caserecce Makarna 500 Gr",
+          "yesterday": 68.75,
+          "today": 40.95000076293945,
+          "change_pct": -40.4
+        },
+        {
+          "identifier": "carrefour / Papia Tuvalet Kağıdı 24 Adet",
+          "yesterday": 455.0,
+          "today": 273.0,
+          "change_pct": -40.0
+        },
+        {
+          "identifier": "carrefour / Papia Tuvalet Kağıdı 4 Katlı 32 Adet",
+          "yesterday": 605.9000244140625,
+          "today": 363.5400085449219,
+          "change_pct": -40.0
+        },
+        {
+          "identifier": "carrefour / Lipton Sade Yeşil Çay 30 Gr",
+          "yesterday": 90.9000015258789,
+          "today": 59.95000076293945,
+          "change_pct": -34.0
+        },
+        {
+          "identifier": "migros / Komili Riviera Yemeklik Zeytinyağı 2 Lt",
+          "yesterday": 749.9500122070312,
+          "today": 494.75,
+          "change_pct": -34.0
+        },
+        {
+          "identifier": "carrefour / Uni Baby Aktif Islak Mendil 72 Adet",
+          "yesterday": 49.95000076293945,
+          "today": 66.9000015258789,
+          "change_pct": 33.9
+        },
+        {
+          "identifier": "carrefour / Tamek Fasulye Pilaki 400 Gr",
+          "yesterday": 57.68000030517578,
+          "today": 76.9000015258789,
+          "change_pct": 33.3
+        },
+        {
+          "identifier": "carrefour / İçim Ayran 1 Lt",
+          "yesterday": 39.95000076293945,
+          "today": 52.5,
+          "change_pct": 31.4
+        },
+        {
+          "identifier": "carrefour / Mutlu Penne Makarna 500 Gr",
+          "yesterday": 28.950000762939453,
+          "today": 19.950000762939453,
+          "change_pct": -31.1
+        },
+        {
+          "identifier": "carrefour / Mutlu Spaghetti Makarna 500 Gr",
+          "yesterday": 28.950000762939453,
+          "today": 19.950000762939453,
+          "change_pct": -31.1
+        }
+      ],
+      "warnings": [
+        "Fiyat değişimi: carrefour / Hasata Mardin Kırmızı Mercimek 1 Kg +46.6%",
+        "Fiyat değişimi: carrefour / Banvit Kokteyl Piliç Sosis 500 Gr -46.3%",
+        "Fiyat değişimi: carrefour / Milka Rüyası Çikolata 100 Gr -44.3%",
+        "Fiyat değişimi: carrefour / Milka Beyaz Çikolata 80 Gr -44.3%",
+        "Fiyat değişimi: migros / Danone Disney Kakaolu Süt 6x180 Ml +42.9%",
+        "Fiyat değişimi: carrefour / Disney Muz Aromalı Süt 1.08 Lt +42.9%",
+        "Fiyat değişimi: carrefour / Uni Baby Aile Islak Mendil 156 Adet +42.9%",
+        "Fiyat değişimi: migros / Disney Çilek Aromalı Süt 180 Ml +42.3%",
+        "Fiyat değişimi: carrefour / Makaroma Caserecce Makarna 500 Gr -40.4%",
+        "Fiyat değişimi: carrefour / Papia Tuvalet Kağıdı 24 Adet -40.0%",
+        "Fiyat değişimi: carrefour / Papia Tuvalet Kağıdı 4 Katlı 32 Adet -40.0%",
+        "Fiyat değişimi: carrefour / Lipton Sade Yeşil Çay 30 Gr -34.0%",
+        "Fiyat değişimi: migros / Komili Riviera Yemeklik Zeytinyağı 2 Lt -34.0%",
+        "Fiyat değişimi: carrefour / Uni Baby Aktif Islak Mendil 72 Adet +33.9%",
+        "Fiyat değişimi: carrefour / Tamek Fasulye Pilaki 400 Gr +33.3%",
+        "Fiyat değişimi: carrefour / İçim Ayran 1 Lt +31.4%",
+        "Fiyat değişimi: carrefour / Mutlu Penne Makarna 500 Gr -31.1%",
+        "Fiyat değişimi: carrefour / Mutlu Spaghetti Makarna 500 Gr -31.1%"
+      ],
+      "errors": [
+        "Kritik fiyat değişimi: carrefour / Coffee Mate Kahve Beyazlatıcısı 500 Gr +55.4%",
+        "Kritik fiyat değişimi: carrefour / Uni Baby Şampuan 700 Ml +53.7%"
+      ]
+    },
+    {
+      "module_code": "05p2",
+      "module_name": "Beyaz Eşya & Küçük Aletler (M05 Aşama 2)",
+      "status": "warning",
+      "records_today": 46,
+      "records_yesterday": 0,
+      "expected": 55,
+      "missing_count": 9,
+      "missing": [
+        "[ocak] Sinbo SCO-5065 Tekli Elektrikli Ocak – 5 Kadem (SKU 1060349700)",
+        "[LED ampul] PANASONIC E27 LED Ampul 4,9W 515 Lümen 4000K Doğal (SKU 1116531242)",
+        "[ocak] Ailipu 2400 W Lazer Indiksiyonlu Ocak (SKU 330057422)",
+        "[ocak] Optimum Xx-133 4 Gözlü Set Üstü Dörtlü Ocak Doğa (SKU 37935553)",
+        "[ocak] Uğur 4 Gözlü Tüplü Ocak Set Üstü Beyaz Ocak (SKU 76142120)",
+        "[çamaşır makinesi] Arçelik 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi (SKU 826518040)",
+        "[çamaşır makinesi] Beko CMX 8100 ÇAMAŞIR MAKİNESİ (SKU 833670806)",
+        "[ocak] KUMTEL Ko-40 Tshdf Set Üstü Ocak Beyaz Cam Doğa (SKU 896791791)",
+        "[LED ampul] Heka E27 220V 6W 4000K FİLAMENT LED AMPUL ERD (SKU 925939668)"
+      ],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [
+        "Eksik SKU: [ocak] Sinbo SCO-5065 Tekli Elektrikli Ocak – 5 Kadem (SKU 1060349700)",
+        "Eksik SKU: [LED ampul] PANASONIC E27 LED Ampul 4,9W 515 Lümen 4000K Doğal (SKU 1116531242)",
+        "Eksik SKU: [ocak] Ailipu 2400 W Lazer Indiksiyonlu Ocak (SKU 330057422)",
+        "Eksik SKU: [ocak] Optimum Xx-133 4 Gözlü Set Üstü Dörtlü Ocak Doğa (SKU 37935553)",
+        "Eksik SKU: [ocak] Uğur 4 Gözlü Tüplü Ocak Set Üstü Beyaz Ocak (SKU 76142120)",
+        "Eksik SKU: [çamaşır makinesi] Arçelik 8100 MX 1000 Devir 8 Kg Çamaşır Makinesi (SKU 826518040)",
+        "Eksik SKU: [çamaşır makinesi] Beko CMX 8100 ÇAMAŞIR MAKİNESİ (SKU 833670806)",
+        "Eksik SKU: [ocak] KUMTEL Ko-40 Tshdf Set Üstü Ocak Beyaz Cam Doğa (SKU 896791791)",
+        "Eksik SKU: [LED ampul] Heka E27 220V 6W 4000K FİLAMENT LED AMPUL ERD (SKU 925939668)"
+      ],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "warning",
+      "records_today": 27,
+      "records_yesterday": 27,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 9,
+      "anomalies": [
+        {
+          "identifier": "petrolofisi / istanbul / diesel",
+          "yesterday": 85.14,
+          "today": 72.28,
+          "change_pct": -15.1
+        },
+        {
+          "identifier": "petrolofisi / ankara / diesel",
+          "yesterday": 86.42,
+          "today": 73.56,
+          "change_pct": -14.9
+        },
+        {
+          "identifier": "petrolofisi / izmir / diesel",
+          "yesterday": 86.7,
+          "today": 73.84,
+          "change_pct": -14.8
+        },
+        {
+          "identifier": "opet / istanbul / diesel",
+          "yesterday": 85.14,
+          "today": 72.31,
+          "change_pct": -15.1
+        },
+        {
+          "identifier": "opet / ankara / diesel",
+          "yesterday": 86.38,
+          "today": 73.55,
+          "change_pct": -14.9
+        },
+        {
+          "identifier": "opet / izmir / diesel",
+          "yesterday": 86.66,
+          "today": 73.83,
+          "change_pct": -14.8
+        },
+        {
+          "identifier": "shell / istanbul / diesel",
+          "yesterday": 85.14,
+          "today": 72.26,
+          "change_pct": -15.1
+        },
+        {
+          "identifier": "shell / ankara / diesel",
+          "yesterday": 86.42,
+          "today": 73.54,
+          "change_pct": -14.9
+        },
+        {
+          "identifier": "shell / izmir / diesel",
+          "yesterday": 86.7,
+          "today": 73.82,
+          "change_pct": -14.9
+        }
+      ],
+      "warnings": [
+        "Yakıt fiyat değişimi: petrolofisi / istanbul / diesel -15.1%",
+        "Yakıt fiyat değişimi: petrolofisi / ankara / diesel -14.9%",
+        "Yakıt fiyat değişimi: petrolofisi / izmir / diesel -14.8%",
+        "Yakıt fiyat değişimi: opet / istanbul / diesel -15.1%",
+        "Yakıt fiyat değişimi: opet / ankara / diesel -14.9%",
+        "Yakıt fiyat değişimi: opet / izmir / diesel -14.8%",
+        "Yakıt fiyat değişimi: shell / istanbul / diesel -15.1%",
+        "Yakıt fiyat değişimi: shell / ankara / diesel -14.9%",
+        "Yakıt fiyat değişimi: shell / izmir / diesel -14.9%"
+      ],
+      "errors": []
+    }
+  ]
+}

@@ -17,6 +17,42 @@ furniture:
   - sku: '19390773'
     brand: IKEA
     model: agen rattan bambu rattan koltuk
+  - sku: '50058376'
+    brand: IKEA
+    model: agen rattan bambu rattan koltuk
+  - sku: '30410326'
+    brand: IKEA
+    model: tullsta renksiz tekli koltuk iskeleti
+  - sku: '20320897'
+    brand: IKEA
+    model: tullsta nordvalla orta gri tekli koltuk kilifi
+  - sku: '40410335'
+    brand: IKEA
+    model: tullsta lofallet bej tekli koltuk kilifi
+  - sku: '49031774'
+    brand: IKEA
+    model: landskrona grann bomstad siyah tekli deri koltuk
+  - sku: '59031778'
+    brand: IKEA
+    model: landskrona grann bomstad siyah tekli deri koltuk
+  - sku: 09401828
+    brand: IKEA
+    model: vimle gunnared bej uzanma koltuklu 5 li kose kanepe
+  - sku: '99399581'
+    brand: IKEA
+    model: vimle gunnared bej uzanma koltuklu 5 li kose kanepe
+  - sku: 09399670
+    brand: IKEA
+    model: vimle hallarp bej uzanma koltuklu 5 li kose kanepe
+  - sku: '19401818'
+    brand: IKEA
+    model: vimle hallarp bej uzanma koltuklu 5 li kose kanepe
+  - sku: '59401821'
+    brand: IKEA
+    model: vimle hallarp gri uzanma koltuklu 5 li kose kanepe
+  - sku: '79399676'
+    brand: IKEA
+    model: vimle hallarp gri uzanma koltuklu 5 li kose kanepe
 - coicop: '0511'
   source: ikea
   keyword: yemek masası
@@ -30,6 +66,42 @@ furniture:
   - sku: '80447266'
     brand: IKEA
     model: docksta beyaz 103 cm yemek masasi tablasi
+  - sku: '89582679'
+    brand: IKEA
+    model: vasman acik kahverengi siyah yemek masasi ve sandalye seti
+  - sku: '69581732'
+    brand: IKEA
+    model: vasman acik kahverengi siyah yesil yemek masasi ve sandalye seti
+  - sku: 09578252
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve sandalye seti
+  - sku: 09529110
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve sandalye seti
+  - sku: '49530296'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve sandalye seti
+  - sku: '79576179'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve sandalye seti
+  - sku: '29575318'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve katlanabilir sandalye seti
+  - sku: '39530008'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve katlanabilir sandalye seti
+  - sku: '79529102'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve katlanabilir sandalye seti
+  - sku: '19576177'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi ve katlanabilir sandalye seti
+  - sku: '50535679'
+    brand: IKEA
+    model: askholmen koyu kahve yemek masasi
+  - sku: '60412885'
+    brand: IKEA
+    model: morbylanga mese kaplama kahverengi vernikli 6 kisilik yuvarlak yemek masasi
 - coicop: '0511'
   source: ikea
   keyword: kitaplık
@@ -43,6 +115,42 @@ furniture:
   - sku: 09481655
     brand: IKEA
     model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '29481678'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '29481683'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '49481658'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '59481653'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '69481681'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '79481652'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: 09481679
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: 09481684
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '29481659'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '79231154'
+    brand: IKEA
+    model: hemnes beyaz vernik 229x197 cm kitaplik
+  - sku: '40371763'
+    brand: IKEA
+    model: hemnes beyaz vernik 49x197 cm kitaplik
+  - sku: '90371765'
+    brand: IKEA
+    model: hemnes beyaz vernik 90x197 cm kitaplik
 - coicop: '0511'
   source: ikea
   keyword: gardırop
@@ -50,66 +158,317 @@ furniture:
   - sku: '79553644'
     brand: IKEA
     model: pax forsand aheim beyaz ayna 150x60x201 cm pax gardirop
-  - sku: '99502578'
-    brand: IKEA
-    model: pax forsand aheim beyaz aynali cam 75x60x236 cm pax gardirop
   - sku: '89621256'
     brand: IKEA
     model: pax forsand aheim beyaz aynali cam 50x38x236 cm pax gardirop
+  - sku: 09562232
+    brand: IKEA
+    model: pax forsand aheim bej aynali cam 150x60x201 cm pax gardirop
+  - sku: '99502578'
+    brand: IKEA
+    model: pax forsand aheim beyaz aynali cam 75x60x236 cm pax gardirop
+  - sku: '19621269'
+    brand: IKEA
+    model: pax forsand aheim beyaz aynali cam 50x38x201 cm pax gardirop
+  - sku: '49553650'
+    brand: IKEA
+    model: pax forsand aheim beyaz aynali cam 150x60x236 cm pax gardirop
+  - sku: '19502577'
+    brand: IKEA
+    model: pax forsand aheim beyaz aynali cam 75x60x201 cm pax gardirop
+  - sku: '39502755'
+    brand: IKEA
+    model: pax forsand aheim koyu gri aynali cam 150x60x201 cm pax gardirop
+  - sku: '69562234'
+    brand: IKEA
+    model: pax forsand aheim gri bej aynali cam 150x60x236 cm pax gardirop
+  - sku: '99621821'
+    brand: IKEA
+    model: pax forsand aheim agartilmis mese gorunumlu aynali cam 125x60x236 cm pax
+      gardirop
+  - sku: '19502756'
+    brand: IKEA
+    model: pax forsand aheim agartilmis mese gorunumlu aynali cam 150x60x201 cm pax
+      gardirop
+  - sku: '39502760'
+    brand: IKEA
+    model: pax forsand aheim agartilmis mese gorunumlu aynali cam 150x60x236 cm pax
+      gardirop
+  - sku: '19500291'
+    brand: IKEA
+    model: pax forsand aheim koyu gri aynali cam 150x60x236 cm pax gardirop
+  - sku: '50251270'
+    brand: IKEA
+    model: hemnes beyaz 120x59x197 cm surgu kapakli gardirop
+  - sku: '59502542'
+    brand: IKEA
+    model: pax beyaz 375x58x201 cm pax acik gardirop
 - coicop: '0511'
   source: ikea
   keyword: çalışma masası
   tracked_skus:
-  - sku: '70214192'
-    brand: IKEA
-    model: malm beyaz 151x65 cm calisma masasi
   - sku: '60214159'
     brand: IKEA
     model: malm beyaz 140x65 cm calisma masasi
+  - sku: '70214192'
+    brand: IKEA
+    model: malm beyaz 151x65 cm calisma masasi
   - sku: '69488574'
     brand: IKEA
     model: torald smallen beyaz siyah calisma masasi ve sandalye
+  - sku: '89481680'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '99481651'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: 09481655
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '29481678'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '29481683'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '49481658'
+    brand: IKEA
+    model: lagkapten kallax venge siyah kitaplikli calisma masasi
+  - sku: '59481653'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '69481681'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '79481652'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: 09481679
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: 09481684
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
+  - sku: '29481659'
+    brand: IKEA
+    model: lagkapten kallax beyaz kitaplikli calisma masasi
 - coicop: '0511'
   source: trendyol
   keyword: koltuk
   tracked_skus:
-  - sku: '1067014511'
-    brand: Mobidu
-    model: Fold 2’li Aktivite Koltuk – Yatak Olabilen Modüler Kanepe – Fitilli Kadife
-      - Gri
-  - sku: '34034541'
-    brand: Woodesk
-    model: Adalar Modern Ceviz-kahverengi Renk Ahşap Kanepe
-  - sku: '1131824699'
-    brand: DECHOME
-    model: 200x100 50 DNS Modüler Koltuk.Kadife Fitilli Kumaş, Yatak Olabilen, Modern
-      Tasarım.
-  - sku: '863332062'
-    brand: GOOD NİGHT
-    model: Kanyon Çok Amaçlı Köşe Koltuk
   - sku: '871528282'
     brand: Huga Metal
     model: Relax Dinlenme Koltuğu Yatak Olabilen Kanepe Rahat Kanepe Fittilli Kadife
       Yıkanır Silinir - Yeşil
+  - sku: '881934472'
+    brand: Modalife
+    model: Bohem Kanepe, 3 lü Koltuk, Salon Oturma Odası Üçlü Kanepe
+  - sku: '1067014511'
+    brand: Mobidu
+    model: Fold 2’li Aktivite Koltuk – Yatak Olabilen Modüler Kanepe – Fitilli Kadife
+      - Gri
+  - sku: '871528274'
+    brand: Huga Metal
+    model: Relax 200cm Kanepe, Fitilli Kadife, Yıkanır, Silinir, Dinlenme Koltuğu,
+      Yatak Olabilen, Krem
+  - sku: '899265063'
+    brand: Gaga Mobilya
+    model: Aktivite koltuğu Kanepe Koltuk Yataklı Kanepe Üçlü Koltuk Üçlü Kanepe (antrasit)
+      (90x200cm)
+  - sku: '868569520'
+    brand: EDSY HOME
+    model: Mira Relax 4 Modül Köşe Koltuk Krem Keten Kumaş
+  - sku: '1071789955'
+    brand: foamly
+    model: Minimalist Yıkanabilir Kumaşlı Çok Amaçlı Tamamen Sünger Lego Aktivite
+      Koltuğu
+  - sku: '749524572'
+    brand: Genel Markalar
+    model: Çay Seti Ikili Koltuk Berjer Ve Puf Takımı 3 Lü Takım
+  - sku: '986462035'
+    brand: Huga Mobilya
+    model: Petite Kanepe Oyun, Tv, Sinema Koltuğu- Yatak Olabilen Fitilli Kadife Yıkanır
+      Silinir 80x160 h:36
+  - sku: '1088414864'
+    brand: foamly
+    model: 140x70 cm Modüler Çocuk Koltuğu - Fonksiyonel Oyun Minderi ve Kanepe Tamamen
+      Sünger
+  - sku: '847028346'
+    brand: EDSY HOME
+    model: Riva 3'lü Koltuk
+  - sku: '1031188759'
+    brand: Ravessi
+    model: Luxıvo Yeşil Modern Kumaş Koltuk-Geniş ve Rahat Oturumlu Kanepe-Uzanmalı
+      Koltuk-Aktivite Koltuğu
+  - sku: '826616845'
+    brand: GOOD NİGHT
+    model: New Legom Puf Koltuk &berjer & Uzanma Koltuğu Yıkanabilir
+  - sku: '1130437711'
+    brand: KOKİ DESİGN
+    model: LİDA 2 Kişilik Uzun Koltuk Berjer Wellsoft Yeşil (Salon , Balkon ,Ofis)
+  - sku: '1071790100'
+    brand: foamly
+    model: Minimalist Yıkanabilir Kumaşlı Çok Amaçlı Tamamen Sünger Lego Aktivite
+      Koltuğu
+  - sku: '863332062'
+    brand: GOOD NİGHT
+    model: Kanyon Çok Amaçlı Köşe Koltuk
+  - sku: '967974712'
+    brand: Aberteka
+    model: ANİTA Ahşap Hazeranlı Bukle Kumaş Üçlü Koltuk
+  - sku: '934922468'
+    brand: Aberteka
+    model: ANİTA Ahşap Hazeranlı Bukle Kumaş İkili Koltuk
+  - sku: '1129367753'
+    brand: Ravessi
+    model: 100x200 Kanepe-Fitilli Kadife Yıkanabilir Yer Yatağı- Çok Amaçlı Aktivite
+      Koltuğu
+  - sku: '1055160788'
+    brand: PRAKTURA
+    model: STYLISH Berjer Tekli Ahşap Krem Ceviz Koltuk
+  - sku: '1110209125'
+    brand: AVYNA
+    model: Palace Luxury Edition Tekli Koltuk Berjer, TV & Dinlenme Koltuğu | Ergonomik
+      ve Şık Tasarım
+  - sku: '848262299'
+    brand: WEBPANYA
+    model: Sallanan Ahşap Ayaklı Kırık Beyaz Rengi Berjer Koltuk - Puf Hediyeli
+  - sku: '1105322198'
+    brand: indes home
+    model: Armada 3+3 Koltuk Takımı Krem
+  - sku: '984741965'
+    brand: Evdemo
+    model: Legom Lucas Aktivite Koltuğu Yatak Olabilen Çok Amaçlı Kanepe L Koltuk
+      Antrasit
+  - sku: '227130321'
+    brand: S Home Design Concept
+    model: Frida 4 Modül Pofidik Modüler Kanepe L Köşe Koltuk Takımı, Keten, Kırık
+      Beyaz 295x190 Cm
+  - sku: '978882759'
+    brand: inegölmobilyası
+    model: Bohem Koltuk Takımı %100 Gürgen
+  - sku: '710619606'
+    brand: Bilgin Design
+    model: Fasulye Teddy Koltuk 3 Lü Kanepe Süt Beyaz
+  - sku: '988531544'
+    brand: 38 MBM
+    model: ŞİŞME KOLTUK PUF TELEVİZYON KOLTUĞU PUF
+  - sku: '1124121226'
+    brand: Dekoro
+    model: Axis 160x240 Modüler Takım 50 DNS Bondex Fitilli Kadife Yataklı Koltuk
+      Takımı Yer Minderi Puf Seti
+  - sku: '294110535'
+    brand: Homedius
+    model: Notre Kadife Koltuk Puf Set Kiremit
 - coicop: '0511'
   source: trendyol
   keyword: yemek masası
   tracked_skus:
-  - sku: '127697864'
-    brand: MOBETTO
-    model: Home Arda Masa / Venüs Sandalye Mutfak Masa Takımı- Beyaz
-  - sku: '50763105'
-    brand: Canisa Concept
-    model: Zen Serisi 80x132 Mdf Açılabilir Beyaz Mutfak Masası Takımı Ve 6 Füme Sandalye
-  - sku: '752973130'
+  - sku: '1104188909'
+    brand: TOCE HOME
+    model: Kuf Serisi 80X130 Açılabilir Masa Yemek Odası Takımı, Mutfak Takımı 6 Adet
+      Sandalye
+  - sku: '731838404'
+    brand: mutfak moda
+    model: Mutfak Masa Takımı
+  - sku: '1060497159'
     brand: Canisa
-    model: Kea Serisi Yuvarlak Beyaz Mutfak Masa Takımı 4 Krem Babyface Sandalye
-  - sku: '50444383'
-    brand: SANDALİE
-    model: Arda / Venüs Mutfak Masa Takımı 1 Masa 4 Sandalye - Beyaz
+    model: Akort Serisi MDF Sabit 80x130 Siyah Mermer Desen Mutfak Masası Takımı 4
+      Antrasit Sandalye
+  - sku: '1104121242'
+    brand: TOCE HOME
+    model: Kuf Serisi 80X130 Açılabilir Masa Yemek Odası Takımı, Mutfak Takımı 6 Adet
+      Sandalye
+  - sku: '1122938568'
+    brand: BY ORHAN GÜZEL
+    model: Mutfak Masası Takımı 6 Kişilik Masa Takımı CASSE Serisi Mutfak Salon Masası
+      Takımı
   - sku: '834287002'
     brand: Royal
     model: Elısa 4kişilik Mutfak Masası Takımı Teddy01
+  - sku: '978437662'
+    brand: Alesta Life
+    model: Beyaz Yemek Masası, Mutfak Masası, Çalışma Masası, Metal Ayaklı Masa, Bilgisayar
+      Masası
+  - sku: '1101029844'
+    brand: Maholandin
+    model: Oslo yemek masası mutfak masası 90x160 Lüx masa(sadece masa)
+  - sku: '1104191751'
+    brand: TOCE HOME
+    model: Leva 80X130 Açılabilir Beyaz Masa Yemek Odası Takımı Mutfak Takımı 6 Adet
+      Sandalye
+  - sku: '857700704'
+    brand: KARMOB
+    model: Oval Salon Yemek masası ( sadece görseldeki masa verilecektir)
+  - sku: '902833046'
+    brand: BY ORHAN GÜZEL
+    model: SELENİT Mutfak Yemek Masası Takımı- 4 KİŞİLİK Mutfak Masa Sandalye Takımı-
+      Mutfak Masası Takımı
+  - sku: '103890294'
+    brand: Resa mobilya design
+    model: Yemek Masası Takımı 120x70 Ve 4 Adet Güneş Sandalye
+  - sku: '1093737734'
+    brand: Skandi homeworks
+    model: Nardo Yemek Masası 110cm
+  - sku: '790404791'
+    brand: Cosargroup
+    model: Parla Mutfak Yemek Masası W Metal Ayak 70x110 Mutfak Yemek Masası
+  - sku: '1111412322'
+    brand: De Mobilya
+    model: Katlanır Mutfak Masası 145cm x 90cm (6 Destekli)
+  - sku: '1053271098'
+    brand: SEZBİL
+    model: YEMEK ODASI MASA TAKIMI BOHEM TAKIM AHŞAP MASA TAKIMI AHŞAP SANDALYE
+  - sku: '39309063'
+    brand: Canisa Concept
+    model: Via Serisi 80x132 Açılabilir Mutfak Masası Takımı Siyah Mermer Desen Masa
+      4 Füme Sandalye
+  - sku: '814644697'
+    brand: AVVİO
+    model: Margo   Teddy Sandalye 80x140 Yemek Masası Mutfak Masası 6 Kişilik Masa
+      Sandalye Takımı
+  - sku: '1069725418'
+    brand: BY ORHAN GÜZEL
+    model: BOHEM POLO MUTFAK MASASI TAKIMI 6 KİŞİLİK AHŞAP GÖRÜNÜMLÜ METAL
+  - sku: '945181081'
+    brand: HMC DECOR
+    model: Modern Yuvarlak 100cm Yemek Masası-mutfak Masası Traverten (SANDALYELER
+      TEMSİLİDİR)
+  - sku: '809458888'
+    brand: AVVİO
+    model: Veyron Teddy Sandalye 80x140 Yemek Masası Mutfak Masası 6 Sandalyeli Masa
+      Sandalye Takım
+  - sku: '820975429'
+    brand: Canisa
+    model: Lai Serisi 90x168 Lak Panel Beyaz Mermer Desen Krom Ayak Masa Takımı 6
+      Gri Sandalye
+  - sku: '983877965'
+    brand: Mygusi
+    model: Gnr 70x110cm Sabit Beyaz Mutfak Masası Takımı, Yemek Masası, 4 Modern Krem
+      Sandalye
+  - sku: '882388937'
+    brand: Mygusi
+    model: Src Mutfak, Balkon Köşe Takımı, Köşesi Masalı Atlantikçam
+  - sku: '713743823'
+    brand: Retodesign
+    model: Metal Katlanır Balkon Masası -askılı Katlanır Masa 5002
+  - sku: '246314652'
+    brand: Genel Markalar
+    model: 60×120 Metal Ayaklı Masa Mutfak Masası Çalışma Masası Bilgisayar Masası
+  - sku: '68168262'
+    brand: CAN CONCEPT
+    model: Byk Mobilya Mermer Görünümlü Masa Sandalye Takımı 4 Adet Tel Sandalye Masa
+      Takımı 70x110
+  - sku: '1092853604'
+    brand: Maholandin
+    model: Traverten Mutfak masası Yemek masası 6-8 kişilik
+  - sku: '982188800'
+    brand: YUNUSOĞLU HOME
+    model: Fırfırlı Runner ve Supla Takımı - Masa Örtüsü Takımı 7 Parça 120 x 40 cm
+  - sku: '1119864594'
+    brand: Altın Çeyiz Tekstil
+    model: Fransız Güpürlü Oval Şeffaf Masa Örtüsü - Çınar Model Runner'lı Premium
+      Dökümlü Şık Tasarım
 - coicop: '0511'
   source: trendyol
   keyword: kitaplık
@@ -121,17 +480,101 @@ furniture:
     brand: WANDOO
     model: Metal Gövdeli 5 Raflı Ahşap Kitaplık Ofis Ev Raf Sistemi Dekoratif Dosya
       Rafı
-  - sku: '126061018'
-    brand: Morpanya
-    model: Aural Dekoratif 5 Raflı Kitaplık Geniş Metal Kitaplık Dosya Rafı Ofis Salon
-      Raf 90x180cm Ceviz
-  - sku: '33108062'
-    brand: Remaks
-    model: Pınar 5 Raflı Kitaplık - Beyaz
+  - sku: '869925084'
+    brand: Woodesk
+    model: Pietra, Ahşap, Kitaplık Ve Raf Ünitesi, Tik Renk
   - sku: '121235151'
     brand: Tree World
     model: Montessori Çocuk Odası Kitaplığı Ahşap Ham Verniksiz Doğal Kitaplık 100*50*9
       Ahşap Kitaplık
+  - sku: '33108062'
+    brand: Remaks
+    model: Pınar 5 Raflı Kitaplık - Beyaz
+  - sku: '773239613'
+    brand: PEKA
+    model: 5 Raflı Modern Dekoratif Kitaplık Klasörlük Mutfak Rafı Kiler Çok Amaçlı
+      Düzenleyici Raf-safir Meşe
+  - sku: '889251018'
+    brand: BAGAX
+    model: Likya Model, Çam Renk, 10 Raflı Dekoratif Kitaplık
+  - sku: '940339790'
+    brand: bituclass
+    model: BİTUCLASS KİTAPLIK ORGANISER AYAKKABILIK ÇOK AMAÇLI RAF
+  - sku: '126061018'
+    brand: Morpanya
+    model: Aural Dekoratif 5 Raflı Kitaplık Geniş Metal Kitaplık Dosya Rafı Ofis Salon
+      Raf 90x180cm Ceviz
+  - sku: '929872944'
+    brand: AEKA
+    model: AE-1079 İmre Beyaz 24 Raflı Kitaplık Kütüphane Ayarlanabilir Raf Geniş
+      Çocuk Odası
+  - sku: '959025912'
+    brand: Bofigo
+    model: 6 Raflı Kitaplık Dekoratif Kitaplık Metal Kitaplık Ofis Kitaplığı Larissa
+      Antrasit
+  - sku: '984241973'
+    brand: Yılkı Mobilya
+    model: Köşe Kitaplık
+  - sku: '136924305'
+    brand: Alesta Life
+    model: 10 Gözlü/raflı Kitaplık Beyaz
+  - sku: '888036322'
+    brand: ALONEX HOME
+    model: Diana, Kitaplık Sehpa, Traverten Yan Sehpa, Kitaplık, Çok Amaçlı Sehpa
+  - sku: '56108970'
+    brand: Mgr Office
+    model: STONE 5 Raflı Metal Mutfak Düzenleyici Raf Metal 5 Raflı Kitaplık Mutfak
+      Rafı Baharatlık Kahverengi
+  - sku: '1074494060'
+    brand: Pikas
+    model: Elmas Dekoratif Çok Amaçlı Yatay Ve Dikey Kullanılabilir Raf, Kitaplık
+  - sku: '926727255'
+    brand: umondesign
+    model: Bohem 5 Raflı Kapaklı Kitaplık MDF Dekoratif Kapak
+  - sku: '961072669'
+    brand: enc home
+    model: Mini Ütopya Metal Kitaplık Ve Dekoratif Raf 150x40x30
+  - sku: '976931693'
+    brand: alpaevmobilya
+    model: 5 Raflı Kitaplık Dekoratif Çok Amaçlı Düzenleyici Raf 150 cm Salon Çalışma
+      Odası Raf
+  - sku: '241720174'
+    brand: Alesta Life
+    model: 5 Raflı/Gözlü Kitaplık
+  - sku: '969428482'
+    brand: WANDOO
+    model: 5 Raflı Çok Amaçlı Metal ve Ahşap Dolap – Kitaplık, Mutfak, Kırtasiye ve
+      Banyo Rafı – 60x30x150 cm
+  - sku: '822697030'
+    brand: Bofigo
+    model: Dekoratif Kitaplık 2 Kapaklı 8 Bölmeli Kitaplık Smyrna Safir Meşe Beyaz
+  - sku: '171079003'
+    brand: Genel Markalar
+    model: Sema Yatay Raf ,dekoratif Raf,aksesuar Raf Kitaplık Beyaz MDF
+  - sku: '34432164'
+    brand: KZY
+    model: Mobilya 5 Raflı Geniş Kitaplık - Ceviz
+  - sku: '880243354'
+    brand: Emkatex
+    model: 3 Katlı Kitaplık & Ayakkabılık, Banyo, Mutfak, Oyuncak Rafı Metal Kitaplık
+      60x40x23 CM
+  - sku: '952597071'
+    brand: WANDOO
+    model: Metal Gövdeli 5 Raflı Ahşap Kitaplık Ofis Ev Raf Sistemi Dekoratif Dosya
+      Rafı
+  - sku: '1057985987'
+    brand: CLASSY HOME TASARIM
+    model: CLASSY 10 RAFLI 1 BÜYÜK 1 KÜÇÜK 2 PARÇA KİTAPLIK ÇOK AMAÇLI DOLAP ATLANTİK
+      ÇAM
+  - sku: '983012072'
+    brand: midoser
+    model: Lisa 4 Kapaklı Beyaz Vitrin - Kitaplık ve Çok Amaçlı Dolap
+  - sku: '1130431568'
+    brand: Arles Home
+    model: Todi - Montessori Kitaplık
+  - sku: '1092826759'
+    brand: DEKOZUM
+    model: STONE Metal Kitaplık Ofis Kitaplık Çok Amaçlı Dekoratif Raf Stand 150 cm
 - coicop: '0511'
   source: trendyol
   keyword: 2 kapılı gardırop
@@ -139,18 +582,73 @@ furniture:
   - sku: '475742300'
     brand: Metalia
     model: Gm 177 Modena 3 Kapı 2 Çekmeceli Aynalı Siyah Kulplu Beyaz Gardırop
-  - sku: '901034829'
-    brand: MOBİLİQUE
-    model: İlkay Çok Amaçlı 2 Kapaklı 5 Raflı Dolap
   - sku: '1074330450'
     brand: Rabi
     model: Maya Çok Amaçlı 2 Kapaklı Raflı ve Askılı Gardırop - Beyaz
-  - sku: '1072106574'
-    brand: SE Desing
-    model: Plus 2 Kapaklı Raflı Askılı Elbise Gardırop Atlantik Çam-Aytaşı
-  - sku: '896988330'
-    brand: Genel Markalar
-    model: elbise dolabı 2 kapaklı
+  - sku: '851443943'
+    brand: MOBİLİQUE
+    model: Madrid No.1 Raflı Gardırop
+  - sku: '731486739'
+    brand: MOBİLİQUE
+    model: 5raflı Izmir Gardırop
+  - sku: '1039179325'
+    brand: satenhome
+    model: 2 Kapaklı Tek Çekmeceli Askılı Raflı Gardırop
+  - sku: '951109714'
+    brand: Rabi
+    model: Ecem 3 Kapaklı 2 Çekmeceli Aynalı Gardırop
+  - sku: '930545934'
+    brand: MOBİLİQUE
+    model: Elite No.4 Gardırop
+  - sku: '1129891918'
+    brand: İNDEPPO
+    model: LİNE 4 KAPAKLI 2 ÇEKMECELİ GARDIROP (160 CM - BEYAZ)
+  - sku: '316351640'
+    brand: Metalia
+    model: Gm 308 Ece Lüx 3 Kapı 3 Çekmeceli Düğme Kulplu Gardırop
+  - sku: '1127952024'
+    brand: İNDEPPO
+    model: BOHEM 3 KAPAKLI 2 ÇEKMECELİ GARDIROP (120 CM - AYTAŞI)
+  - sku: '1107268805'
+    brand: İNDEPPO
+    model: LOFT 4 KAPAKLI 2 ÇEKMECELİ GARDIROP (120 CM CEVİZ - BEYAZ)
+  - sku: '237402415'
+    brand: KZNMOB HOME
+    model: Kartopu 2 Kapaklı Country Gardırop Elbise Dolabı - Tamamı 1. Kalite Mdf
+  - sku: '32112574'
+    brand: KZY
+    model: Beyaz Mobilya 3 Kapılı Gardırop
+  - sku: '38465614'
+    brand: Rabi
+    model: Ecem 3 Kapaklı 2 Çekmeceli Gardırop
+  - sku: '1085845225'
+    brand: Bygolden
+    model: Neva 2 Kapılı 2 Çekmeceli raflı Gardrop Elbise dolabı
+  - sku: '926093347'
+    brand: wode studio
+    model: '- LADİK - BEYAZ ÇİFT KAPAKLI GARDIROP 210-90-45 CM'
+  - sku: '252217476'
+    brand: midoser
+    model: 90 Cm Mat Beyaz 2 Kapılı 2 Çekmeceli Elbise Dolabı - Gardırop
+  - sku: '801496724'
+    brand: KZNMOB HOME
+    model: Stil 2 Kapaklı 2 Çekmeceli Modern Gardırop, Elbise Dolabı - Tamamı 1. Kalite
+      Mdf
+  - sku: '869619559'
+    brand: KLT Modüler
+    model: Atlas Model 3 kapılı elbise dolabı ve gardırop çizgili model
+  - sku: '1074929590'
+    brand: ARNETTİ
+    model: Linda 3 Kapaklı Raflı Genç Odası Gardırop, Atlantik Çam Bej - Linda
+  - sku: '4434521'
+    brand: Metalia
+    model: Home 3 Kapılı 2 Çekmeceli Gardırop
+  - sku: '802525835'
+    brand: Mezza
+    model: 3520 Lisa 4 Kapılı Gardırop Sepet-yunus-beyaz
+  - sku: '1045555354'
+    brand: UMGMOBİLYA
+    model: 3 KAPILI, 2 ÇEKMECELİ GARDIROP, ELBİSE DOLABI, ÇOCUK ODASI DOLABI
 - coicop: '0521'
   source: trendyol
   keyword: nevresim takımı
@@ -158,19 +656,88 @@ furniture:
   - sku: '655477600'
     brand: conzaliza
     model: Lastikli Çarşaflı Çift Kişilik Nevresim Takımı | Mürdüm Antrasit |
+  - sku: '931871424'
+    brand: conzaliza
+    model: Çift Kişilik Lastikli Çarşaflı Pamuklu Nevresim Takımı | Tam Takım
+  - sku: '467443838'
+    brand: conzaliza
+    model: Lastikli Çarşaflı Çift Kişilik Nevresim Takımı | Antrasit Siyah | Pamuklu
+      | Tam Takım
   - sku: '934098058'
     brand: Bella Maison
     model: Lauren Pamuklu Çift Kişilik Nevresim Seti Yeşil (200x220 cm)
-  - sku: '869360043'
-    brand: Boreas Home
-    model: Saray Çarşafı Lastikli Çift Kişilik Nevresim Takımı
-  - sku: '795386745'
+  - sku: '1064141083'
+    brand: Rimo Home
+    model: ÇARŞAFI LASTİKLİ ÇİFT KİŞİLİK NEVRESİM TAKIMI
+  - sku: '271943142'
     brand: İQON
-    model: Lastikli Çarşaflı Nevresim Takımı Çift Kişilik Damask Bej
+    model: Lastikli Çarşaflı Nevresim Takımı Çift Kişilik Bordo-gri
+  - sku: '987072310'
+    brand: Sheri Home
+    model: KIRÇİÇEK MODEL Çift Kişilik Nevresim (Yorgan Kılıfı+2 Adet Yastık Kılıfı)ZÜMRÜT8886567
+  - sku: '635703472'
+    brand: Rimo Home
+    model: Çift Kişilik Çift Taraflı Nevresim Takımı
   - sku: '1079021699'
     brand: DB
     model: Çift Kişilik Nevresim Seti %100 Pamuklu Kalp ve Fiyonklu Süs Overloklu
       Fırfırlı
+  - sku: '795386745'
+    brand: İQON
+    model: Lastikli Çarşaflı Nevresim Takımı Çift Kişilik Damask Bej
+  - sku: '931599860'
+    brand: Sheri Home Tekstil
+    model: Kalpli Tek Kişilik Nevresim Seti Yorgan Kılıfı +1 adet Yastık Kılıfı 889221969488
+  - sku: '849064164'
+    brand: İQON
+    model: Lastikli Çarşaflı Nevresim Takımı Çift Kişilik SULUBOYA ÇAĞLA
+  - sku: '1111758047'
+    brand: Uçkan home
+    model: '%100 PAMUKLU FİYONK DESEN FIRFIRLI ÇİFT KİŞİLİK NEVRESİM SETİ'
+  - sku: '1096985205'
+    brand: Lorien
+    model: Valentines Kalp Desenli Çift Kişilik, Lastikli Çarşaflı, Çift Taraf Kullanımlı
+      Nevresim Takımı
+  - sku: '1108811780'
+    brand: Madame Coco
+    model: Marcelle Çift Kişilik %100 Pamuk Ranforce Baskılı Nevresim Takımı - Mavi
+  - sku: '806302112'
+    brand: Ricco Lifes
+    model: Çift Taraflı Çift Kişilik Çarşaflı Nevresim Takımı
+  - sku: '1095358527'
+    brand: Sheri Home
+    model: YENİ KELEBEK MODEL Çift Kişilik Nevresim (Yorgan Kılıfı+2 Adet Yastık Kılıfı)88865672026
+  - sku: '938914306'
+    brand: Sheri Home Tekstil
+    model: Pure Leo Çift Kişilik Nevresim Seti(YORGAN KILIFI 2 Lİ YASIK KILIFI) %100
+      Pamukleopar
+  - sku: '961740637'
+    brand: Sheri Home Tekstil
+    model: Lastikli Çarşaflı Tek Kişilik Nevresim Takımı SWEETHEARTMODELSZ8889221
+  - sku: '768107410'
+    brand: Yataş
+    model: Teny Çift Kişilik %100 Pamuk Ranforce Nevresim Takımı - Bej
+  - sku: '924521896'
+    brand: Karaca Home
+    model: Daisy %100 Pamuk Çift Kişilik Nevresim Takımı Bej
+  - sku: '757556365'
+    brand: Rivaİstanbul
+    model: Yeşil Papatya Çift Kişilik Nevresim Takımı Pamuklu
+  - sku: '1040984077'
+    brand: Ricco Lifes
+    model: Fırfırlı %100 Pamuk Sarı Pötikare Pamuklu Çift Kişilik Nevresim Seti
+  - sku: '927230589'
+    brand: Yataş
+    model: Teny Çift Kişilik Ranforce Nevresim Seti - Bej
+  - sku: '640436592'
+    brand: Yataş
+    model: Farida Tek Kişilik Ranforce Nevresim Seti - Somon
+  - sku: '827939538'
+    brand: Karaca Home
+    model: Emma %100 Pamuk Fırfırlı Çift Kişilik Çarşaf Takımı Sarı (PP)
+  - sku: '841578820'
+    brand: üntaş
+    model: Kalp Desenli Çift Kişilik Çift Taraflı Nevresim 2 Adet Yastık Kılıfı
 - coicop: '0521'
   source: trendyol
   keyword: havlu takımı
@@ -181,10 +748,23 @@ furniture:
   - sku: '846973733'
     brand: Özdilek
     model: Point Havlu Seti
+  - sku: '266422539'
+    brand: Mürdüm Home
+    model: 4'lü Banyo Havlu Seti Hamam Takımı 100% Pamuk
+  - sku: '846973728'
+    brand: Özdilek
+    model: Point Havlu Seti
   - sku: '469316399'
     brand: Güvenal
     model: Lara Kutulu 4'lü Banyo Havlusu | Havlu Takımı | Havlu | Havlu Seti I Hamam
       Seti I Çeyiz Havlusu
+  - sku: '180041624'
+    brand: Özdilek
+    model: Elissa Havlu 6 Adet - Krem Pembe Taş Gri Bej Beya
+  - sku: '468406466'
+    brand: Güvenal
+    model: Azra 6 Adet 50*90 Kutulu Desenli Havlu | Havlu Seti | Havlu Takımı | El
+      Yüz Havlusu | Çeyizlik Havlu
   - sku: '1026455164'
     brand: DNZGÜLCAN
     model: 4 Parça Lüks Banyo Havlu Seti (2 Adet 70x140cm & 2 Adet 50x90cm) | Leopar
@@ -192,6 +772,63 @@ furniture:
   - sku: '805388339'
     brand: Zeynep Tekstil
     model: Range | 10'lu 50x90 cm El&Yüz Havlu Seti
+  - sku: '887012362'
+    brand: Miss Paris Home
+    model: 4'lü Banyo ve Saç Havlusu Seti - Hamam Takımı | Yumuşak, Hızlı Kuruyan
+      ve Dayanıklı
+  - sku: '119557881'
+    brand: Mürdüm Home
+    model: 4'lü Banyo Havlu Seti Hamam Takımı 100% Pamuk
+  - sku: '898015168'
+    brand: Casnack
+    model: Veronica Small 4'lü Havlu Seti 50x90 cm
+  - sku: '931077397'
+    brand: Güvenal
+    model: Ece 4'lü Banyo Havlu Seti | Havlu | Banyo Havlusu I Hamam Seti I Çeyiz
+      Havlusu
+  - sku: '1088522183'
+    brand: Pamira
+    model: DİANA BANYO HAVLU TAKIMI (2 ADET EL ,YÜZ & BAŞ HAVLUSU + 2 ADET VÜCUT BANYO
+      HAVLUSU)
+  - sku: '51391251'
+    brand: Louis Marie
+    model: Mavi Banyo Havlu Takımı 70x140  50x90
+  - sku: '824168161'
+    brand: Rebeka Home Collection
+    model: Gri Sophia 6'lı 30x50 Cm El Ve Yüz Havlu Seti Mutfak Havlusu
+  - sku: '1076617125'
+    brand: DNZGÜLCAN
+    model: 4'lu Beyaz %100 Pamuk Banyo Havlusu Seti - 2 Adet 70x140 2 Adet 50x90,
+      Spa Ve Otel Havlusu, Gramajlı
+  - sku: '848530608'
+    brand: Zeynep Tekstil
+    model: Shiny 12'li 50x90 cm El&Yüz Havlu Seti
+  - sku: '462341283'
+    brand: AYHANHOME
+    model: Güpürlü Saten Işleme Desenli Kutulu Lüks Çeyizlik 50x90 6'lı El Yüz Havlu
+      Seti
+  - sku: '1041986209'
+    brand: Comfort Home
+    model: 4’lü Pamuklu Banyo Havlu Seti Hamam Takımı, El, Yüz, Baş ve Beden, 2 Adet
+      40x80cm + 2 Adet 70x140cm
+  - sku: '52290264'
+    brand: Louis Marie
+    model: '| 50x90 + 70x140 cm Saçak Detaylı Pamuk | Vip Fıstık Yeşili | Banyo Havlu
+      Seti'
+  - sku: '161318861'
+    brand: eumenia
+    model: Valona 50 x 85 – 70 x140 cm 4'lü Banyo Havlu Seti | Gri-krem
+  - sku: '91250754'
+    brand: Kardelen
+    model: '%100 Pamuklu Boncuklu Güpürlü 6''lı Havlu 50x85'
+  - sku: '1120030855'
+    brand: Elmas Home Collection
+    model: 6 Adet Mutfak Havlusu 30x50 cm | Kurulama Bezi | Sepette | Pamuk El Havlusu
+      Seti | 6 Renk
+  - sku: '1054256205'
+    brand: Comfort Home
+    model: 4’lü Pamuklu Banyo Havlu Seti Hamam Takımı, El, Yüz, Baş ve Beden, 2 Adet
+      40x80cm + 2 Adet 70x140cm
 - coicop: '0521'
   source: trendyol
   keyword: battaniye
@@ -199,23 +836,76 @@ furniture:
   - sku: '743555309'
     brand: Mulberry
     model: Tek Kişilik Fitilli Yumuşak Dokulu Tv Battaniye 120x170 cm
-  - sku: '837361140'
-    brand: Soley
-    model: '| Panthera | %100 Pamuk Leopar Desenli Kadife Bornoz'
-  - sku: '987386232'
-    brand: Penelope
-    model: Microfiber Kumaş Çift Kişilik Yeşil Yastık Yorgan Seti - Colors in Comfort
-  - sku: '822032359'
-    brand: BEYAZLALE
-    model: Çift Kişilik Kuzu Yünü %100 Doğal Yorgan | Özel Çantalı Organik Merinos
-      Yün Yorgan
+  - sku: '373988537'
+    brand: Mulberry
+    model: Wellsoft Tek Kişilik Battaniye Sıcak Battaniye Tv Dekor Battaniyesi 100x170
+      Kiremit
+  - sku: '1092335122'
+    brand: FLORETTA
+    model: Tinta Pamuklu Battaniye 130x170 cm
   - sku: '319167536'
     brand: Yataş
     model: Holly Wellsoft Çift Kişilik Battaniye - Şampanya
+  - sku: '1092335121'
+    brand: FLORETTA
+    model: Tinta Pamuklu Battaniye 130x170 cm
+  - sku: '746374353'
+    brand: Yataş
+    model: Olenna Çift Kişilik Wellsoft Battaniye - Pudra
+  - sku: '783177441'
+    brand: Childiva
+    model: '%100 Pamuklu 4 Katlı Müslin Battaniye'
+  - sku: '848070953'
+    brand: Yataş
+    model: Holly Wellsoft Tv Battaniyesi 140x190 cm - Şampanya
+  - sku: '863101090'
+    brand: Bella Maison
+    model: Oriane Pamuklu Çift Kişilik Battaniye Bej (180x220 cm)
+  - sku: '1019212540'
+    brand: Calmera
+    model: Wellsoft TV Battaniyesi | Ultra Yumuşak & Hafif | Peluş - Polar | 130 ×
+      170 cm - Bordo
+  - sku: '1041063795'
+    brand: Bondberro
+    model: Çift Taraflı İnterlok Battaniye %100 Pamuk Oeko-teks Sertifikalı 100 X
+      85 Cm
+  - sku: '775863859'
+    brand: Taç
+    model: Kristal Blankent Çift Kişilik Battaniye 220x240- Cappuccino
+  - sku: '369733867'
+    brand: Sarar
+    model: Tek Kişilik Battaniye-bella Gül.
+  - sku: '138898825'
+    brand: Mulberry
+    model: Wellsoft Battaniye, Dört Mevsim Televizyon Battaniyesi, Peluş, Polar Battaniye,
+      Tek Kişilik, 170*230
+  - sku: '778161059'
+    brand: Carter's
+    model: Kız Bebek Battaniye
+  - sku: '991690087'
+    brand: BED LİNE
+    model: Gentle Battaniye 200/220 Kahve
+  - sku: '932323473'
+    brand: HİG HOME
+    model: Hurç 42x53x20 – Şeffaf Baza Altı Saklama Hurcu (Battaniye & Yorgan İçin)
+  - sku: '428425073'
+    brand: Genel Markalar
+    model: 4 Mevsim Pamuklu Battaniye Çift Kişilik 180*220cm Balkon Tv Battaniyesi
+      Mavi Çizgili
+  - sku: '1116227106'
+    brand: tinylamb
+    model: 100x120cm Organik 4 Katlı Mavi Renk Müslin Battaniye - Brighton
+  - sku: '790623045'
+    brand: Merinos
+    model: Elegance Çift Kişilik Battaniye - Indigo
 - coicop: '0521'
   source: trendyol
   keyword: halı
   tracked_skus:
+  - sku: '971387037'
+    brand: venucci home & living
+    model: Nora Yumuşak Dokulu Yolluk %100 Polyester Makina Halısı Oturma Odası Salon
+      Mutfak Yatak Odası Halısı
   - sku: '930297250'
     brand: Nun Halı
     model: Nun Halı Kolay Temizlenen Yıkanabilir Bordürlü Halı
@@ -223,14 +913,102 @@ furniture:
     brand: Lorente Home
     model: Moreno Viskon Dokuma Halı Kaymaz Taban Yıkanabilir Açık Kahve Koridor Halısı
       1285
+  - sku: '869766906'
+    brand: Nun Halı
+    model: Kolay Temizlenen Yıkanabilir Bordürlü Halı Gri Krem
   - sku: '803918393'
     brand: Red Halı
     model: Düz Renk Bej Sisal Yumuşak Polipropilen Jüt Halı Salon Oturma Odası Yolluk
       Mutfak Koridor Halısı
-  - sku: '1019305067'
+  - sku: '257110483'
+    brand: MOTTO HALI
+    model: Otantik Eko Punto Kaymaz Tabanlı Yıkanabilir Antibakteriyel Dijital Baskı
+      Halı Yolluk
+  - sku: '752396387'
+    brand: Oriente Home
+    model: Klasik Model Eskitme Desenli Krem Gri Yıkanabilir Kaymaz Taban Şönil Halı
+      7364
+  - sku: '1120650661'
+    brand: VOPTEKS
+    model: Siyah Halı Salon Halısı Makinede Yıkanabilir Kaymaz Taban Halı
+  - sku: '799859579'
+    brand: Lorente Home
+    model: Moreno Viskon Dokuma Halı Kaymaz Taban Yıkanabilir Yeşil Antrasit Mutfak
+      Halısı 1288
+  - sku: '933607071'
+    brand: Estiva Home
+    model: Krem Beyaz Sisal Halı - Robot Süpürge Uyumlu Leke Tutmaz Kaymaz Taban Salon
+      Mutfak Yolluk
+  - sku: '864018959'
     brand: Raschel Carpet
-    model: Bohem Emboss Premium Seri Kaymaz Taban Jel Taban Halı Yolluk Koyu Gri
+    model: Krem Yumuşak Bubble Kaymaz Özel Taban Peluş Halı Yolluk
+  - sku: '378716784'
+    brand: Cool Halı
+    model: Sydney Bej Sisal Halı Hasır Dokulu Salon Yatak Odası Mutfak Oturma Odası
+      Antre Hol Koridor Halısı
+  - sku: '1098986144'
+    brand: eco concept
+    model: Mitos Serisi Dijital Baskı Halı Etnik Retro Desen Mutfak Halı Yıkanabilir
+      Kaymaz Taban Salon Halısı
+  - sku: '1089603350'
+    brand: bergama home
+    model: Lalezar beyaz rengi modern tozsuz özel ölçü antre, koridor, mutfak, ve
+      salon halısı
+  - sku: '1110654551'
+    brand: GECE HOME
+    model: Dijital Kaymaz Yıkanabilir Asimetrik Çiçekli Vintage Salon Halısı Mutfak
+      Halısı Yolluk
+  - sku: '339578890'
+    brand: Eliz Home
+    model: Krem Bej Bukleli Dokuma Halı Antre Yolluk Çocuk Odası Oturma Odası Salon
+      Mutfak Halısı
+  - sku: '1019320920'
+    brand: Raschel Carpet
+    model: Bohem Emboss Premium Seri Kaymaz Taban Jel Taban Halı Yolluk Krem
+  - sku: '1094673570'
+    brand: Cool Halı
+    model: Puffy Krem Rengi Düz Renk Modern Yumuşak Puf Dokuma Salon Oturma Özel Ölçü
+      Pofuduk Ev Oda Halısı
+  - sku: '86231673'
+    brand: Sarar
+    model: Dream House Peluş Halı Yumuşak
+  - sku: '824855751'
+    brand: Hülya Home
+    model: Salon Halısı Geometrik İskandinav Eskitmeli Dijital Baskı Yıkanabilir Kaymaz
+      Taban 8086SALON
+  - sku: '819984938'
+    brand: venucci home & living
+    model: Valeria %100 Polyester Vintage Modern  Dokuma Salon Oturma Odası Halısı
   - sku: '766031811'
     brand: Dijidekor
     model: Halı Krem Cool Janjanlı Yıkanabilir Kaymaz Kesme Ince Yolluk Kilim Salon
       Halısı Modelleri
+  - sku: '831662653'
+    brand: Red Halı
+    model: Düz Renk Krem Sisal Yumuşak Polipropilen Jüt Halı Salon Oturma Odası Yolluk
+      Mutfak Koridor Halısı
+  - sku: '325216883'
+    brand: Mariesse Home
+    model: Elit Bukleli Yumuşak Peluş Post Shaggy Çocuk Odası Oturma Odası Salon Mutfak
+      Halısı
+  - sku: '924135912'
+    brand: Mariesse Home
+    model: Asır Serisi Vintage Modern Dokuma Salon Oturma Odası Halısı
+  - sku: '838988432'
+    brand: Madame Coco
+    model: Feroın Halı - Krem - 120x180 Cm
+  - sku: '727072320'
+    brand: VOPTEKS
+    model: Makinede Yıkanabilir Kaymaz Taban Siyah Beyaz Halı
+  - sku: '928027055'
+    brand: West Home
+    model: Makinede yıkanabilir dijital kaymaz taban leke tutmaz mutfak halısı salon
+      halısı ve kesme yolluk
+  - sku: '1101702619'
+    brand: eco concept
+    model: Mitos Serisi Dijital Baskı Halı Etnik Retro Desen Mutfak Halı Yıkanabilir
+      Kaymaz Taban Salon Halısı
+  - sku: '1108877331'
+    brand: Decomia Home
+    model: Dijital Kaymaz Yıkanabilir Renkli Retro Salon Halısı Mutfak Halısı Koridor
+      Halısı

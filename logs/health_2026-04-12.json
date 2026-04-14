@@ -1,0 +1,237 @@
+{
+  "date": "2026-04-12",
+  "overall_status": "warning",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "warning",
+      "records_today": 4527,
+      "records_yesterday": 4527,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 20,
+      "anomalies": [
+        {
+          "identifier": "carrefour / Knorr Mercimek Çorbası 76 Gr",
+          "yesterday": 29.0,
+          "today": 33.95000076293945,
+          "change_pct": 17.1
+        },
+        {
+          "identifier": "carrefour / Rinso Argan Sıvı Deterjan 2.5 Lt",
+          "yesterday": 368.5,
+          "today": 368.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Namet Hindi Kokteyl Sosis 7/24 140 Gr",
+          "yesterday": 80.9000015258789,
+          "today": 80.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Yumoş Siyahlar İçin Sıvı Deterjan 2.5 Lt",
+          "yesterday": 388.5,
+          "today": 388.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Indomie Spesiyel Tavuk Paket Noodle 75 G",
+          "yesterday": 20.25,
+          "today": 20.25,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Macromax Extra Güçlü Çöp Torbası Küçük B",
+          "yesterday": 68.5,
+          "today": 68.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Vanish Gold Beyaz Leke Çıkarıcı 1 Lt",
+          "yesterday": 329.8999938964844,
+          "today": 329.8999938964844,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Köftelik Bulgur 1 Kg",
+          "yesterday": 49.95000076293945,
+          "today": 49.95000076293945,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Uni Baby Aktif Islak Mendil 72 Adet",
+          "yesterday": 66.9000015258789,
+          "today": 66.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Kuru Fasulye 1 Kg",
+          "yesterday": 137.25,
+          "today": 137.25,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Parex %30 Mikrofiber Sarı Temizlik Bezi ",
+          "yesterday": 201.89999389648438,
+          "today": 201.89999389648438,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Knorr Et Bulyon 12 Adet",
+          "yesterday": 62.5,
+          "today": 62.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Reis Nohut 1 Kg",
+          "yesterday": 147.9499969482422,
+          "today": 147.9499969482422,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Altınkılıç Kefir 1 Lt",
+          "yesterday": 109.9000015258789,
+          "today": 109.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Monster Energy Enerji İçeceği 500 Ml",
+          "yesterday": 70.9000015258789,
+          "today": 70.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Reis Kırmızı Mercimek 1 Kg",
+          "yesterday": 165.9499969482422,
+          "today": 165.9499969482422,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Dermason Fasulye 1 Kg",
+          "yesterday": 144.5,
+          "today": 144.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Hellmann's Ketçap 460 Gr",
+          "yesterday": 121.0,
+          "today": 121.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Koçbaşı Nohut 8 mm 1 Kg",
+          "yesterday": 126.25,
+          "today": 126.25,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Yeşil Mercimek 1 Kg",
+          "yesterday": 163.5,
+          "today": 163.5,
+          "change_pct": 0.0
+        }
+      ],
+      "warnings": [
+        "Fiyat değişimi: carrefour / Knorr Mercimek Çorbası 76 Gr +17.1%",
+        "Fiyat değişimi: carrefour / Rinso Argan Sıvı Deterjan 2.5 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Namet Hindi Kokteyl Sosis 7/24 140 Gr +0.0%",
+        "Fiyat değişimi: carrefour / Yumoş Siyahlar İçin Sıvı Deterjan 2.5 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Indomie Spesiyel Tavuk Paket Noodle 75 G +0.0%",
+        "Fiyat değişimi: carrefour / Macromax Extra Güçlü Çöp Torbası Küçük B +0.0%",
+        "Fiyat değişimi: carrefour / Vanish Gold Beyaz Leke Çıkarıcı 1 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Duru Köftelik Bulgur 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Uni Baby Aktif Islak Mendil 72 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Duru Kuru Fasulye 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Parex %30 Mikrofiber Sarı Temizlik Bezi  +0.0%",
+        "Fiyat değişimi: carrefour / Knorr Et Bulyon 12 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Reis Nohut 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Altınkılıç Kefir 1 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Monster Energy Enerji İçeceği 500 Ml +0.0%",
+        "Fiyat değişimi: carrefour / Reis Kırmızı Mercimek 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Duru Dermason Fasulye 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Hellmann's Ketçap 460 Gr +0.0%",
+        "Fiyat değişimi: carrefour / Duru Koçbaşı Nohut 8 mm 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Duru Yeşil Mercimek 1 Kg +0.0%"
+      ],
+      "errors": []
+    },
+    {
+      "module_code": "05p2+3",
+      "module_name": "Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
+      "status": "warning",
+      "records_today": 95,
+      "records_yesterday": 52,
+      "expected": 110,
+      "missing_count": 15,
+      "missing": [
+        "[trendyol:nevresim takımı] Rimo Home ÇARŞAFI LASTİKLİ ÇİFT KİŞİLİK NEVRESİM T (SKU 1064141083)",
+        "[trendyol:yemek masası] TOCE HOME Kuf Serisi 80X130 Açılabilir Masa Yemek  (SKU 1104188909)",
+        "[trendyol:battaniye] argehome Donut Kedi Yatağı Peluş Kedi Minderi Yuv (SKU 1116229635)",
+        "[trendyol:LED ampul] Şımart Akıllı RGB LED Ampul Wi-Fi 16M Renk, Uza (SKU 282444013)",
+        "[trendyol:LED ampul] Şımart Teknoloji Akıllı Rgb Led Ampul Bluetooth 16m Renk, (SKU 376730755)",
+        "[trendyol:LED ampul] Xenon Smart Akıllı Wi-Fi Led Akıllı RGB Ampul Mobil  (SKU 789991474)",
+        "[trendyol:çamaşır makinesi] Hoover HRE H9A2TE-17 9 kg Wi-Fi Bağlantılı Isı  (SKU 831564899)",
+        "[trendyol:kahve makinesi] KUMTEL LatteNow Tam Otomatik Espresso Makinesi  (SKU 835117028)",
+        "[trendyol:2 kapılı gardırop] MOBİLİQUE Madrid No.1 Raflı Gardırop (SKU 851443943)",
+        "[trendyol:koltuk] EDSY HOME Mira Relax 4 Modül Köşe Koltuk Krem Kete (SKU 868569520)",
+        "[trendyol:çamaşır makinesi] Mirobi WashBox Banyo Kirli Sepetli Çamaşır Maki (SKU 895131599)",
+        "[trendyol:battaniye] Soley Serenity | %100 Pamuk 200 X 220 Cm Çift  (SKU 899178512)",
+        "[trendyol:koltuk] Gaga Mobilya Aktivite koltuğu Kanepe Koltuk Yataklı K (SKU 899265063)",
+        "[trendyol:halı] venucci home & living Nora Yumuşak Dokulu Yolluk %100 Polyeste (SKU 971387037)",
+        "[trendyol:yemek masası] Alesta Life Beyaz Yemek Masası, Mutfak Masası, Çalış (SKU 978437662)"
+      ],
+      "anomaly_count": 2,
+      "anomalies": [
+        {
+          "identifier": "Varta Super Heavy Duty Toplam 24 Adet Öze",
+          "yesterday": 133.42,
+          "today": 159.0,
+          "change_pct": 19.2
+        },
+        {
+          "identifier": "Philips PowerPro City Toz Torbasız Elektrik",
+          "yesterday": 6499.0,
+          "today": 7249.0,
+          "change_pct": 11.5
+        }
+      ],
+      "warnings": [
+        "Eksik SKU: [trendyol:nevresim takımı] Rimo Home ÇARŞAFI LASTİKLİ ÇİFT KİŞİLİK NEVRESİM T (SKU 1064141083)",
+        "Eksik SKU: [trendyol:yemek masası] TOCE HOME Kuf Serisi 80X130 Açılabilir Masa Yemek  (SKU 1104188909)",
+        "Eksik SKU: [trendyol:battaniye] argehome Donut Kedi Yatağı Peluş Kedi Minderi Yuv (SKU 1116229635)",
+        "Eksik SKU: [trendyol:LED ampul] Şımart Akıllı RGB LED Ampul Wi-Fi 16M Renk, Uza (SKU 282444013)",
+        "Eksik SKU: [trendyol:LED ampul] Şımart Teknoloji Akıllı Rgb Led Ampul Bluetooth 16m Renk, (SKU 376730755)",
+        "Eksik SKU: [trendyol:LED ampul] Xenon Smart Akıllı Wi-Fi Led Akıllı RGB Ampul Mobil  (SKU 789991474)",
+        "Eksik SKU: [trendyol:çamaşır makinesi] Hoover HRE H9A2TE-17 9 kg Wi-Fi Bağlantılı Isı  (SKU 831564899)",
+        "Eksik SKU: [trendyol:kahve makinesi] KUMTEL LatteNow Tam Otomatik Espresso Makinesi  (SKU 835117028)",
+        "Eksik SKU: [trendyol:2 kapılı gardırop] MOBİLİQUE Madrid No.1 Raflı Gardırop (SKU 851443943)",
+        "Eksik SKU: [trendyol:koltuk] EDSY HOME Mira Relax 4 Modül Köşe Koltuk Krem Kete (SKU 868569520)",
+        "Eksik SKU: [trendyol:çamaşır makinesi] Mirobi WashBox Banyo Kirli Sepetli Çamaşır Maki (SKU 895131599)",
+        "Eksik SKU: [trendyol:battaniye] Soley Serenity | %100 Pamuk 200 X 220 Cm Çift  (SKU 899178512)",
+        "Eksik SKU: [trendyol:koltuk] Gaga Mobilya Aktivite koltuğu Kanepe Koltuk Yataklı K (SKU 899265063)",
+        "Eksik SKU: [trendyol:halı] venucci home & living Nora Yumuşak Dokulu Yolluk %100 Polyeste (SKU 971387037)",
+        "Eksik SKU: [trendyol:yemek masası] Alesta Life Beyaz Yemek Masası, Mutfak Masası, Çalış (SKU 978437662)",
+        "Fiyat değişimi: Varta Super Heavy Duty Toplam 24 Adet Öze +19.2%",
+        "Fiyat değişimi: Philips PowerPro City Toz Torbasız Elektrik +11.5%"
+      ],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "ok",
+      "records_today": 27,
+      "records_yesterday": 27,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}

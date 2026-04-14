@@ -42,8 +42,53 @@ logger = logging.getLogger(__name__)
 
 _SEARCH_URL      = "https://www.trendyol.com/sr?q={keyword}&pi={page}"
 _BESTSELLER_URL  = "https://www.trendyol.com/sr?q={keyword}&siralama=en-cok-satan&pi={page}"
-_MAX_DISCOVERY   = 5   # discovery basina kaydedilecek SKU sayisi
-_SEARCH_PAGES    = 3   # scrape_tracked icin taranan sayfa sayisi
+_MAX_DISCOVERY   = 30  # discovery basina kaydedilecek SKU sayisi
+_MAX_PER_BRAND   = 3   # discovery'de marka basina max SKU
+_DISCOVERY_PAGES = 3   # discovery icin taranan sayfa sayisi
+_SEARCH_PAGES    = 5   # scrape_tracked icin taranan sayfa sayisi
+
+# Turkce karakter normalizasyonu (ilgililik kontrolu icin)
+_TR_LOWER = str.maketrans({
+    "İ": "i", "I": "ı", "Ğ": "ğ", "Ü": "ü", "Ş": "ş", "Ö": "ö", "Ç": "ç",
+})
+
+
+def _tr_lower(text: str) -> str:
+    """Turkce-dogru kucuk harf donusumu."""
+    return text.translate(_TR_LOWER).lower()
+
+
+def _is_relevant(model: str, keyword: str) -> bool:
+    """
+    Urun adi (model) keyword ile ilgili mi?
+    Keyword'un en az bir onemli kelimesi model icinde gecmeli.
+    Turkce ek dusurme: 'makinesi' → 'makine', 'koltuğu' → 'koltuk'
+    Yumusak unsuz (k↔ğ, t↔d, p↔b, c↔ç) degisimi de kontrol edilir.
+    """
+    model_lower = _tr_lower(model)
+    tokens = _tr_lower(keyword).split()
+    # 2 ve alti harfli kelimeleri atla (ör. '2', 'li', 'cm')
+    tokens = [t for t in tokens if len(t) > 2]
+    if not tokens:
+        return True  # cok kisa keyword → filtre yapma
+
+    # yumusak unsuz ciftleri (Turkce unsuz yumusamasi)
+    _SOFT = {"k": "ğ", "t": "d", "p": "b", "ç": "c"}
+
+    for tok in tokens:
+        # kok esleme: 'makinesi' → 'makine', 'buzdolabı' → 'buzdolab'
+        stem = tok.rstrip("ıiuüsşnNğ")
+        if len(stem) < 3:
+            stem = tok
+        if stem in model_lower:
+            return True
+        # yumusak unsuz: 'koltuk' → 'koltuğ' (modelde 'koltuğu' olabilir)
+        last = stem[-1] if stem else ""
+        if last in _SOFT:
+            soft_stem = stem[:-1] + _SOFT[last]
+            if soft_stem in model_lower:
+                return True
+    return False
 
 _HEADERS = {
     "User-Agent": (
@@ -166,34 +211,55 @@ class TrendyolScraper(BaseScraper):
         """
         En cok satan siralamasiyla keyword'u arar ve ilk top_n urunu
         {sku, brand, model} sozlugu olarak doner.
+        Birden fazla sayfa tarar, marka basina max _MAX_PER_BRAND SKU alir.
         appliances.yaml tracked_skus listesine yazilmak uzere kullanilir.
         """
         from urllib.parse import quote
-        url = _BESTSELLER_URL.format(keyword=quote(keyword, safe=""), page=0)
-        try:
-            html = await self._fetch_html(url)
-        except Exception as exc:
-            logger.error("[trendyol] discovery fetch hatasi %s: %s", keyword, exc)
-            return []
 
-        products = self._extract_products(html)
-        result = []
-        seen_brands: set[str] = set()
+        result: list[dict] = []
+        brand_counts: dict[str, int] = {}
+        seen_skus: set[str] = set()
         today = date.today()
-        for item in products:
+
+        for page in range(_DISCOVERY_PAGES):
             if len(result) >= top_n:
                 break
-            rec = self._parse_product(item, coicop_code, today)
-            if rec and rec.brand.lower() not in seen_brands:
-                seen_brands.add(rec.brand.lower())
+            url = _BESTSELLER_URL.format(keyword=quote(keyword, safe=""), page=page)
+            try:
+                html = await self._fetch_html(url)
+            except Exception as exc:
+                logger.error("[trendyol] discovery fetch hatasi %s p%d: %s", keyword, page, exc)
+                break
+
+            products = self._extract_products(html)
+            if not products:
+                break
+
+            for item in products:
+                if len(result) >= top_n:
+                    break
+                rec = self._parse_product(item, coicop_code, today)
+                if not rec or rec.sku in seen_skus:
+                    continue
+                if not _is_relevant(rec.model, keyword):
+                    continue
+                brand_key = rec.brand.lower()
+                if brand_counts.get(brand_key, 0) >= _MAX_PER_BRAND:
+                    continue
+                brand_counts[brand_key] = brand_counts.get(brand_key, 0) + 1
+                seen_skus.add(rec.sku)
                 result.append({
                     "sku":   rec.sku,
                     "brand": rec.brand,
                     "model": rec.model,
                 })
+
+            if page < _DISCOVERY_PAGES - 1:
+                await self._sleep(2.0, 4.0)
+
         logger.info(
             "[trendyol] discovery keyword=%s → %d SKU secildi (%d marka)",
-            keyword, len(result), len(seen_brands),
+            keyword, len(result), len(brand_counts),
         )
         return result
 
