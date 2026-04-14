@@ -26,6 +26,7 @@ load_dotenv()
 from db.repository import get_connection
 from modules import get_modules
 from modules.m01_food import FoodModule
+from modules.m05_household import HouseholdModule
 
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(
@@ -86,11 +87,16 @@ async def main(
     dry_run: bool,
     setup_schema: bool,
     do_discover: bool,
+    do_discover_items: bool,
     do_health_check: bool,
     health_date: date | None,
 ) -> None:
     if do_discover:
         await FoodModule().discover_branches()
+        return
+
+    if do_discover_items:
+        await HouseholdModule().discover_items()
         return
 
     if do_health_check:
@@ -182,6 +188,11 @@ if __name__ == "__main__":
         help="Gıda modülü için şube keşfi (config/branches.yaml oluşturur)",
     )
     parser.add_argument(
+        "--discover-items",
+        action="store_true",
+        help="Modül 05 SKU keşfi (items.yaml tracked_skus doldurur)",
+    )
+    parser.add_argument(
         "--health-check",
         action="store_true",
         help="Sağlık raporu — DB verisi bütünlük ve anomali kontrolü",
@@ -197,10 +208,11 @@ if __name__ == "__main__":
     hdate = date.fromisoformat(args.date) if args.date else None
 
     asyncio.run(main(
-        module_codes = codes,
-        dry_run      = args.dry_run,
-        setup_schema = args.setup_schema,
-        do_discover  = args.discover_branches,
-        do_health_check = args.health_check,
-        health_date  = hdate,
+        module_codes      = codes,
+        dry_run           = args.dry_run,
+        setup_schema      = args.setup_schema,
+        do_discover       = args.discover_branches,
+        do_discover_items = args.discover_items,
+        do_health_check   = args.health_check,
+        health_date       = hdate,
     ))
