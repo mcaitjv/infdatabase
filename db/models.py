@@ -72,6 +72,32 @@ class FuelPriceRecord(BaseModel):
         return v
 
 
+class AppliancePriceRecord(BaseModel):
+    """Modül 05 — Beyaz eşya & küçük ev aleti fiyat kaydı."""
+    source:           str       # "vestel" | "samsung" | "beko" | "bosch" | "siemens"
+    sku:              str
+    brand:            str
+    model:            str
+    category:         str       # "buzdolabi" | "camasir_makinesi" | "utu" | ...
+    price:            Decimal
+    discounted_price: Decimal | None = None
+    date:             date
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Fiyat sıfır veya negatif olamaz: {v}")
+        return v
+
+    @field_validator("discounted_price")
+    @classmethod
+    def discounted_must_be_less(cls, v: Decimal | None, info) -> Decimal | None:
+        if v is not None and "price" in info.data and v >= info.data["price"]:
+            raise ValueError("İndirimli fiyat normal fiyattan büyük veya eşit olamaz")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str

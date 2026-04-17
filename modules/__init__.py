@@ -8,10 +8,12 @@ Yeni modül eklemek:
 
 from modules.base import BaseModule
 from modules.m01_food import FoodModule
+from modules.m05_household import HouseholdModule
 from modules.m07_fuel import FuelModule
 
 ALL_MODULES: dict[str, type[BaseModule]] = {
     "01": FoodModule,
+    "05": HouseholdModule,
     "07": FuelModule,
 }
 

@@ -1,0 +1,117 @@
+# Modül 05 — Beyaz Eşya & Küçük Ev Aletleri Takip Listesi
+# --discover-m05 ile güncellenir. Eksik SKU'lar self-heal ile yenilenir.
+
+categories:
+  buzdolabi:
+    label: "Buzdolabı"
+    sources:
+      vestel: { cat_id: 13 }
+      samsung: { path: "/tr/refrigerators/all-refrigerators/" }
+      beko: { path: "/buzdolaplari" }
+      bosch: { path: "/tr/urunler/sogutma/buzdolaplari" }
+      siemens: { path: "/tr/urunler/sogutma/buzdolaplari" }
+    tracked_skus: []
+
+  derin_dondurucu:
+    label: "Derin Dondurucu"
+    sources:
+      vestel: { cat_id: 14 }
+      samsung: { path: "/tr/refrigerators/all-freezers/" }
+      beko: { path: "/derin-dondurucular" }
+      bosch: { path: "/tr/urunler/sogutma/derin-dondurucular" }
+      siemens: { path: "/tr/urunler/sogutma/derin-dondurucular" }
+    tracked_skus: []
+
+  bulasik_makinesi:
+    label: "Bulaşık Makinesi"
+    sources:
+      vestel: { cat_id: 15 }
+      samsung: { path: "/tr/dishwashers/all-dishwashers/" }
+      beko: { path: "/bulasik-makineleri" }
+      bosch: { path: "/tr/urunler/bulasik-yikama/bulasik-makineleri" }
+      siemens: { path: "/tr/urunler/bulasik-yikama/bulasik-makineleri" }
+    tracked_skus: []
+
+  firin_ocak:
+    label: "Fırın ve Ocaklar"
+    sources:
+      vestel: { cat_id: 17 }
+      beko: { path: "/firinlar" }
+      bosch: { path: "/tr/urunler/pisirme-ve-firinda-pisirme" }
+      siemens: { path: "/tr/urunler/pisirme-ve-firinda-pisirme" }
+    tracked_skus: []
+
+  camasir_makinesi:
+    label: "Çamaşır Makinesi"
+    sources:
+      vestel: { cat_id: 10 }
+      samsung: { path: "/tr/washing-machines/all-washing-machines/" }
+      beko: { path: "/camasir-makineleri" }
+      bosch: { path: "/tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri" }
+      siemens: { path: "/tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri" }
+    tracked_skus: []
+
+  kurutma_makinesi:
+    label: "Çamaşır Kurutma Makinesi"
+    sources:
+      vestel: { cat_id: 12 }
+      samsung: { path: "/tr/dryers/all-dryers/" }
+      beko: { path: "/kurutma-makineleri" }
+      bosch: { path: "/tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri" }
+      siemens: { path: "/tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri" }
+    tracked_skus: []
+
+  klima:
+    label: "Klima"
+    sources:
+      vestel: { cat_id: 20 }
+      samsung: { path: "/tr/air-conditioners/all-air-conditioners/" }
+      beko: { path: "/klimalar" }
+      bosch: { path: "/tr/urunler/isitma-ve-sicak-su/klimalar" }
+    tracked_skus: []
+
+  elektrikli_supurge:
+    label: "Elektrikli Süpürge"
+    sources:
+      vestel: { cat_id: 22 }
+      samsung: { path: "/tr/vacuum-cleaners/all-vacuum-cleaners/" }
+      beko: { path: "/elektrikli-supurgeler" }
+      bosch: { path: "/tr/urunler/elektrikli-supurgeler" }
+      siemens: { path: "/tr/urunler/elektrikli-supurgeler" }
+    tracked_skus: []
+
+  # ── Küçük ev aletleri ──────────────────────────────────────────────────
+
+  blender:
+    label: "Blender / Kesici Aletler"
+    sources:
+      vestel: { cat_id: 30 }
+      beko: { path: "/blender-ve-dogramacilar" }
+      bosch: { path: "/tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme" }
+      siemens: { path: "/tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme" }
+    tracked_skus: []
+
+  kucuk_ev_aleti:
+    label: "Elektrikli Küçük Ev Aletleri"
+    sources:
+      vestel: { cat_id: 31 }
+      beko: { path: "/kucuk-ev-aletleri" }
+    tracked_skus: []
+
+  cay_makinesi:
+    label: "Elektrikli Çay Makinesi"
+    sources:
+      vestel: { cat_id: 32 }
+      beko: { path: "/cay-ve-kahve-makineleri" }
+      bosch: { path: "/tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma" }
+      siemens: { path: "/tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma" }
+    tracked_skus: []
+
+  utu:
+    label: "Ütü"
+    sources:
+      vestel: { cat_id: 33 }
+      beko: { path: "/utuler" }
+      bosch: { path: "/tr/urunler/kucuk-ev-aletleri/utu-yapma" }
+      siemens: { path: "/tr/urunler/kucuk-ev-aletleri/utu-yapma" }
+    tracked_skus: []

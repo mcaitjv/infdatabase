@@ -68,6 +68,25 @@ CREATE INDEX IF NOT EXISTS idx_fp_date         ON fuel_prices(date);
 CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON fuel_prices(provider, city);
 
 
+-- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05)
+CREATE TABLE IF NOT EXISTS appliance_prices (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    source           TEXT    NOT NULL,
+    sku              TEXT    NOT NULL,
+    brand            TEXT    NOT NULL,
+    model            TEXT    NOT NULL,
+    category         TEXT    NOT NULL,
+    price            REAL    NOT NULL,
+    discounted_price REAL,
+    date             TEXT    NOT NULL,
+    scraped_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(source, sku, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ap_date     ON appliance_prices(date);
+CREATE INDEX IF NOT EXISTS idx_ap_source   ON appliance_prices(source, date);
+CREATE INDEX IF NOT EXISTS idx_ap_category ON appliance_prices(category, date);
+
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON price_snapshots(location);
