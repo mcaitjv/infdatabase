@@ -1,0 +1,48 @@
+{
+  "date": "2026-04-16",
+  "overall_status": "ok",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "ok",
+      "records_today": 3788,
+      "records_yesterday": 0,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "module_code": "05p2+3",
+      "module_name": "Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
+      "status": "ok",
+      "records_today": 0,
+      "records_yesterday": 0,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "ok",
+      "records_today": 27,
+      "records_yesterday": 0,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}
