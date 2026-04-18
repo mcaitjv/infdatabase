@@ -79,7 +79,7 @@ CREATE INDEX IF NOT EXISTS idx_fp_provider_city
 CREATE TABLE IF NOT EXISTS appliance_prices (
     id               BIGSERIAL     PRIMARY KEY,
     source           VARCHAR(50)   NOT NULL,
-    sku              VARCHAR(100)  NOT NULL,
+    sku              VARCHAR(255)  NOT NULL,
     brand            VARCHAR(100)  NOT NULL,
     model            TEXT          NOT NULL,
     category         VARCHAR(100)  NOT NULL,
