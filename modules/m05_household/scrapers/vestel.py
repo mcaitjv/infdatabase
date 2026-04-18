@@ -1,7 +1,7 @@
 """
 Vestel Scraper — vestel.com.tr
-JSON API: /product/getfilteredproductlist/{catId}
-Sayfalama: page parametresi, 24 ürün/sayfa
+Tam kategori sayfası (httpx): /{slug}-c-{cat_id}
+productListArray.push({...}) JS objelerinden veri çekilir.
 """
 
 import logging
@@ -19,69 +19,107 @@ logger = logging.getLogger(__name__)
 _BASE = "https://www.vestel.com.tr"
 _BUNDLE_PATTERNS = re.compile(r"\bset\b|hediyeli|\+.*birlikte|kampanya.*paket", re.IGNORECASE)
 
+# category_key → (cat_id, url_slug)
+_CATEGORY_MAP: dict[str, tuple[int, str]] = {
+    "buzdolabi":          (13,   "buzdolabi"),
+    "derin_dondurucu":    (15,   "derin-dondurucular"),
+    "bulasik_makinesi":   (11,   "bulasik-makineleri"),
+    "firin_ocak":         (2031, "firinlar"),
+    "camasir_makinesi":   (14,   "camasir-makineleri"),
+    "kurutma_makinesi":   (16,   "kurutma-makineleri"),
+    "klima":              (40,   "klimalar"),
+    "elektrikli_supurge": (34,   "elektrikli-supurgeler"),
+    "blender":            (36,   "mixgo-blenderlar"),
+    "kucuk_ev_aleti":     (4,    "kucuk-ev-aletleri"),
+    "cay_makinesi":       (81,   "cay-makinesi"),
+    "utu":                (38,   "utuler"),
+}
 
-def _parse_price(text: str | None) -> Decimal | None:
-    if not text:
-        return None
-    cleaned = text.replace(".", "").replace(",", ".").strip()
-    match = re.search(r"(\d+(?:\.\d+)?)", cleaned)
-    if match:
-        val = Decimal(match.group(1))
-        return val if val > 0 else None
-    return None
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+}
 
 
 class VestelScraper(BaseScraper):
     market_name = "vestel"
 
+    async def __aenter__(self) -> "VestelScraper":
+        import httpx
+        self._client = httpx.AsyncClient(
+            headers=_HEADERS,
+            follow_redirects=True,
+            timeout=30.0,
+        )
+        return self
+
     async def scrape_product(self, sku: str) -> None:
         raise NotImplementedError("discover_category / scrape_tracked kullanın")
 
+    def _category_path(self, cat_id: int, category: str) -> str:
+        if category in _CATEGORY_MAP:
+            cid, slug = _CATEGORY_MAP[category]
+            return f"/{slug}-c-{cid}"
+        return f"/-c-{cat_id}"
+
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=5, max=30))
-    async def _fetch_category(self, cat_id: int, page: int = 1) -> str:
-        url = f"{_BASE}/product/getfilteredproductlist/{cat_id}"
-        resp = await self.client.get(url, params={"page": page})
+    async def _fetch_page(self, path: str, page: int = 1) -> str:
+        params = {"page": page} if page > 1 else {}
+        resp = await self.client.get(f"{_BASE}{path}", params=params)
         resp.raise_for_status()
         return resp.text
 
     def _parse_products(self, html: str, category: str) -> list[dict]:
+        """productListArray.push({...}) JS bloklarından ürün verisi çeker."""
         products = []
-        cards = re.findall(
-            r'data-product-id=["\'](\d+)["\'].*?'
-            r'class=["\']product-name["\'][^>]*>([^<]+)<.*?'
-            r'class=["\']product-price["\'][^>]*>(.*?)</div>',
-            html, re.DOTALL
-        )
-        for sku, name, price_block in cards:
-            name = name.strip()
+        seen: set[str] = set()
+
+        for m in re.finditer(r"productListArray\.push\(\{(.*?)\}\)", html, re.DOTALL):
+            block = m.group(1)
+            item_id   = re.search(r"'item_id'\s*:\s*\"(\d+)\"", block)
+            item_name = re.search(r"'item_name'\s*:\s*\"([^\"]+)\"", block)
+            price_m   = re.search(r"'price'\s*:\s*\"([\d.]+)\"", block)
+            disc_m    = re.search(r"'discount'\s*:\s*\"([\d.]+)\"", block)
+
+            if not (item_id and item_name and price_m):
+                continue
+            sku = item_id.group(1)
+            if sku in seen:
+                continue
+            name = item_name.group(1).strip()
             if _BUNDLE_PATTERNS.search(name):
                 continue
-
-            prices = re.findall(r'[\d.,]+\s*TL', price_block)
-            if not prices:
+            try:
+                price = Decimal(price_m.group(1))
+            except Exception:
+                continue
+            if price <= 0:
                 continue
 
-            price = _parse_price(prices[-1])
-            discounted = _parse_price(prices[0]) if len(prices) > 1 else None
-            if discounted and price and discounted >= price:
-                discounted = None
+            discount = Decimal(disc_m.group(1)) if disc_m else Decimal("0")
+            discounted = price - discount if discount > 0 else None
 
-            if price:
-                products.append({
-                    "sku": sku,
-                    "brand": "Vestel",
-                    "model": name,
-                    "category": category,
-                    "price": price,
-                    "discounted_price": discounted,
-                })
+            seen.add(sku)
+            products.append({
+                "sku": sku,
+                "brand": "Vestel",
+                "model": name,
+                "category": category,
+                "price": price,
+                "discounted_price": discounted,
+            })
         return products
 
     async def discover_category(self, cat_id: int, category: str, max_pages: int = 3) -> list[dict]:
-        all_products = []
+        path = self._category_path(cat_id, category)
+        all_products: list[dict] = []
         for page in range(1, max_pages + 1):
             try:
-                html = await self._fetch_category(cat_id, page)
+                html = await self._fetch_page(path, page)
                 products = self._parse_products(html, category)
                 if not products:
                     break
@@ -93,35 +131,29 @@ class VestelScraper(BaseScraper):
                 break
         return all_products
 
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=5, max=20))
     async def scrape_tracked(self, tracked_skus: list[dict], category: str) -> list[AppliancePriceRecord]:
         today = date.today()
+        if not tracked_skus:
+            return []
+
+        cat_id = _CATEGORY_MAP.get(category, (0, ""))[0]
+        path = self._category_path(cat_id, category)
+
+        all_products = await self.discover_category(cat_id, category, max_pages=5)
+        tracked_set = {s["sku"] for s in tracked_skus}
+
         records = []
-        for sku_info in tracked_skus:
-            try:
-                url = f"{_BASE}/product/getproductdetail/{sku_info['sku']}"
-                resp = await self.client.get(url)
-                if resp.status_code != 200:
-                    continue
-                html = resp.text
-                prices = re.findall(r'[\d.,]+\s*TL', html)
-                if not prices:
-                    continue
-                price = _parse_price(prices[-1])
-                discounted = _parse_price(prices[0]) if len(prices) > 1 else None
-                if discounted and price and discounted >= price:
-                    discounted = None
-                if price:
-                    records.append(AppliancePriceRecord(
-                        source="vestel",
-                        sku=sku_info["sku"],
-                        brand="Vestel",
-                        model=sku_info.get("model", ""),
-                        category=category,
-                        price=price,
-                        discounted_price=discounted,
-                        date=today,
-                    ))
-            except Exception as exc:
-                logger.warning("[vestel] SKU %s hata: %s", sku_info.get("sku"), exc)
-            await self._sleep(1.5, 3.0)
+        for p in all_products:
+            if p["sku"] in tracked_set:
+                records.append(AppliancePriceRecord(
+                    source="vestel",
+                    sku=p["sku"],
+                    brand="Vestel",
+                    model=p["model"],
+                    category=category,
+                    price=p["price"],
+                    discounted_price=p["discounted_price"],
+                    date=today,
+                ))
         return records

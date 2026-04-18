@@ -220,11 +220,51 @@ categories:
       brand: Siemens
       model: iQ500 Üstten Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total noFrost
       source: siemens
+    - sku: '20268312'
+      brand: Vestel
+      model: Vestel NF52111 451 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268350'
+      brand: Vestel
+      model: Vestel NFK52011 471 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268306'
+      brand: Vestel
+      model: Vestel NF48011 434 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268349'
+      brand: Vestel
+      model: Vestel NFK52011 X 471 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268308'
+      brand: Vestel
+      model: Vestel NF45011 402 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268348'
+      brand: Vestel
+      model: Vestel NFK52112 E WIFI 471 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20269634'
+      brand: Vestel
+      model: Vestel NFK60011 TE 533 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268346'
+      brand: Vestel
+      model: Vestel NFK52112 EX WIFI 471 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268305'
+      brand: Vestel
+      model: Vestel NF48011 X 434 Lt No-Frost Buzdolabı
+      source: vestel
+    - sku: '20268345'
+      brand: Vestel
+      model: Vestel NFK48011 427 Lt No-Frost Buzdolabı
+      source: vestel
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
       vestel:
-        cat_id: 14
+        cat_id: 15
       samsung:
         path: /tr/refrigerators/all-freezers/
       beko:
@@ -348,11 +388,51 @@ categories:
       brand: Siemens
       model: iQ300 Solo Derin Dondurucu 186 x 60 cm Paslanmaz çelik
       source: siemens
+    - sku: '20265698'
+      brand: Vestel
+      model: VESTEL CDM701 Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268715'
+      brand: Vestel
+      model: Vestel CDM501 Çekmeceli Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268714'
+      brand: Vestel
+      model: Vestel CDM601 E Çekmeceli Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268716'
+      brand: Vestel
+      model: Vestel CDS301 Çekmeceli Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268372'
+      brand: Vestel
+      model: Vestel SD50011 DuoMode  Sandık Tipi Derin Dondurucu
+      source: vestel
+    - sku: '20265696'
+      brand: Vestel
+      model: VESTEL CDM701 X Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268444'
+      brand: Vestel
+      model: Vestel SD40211 DuoMode Sandık Tipi Derin Dondurucu
+      source: vestel
+    - sku: '20268713'
+      brand: Vestel
+      model: Vestel CDL601 Çekmeceli Dikey Derin Dondurucu
+      source: vestel
+    - sku: '20268376'
+      brand: Vestel
+      model: Vestel SD15011 DuoMode Sandık Tipi Derin Dondurucu
+      source: vestel
+    - sku: '20268401'
+      brand: Vestel
+      model: Vestel SD30111 DuoMode Sandık Tipi Derin Dondurucu
+      source: vestel
   bulasik_makinesi:
     label: Bulaşık Makinesi
     sources:
       vestel:
-        cat_id: 15
+        cat_id: 11
       samsung:
         path: /tr/dishwashers/all-dishwashers/
       beko:
@@ -548,11 +628,51 @@ categories:
       brand: Siemens
       model: iQ500 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
       source: siemens
+    - sku: '20267367'
+      brand: Vestel
+      model: Vestel BM 4212 WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20267368'
+      brand: Vestel
+      model: Vestel BM 4212 X WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20350397'
+      brand: Vestel
+      model: Vestel BM 42012 WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20264053'
+      brand: Vestel
+      model: Vestel BM 10502 X GI Pro WIFI 10 Programlı Bulaşık Makinesi
+      source: vestel
+    - sku: '20263207'
+      brand: Vestel
+      model: Vestel BM 5001 RS 5 Programlı Bulaşık Makinesi
+      source: vestel
+    - sku: '20267373'
+      brand: Vestel
+      model: Vestel BM 6312 WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20267375'
+      brand: Vestel
+      model: Vestel BM 8412 GI Pro WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20267374'
+      brand: Vestel
+      model: Vestel BM 6312 X WIFI Bulaşık Makinesi
+      source: vestel
+    - sku: '20263203'
+      brand: Vestel
+      model: Vestel BM 5001 G 5 Programlı Bulaşık Makinesi
+      source: vestel
+    - sku: '20350396'
+      brand: Vestel
+      model: Vestel BM 53122 WIFI Bulaşık Makinesi
+      source: vestel
   firin_ocak:
     label: Fırın ve Ocaklar
     sources:
       vestel:
-        cat_id: 17
+        cat_id: 2031
       beko:
         path: /ankastre-firin
       bosch:
@@ -722,11 +842,51 @@ categories:
       brand: Siemens
       model: iQ100 Ankastre Fırın 60 x 60 cm Siyah
       source: siemens
+    - sku: '20263473'
+      brand: Vestel
+      model: Vestel MD-20 YMB Mikrodalga Fırın
+      source: vestel
+    - sku: '20261660'
+      brand: Vestel
+      model: Vestel MF 42 MB Mini Fırın
+      source: vestel
+    - sku: '20261661'
+      brand: Vestel
+      model: Vestel MF 42 MG Mini Fırın
+      source: vestel
+    - sku: '20263605'
+      brand: Vestel
+      model: Vestel MD 20 YDB Mikrodalga Fırın
+      source: vestel
+    - sku: '20263000'
+      brand: Vestel
+      model: Vestel MD 20 YDS Mikrodalga Fırın
+      source: vestel
+    - sku: '20265467'
+      brand: Vestel
+      model: Vestel SF 8400 DG 4 Gözü Gazlı A Enerji Sınıfı Solo Fırın
+      source: vestel
+    - sku: '20263604'
+      brand: Vestel
+      model: Vestel MD 20 YDG Mikrodalga Fırın
+      source: vestel
+    - sku: '20265423'
+      brand: Vestel
+      model: Vestel MD 20 YMS Mikrodalga Fırın
+      source: vestel
+    - sku: '20265357'
+      brand: Vestel
+      model: Vestel MD 20 YD Retro Bordo Mikrodalga Fırın
+      source: vestel
+    - sku: '20269392'
+      brand: Vestel
+      model: Vestel SF 84011 DG 4 Gözü Gazlı A Enerji Sınıfı Solo Fırın
+      source: vestel
   camasir_makinesi:
     label: Çamaşır Makinesi
     sources:
       vestel:
-        cat_id: 10
+        cat_id: 14
       samsung:
         path: /tr/washing-machines/all-washing-machines/
       beko:
@@ -938,11 +1098,51 @@ categories:
       brand: Siemens
       model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
       source: siemens
+    - sku: '20350198'
+      brand: Vestel
+      model: Vestel CMI 97402 WIFI 9 Kg 1000 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350194'
+      brand: Vestel
+      model: Vestel CMI 107422 10 Kg 1200 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350190'
+      brand: Vestel
+      model: Vestel CMI 128442 WIFI 12 Kg 1400 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350192'
+      brand: Vestel
+      model: Vestel CMI 108442 WIFI 10 Kg 1400 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20263223'
+      brand: Vestel
+      model: Vestel CMI 109242 KX WIFI 10 Kg 1400 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350196'
+      brand: Vestel
+      model: Vestel CMI 97422 WIFI  9 Kg 1200 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350199'
+      brand: Vestel
+      model: Vestel CMI 87402 WIFI 8 Kg 1000 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20264688'
+      brand: Vestel
+      model: Vestel CMI 99342 KX WIFI 9 Kg 1400 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350197'
+      brand: Vestel
+      model: Vestel CMI 97402 G WIFI 9 Kg 1000 Devir Çamaşır Makinesi
+      source: vestel
+    - sku: '20350195'
+      brand: Vestel
+      model: Vestel CMI 97422 G WIFI 9 Kg 1200 Devir Çamaşır Makinesi
+      source: vestel
   kurutma_makinesi:
     label: Çamaşır Kurutma Makinesi
     sources:
       vestel:
-        cat_id: 12
+        cat_id: 16
       samsung:
         path: /tr/dryers/all-dryers/
       beko:
@@ -1114,11 +1314,51 @@ categories:
       brand: Siemens
       model: iQ300 Isı Pompalı Kurutma Makinesi 8 kg
       source: siemens
+    - sku: '20350376'
+      brand: Vestel
+      model: Vestel  KM 97402 WIFI 9 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350377'
+      brand: Vestel
+      model: Vestel  KM 107402 WIFI 10 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350379'
+      brand: Vestel
+      model: Vestel  KMI 98402 WIFI 9 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350381'
+      brand: Vestel
+      model: Vestel  KMI 108402 WIFI 10 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350380'
+      brand: Vestel
+      model: Vestel  KMI 98402 G WIFI 9 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350375'
+      brand: Vestel
+      model: Vestel  KM 87402 WIFI 8 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350383'
+      brand: Vestel
+      model: Vestel  KMI 108402 MS WIFI 10 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350374'
+      brand: Vestel
+      model: Vestel  KM 77402 WIFI 7 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350414'
+      brand: Vestel
+      model: Vestel  KMI 98402 S WIFI 9 Kg Kurutma Makinesi
+      source: vestel
+    - sku: '20350378'
+      brand: Vestel
+      model: Vestel  KM 98402 G GI Pro WIFI  9 Kg Kurutma Makinesi
+      source: vestel
   klima:
     label: Klima
     sources:
       vestel:
-        cat_id: 20
+        cat_id: 40
       samsung:
         path: /tr/air-conditioners/all-air-conditioners/
       beko:
@@ -1301,11 +1541,51 @@ categories:
       brand: Siemens
       model: Klima, Ev Tipi ,
       source: siemens
+    - sku: '20235131'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 126 A++ WIFI Klima
+      source: vestel
+    - sku: '20235138'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 186 A++ WIFI Klima
+      source: vestel
+    - sku: '20234975'
+      brand: Vestel
+      model: Vestel Buzz Inverter 124 A++ WIFI Klima
+      source: vestel
+    - sku: '20235141'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 246 A++ WIFI Klima
+      source: vestel
+    - sku: '20235128'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 096 A++ WIFI Klima
+      source: vestel
+    - sku: '20234476'
+      brand: Vestel
+      model: Vestel Nova Inverter 122 GI Pro 12000 BTU WIFI Klima
+      source: vestel
+    - sku: '20235134'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 156 A++ WIFI Klima
+      source: vestel
+    - sku: '20235125'
+      brand: Vestel
+      model: Vestel Flora Doğa Inverter 074 A++ WIFI Klima
+      source: vestel
+    - sku: '20234522'
+      brand: Vestel
+      model: Vestel Nova Inverter 182 GI Pro 18000 BTU WIFI Klima
+      source: vestel
+    - sku: '20234727'
+      brand: Vestel
+      model: Vestel NEFES INVERTER 122 GI Pro 12000 BTU WIFI Klima
+      source: vestel
   elektrikli_supurge:
     label: Elektrikli Süpürge
     sources:
       vestel:
-        cat_id: 22
+        cat_id: 34
       samsung:
         path: /tr/vacuum-cleaners/all-vacuum-cleaners/
       beko:
@@ -1517,11 +1797,51 @@ categories:
       brand: Siemens
       model: iQ300 Toz torbalı Süpürge Mavi
       source: siemens
+    - sku: '20264754'
+      brand: Vestel
+      model: VESTEL H30 M Elektrikli Süpürge
+      source: vestel
+    - sku: '20264755'
+      brand: Vestel
+      model: VESTEL H20 K Elektrikli Süpürge
+      source: vestel
+    - sku: '20264757'
+      brand: Vestel
+      model: Vestel S70 G Şarjlı Süpürge
+      source: vestel
+    - sku: '20264761'
+      brand: Vestel
+      model: Vestel S30 B Şarjlı Süpürge
+      source: vestel
+    - sku: '20264632'
+      brand: Vestel
+      model: VESTEL V-BOT PRO S Robot Süpürge
+      source: vestel
+    - sku: '20264760'
+      brand: Vestel
+      model: Vestel S35 K Şarjlı Süpürge
+      source: vestel
+    - sku: '20264747'
+      brand: Vestel
+      model: VESTEL T20 S Elektrikli Süpürge
+      source: vestel
+    - sku: '20264751'
+      brand: Vestel
+      model: VESTEL H60 M Elektrikli Süpürge
+      source: vestel
+    - sku: '20264752'
+      brand: Vestel
+      model: VESTEL H50 G Elektrikli Süpürge
+      source: vestel
+    - sku: '20264749'
+      brand: Vestel
+      model: VESTEL H70 T Elektrikli Süpürge
+      source: vestel
   blender:
     label: Blender / Kesici Aletler
     sources:
       vestel:
-        cat_id: 30
+        cat_id: 36
       beko:
         path: /blender
       bosch:
@@ -1581,11 +1901,51 @@ categories:
       brand: Bosch
       model: Serie 2 Blender VitaPower 450 W Paslanmaz çelik
       source: bosch
+    - sku: '20242585'
+      brand: Vestel
+      model: Vestel Mix&Go Siyah Blender
+      source: vestel
+    - sku: '20242670'
+      brand: Vestel
+      model: Vestel Mix&Go Pembe Blender
+      source: vestel
+    - sku: '20242240'
+      brand: Vestel
+      model: Vestel Mix&Go Kırmızı Blender
+      source: vestel
+    - sku: '20242238'
+      brand: Vestel
+      model: Vestel Mix&Go Yeşil Blender
+      source: vestel
+    - sku: '20242671'
+      brand: Vestel
+      model: Vestel Mix&Go Inox Blender
+      source: vestel
+    - sku: '20244313'
+      brand: Vestel
+      model: Vestel Mix&Go Şarj Edilebilir Siyah Blender
+      source: vestel
+    - sku: '20244314'
+      brand: Vestel
+      model: Vestel Mix&Go Şarj Edilebilir Pembe Blender
+      source: vestel
+    - sku: '20244315'
+      brand: Vestel
+      model: Vestel Mix&Go Şarj Edilebilir Mavi Blender
+      source: vestel
+    - sku: '20242585'
+      brand: Vestel
+      model: Vestel Mix&Go Siyah Blender
+      source: vestel
+    - sku: '20242670'
+      brand: Vestel
+      model: Vestel Mix&Go Pembe Blender
+      source: vestel
   kucuk_ev_aleti:
     label: Elektrikli Küçük Ev Aletleri
     sources:
       vestel:
-        cat_id: 31
+        cat_id: 4
       beko:
         path: /kucuk-ev-aletleri
       arcelik:
@@ -1698,7 +2058,7 @@ categories:
     label: Elektrikli Çay Makinesi
     sources:
       vestel:
-        cat_id: 32
+        cat_id: 81
       beko:
         path: /cay-makinesi
       bosch:
@@ -1790,11 +2150,51 @@ categories:
       brand: Bosch
       model: Çay Makinesi
       source: bosch
+    - sku: '20244336'
+      brand: Vestel
+      model: VESTEL SEFA 5000 X ÇAY MAKİNESİ
+      source: vestel
+    - sku: '20242903'
+      brand: Vestel
+      model: Vestel Sefa 4000 X Çay Makinesi
+      source: vestel
+    - sku: '20244543'
+      brand: Vestel
+      model: VESTEL SEFA 4510 X Çay Makinesi
+      source: vestel
+    - sku: '20244545'
+      brand: Vestel
+      model: Vestel SEFA 4510 CX Çay Makinesi
+      source: vestel
+    - sku: '20244544'
+      brand: Vestel
+      model: Vestel SEFA 4510 C Çay Makinesi
+      source: vestel
+    - sku: '20244336'
+      brand: Vestel
+      model: VESTEL SEFA 5000 X ÇAY MAKİNESİ
+      source: vestel
+    - sku: '20242903'
+      brand: Vestel
+      model: Vestel Sefa 4000 X Çay Makinesi
+      source: vestel
+    - sku: '20244543'
+      brand: Vestel
+      model: VESTEL SEFA 4510 X Çay Makinesi
+      source: vestel
+    - sku: '20244545'
+      brand: Vestel
+      model: Vestel SEFA 4510 CX Çay Makinesi
+      source: vestel
+    - sku: '20244544'
+      brand: Vestel
+      model: Vestel SEFA 4510 C Çay Makinesi
+      source: vestel
   utu:
     label: Ütü
     sources:
       vestel:
-        cat_id: 33
+        cat_id: 38
       beko:
         path: /utu
       arcelik:
@@ -1880,3 +2280,43 @@ categories:
       brand: ARÇELİK
       model: BEU 4024 M
       source: arcelik
+    - sku: '20242228'
+      brand: Vestel
+      model: V-Press Serisi 2000 Lila Buhar Jeneratorlu Ütü
+      source: vestel
+    - sku: '20244214'
+      brand: Vestel
+      model: Vestel SB2500 Buharlı Kırışık Giderici
+      source: vestel
+    - sku: '20244178'
+      brand: Vestel
+      model: Vestel V-Press Serisi 2000 Mavi Buhar Jeneratörlü Ütü
+      source: vestel
+    - sku: '20244266'
+      brand: Vestel
+      model: Vestel VBU 5531 Buharlı Ütü
+      source: vestel
+    - sku: '20244276'
+      brand: Vestel
+      model: Vestel VBJU 7830 Buhar Jeneratörlü Ütü
+      source: vestel
+    - sku: '20244269'
+      brand: Vestel
+      model: Vestel ELMAS VBU 5031 Buharlı Ütü
+      source: vestel
+    - sku: '20244334'
+      brand: Vestel
+      model: Vestel VBJU 8026 Mor Buhar Jenaratörlü Ütü
+      source: vestel
+    - sku: '20244292'
+      brand: Vestel
+      model: Vestel VBJU 8026 Yeşil Buhar Jenaratörlü Ütü
+      source: vestel
+    - sku: '20244271'
+      brand: Vestel
+      model: Vestel VBU 4527 Mor Buharlı Ütü
+      source: vestel
+    - sku: '20244270'
+      brand: Vestel
+      model: Vestel VBU 4527 Kırmızı Buharlı Ütü
+      source: vestel
