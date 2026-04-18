@@ -15,6 +15,8 @@ categories:
         path: /tr/urunler/sogutma/buzdolaplari
       siemens:
         path: /tr/urunler/sogutma/buzdolaplari
+      arcelik:
+        path: /buzdolabi
     tracked_skus:
     - sku: refrigerator-sbs-9-inch-ai-home-621l-black-doi-rs90f64eeftr
       brand: Samsung
@@ -96,6 +98,46 @@ categories:
       brand: Beko
       model: 678551 EBC AI Fit
       source: beko
+    - sku: '7291620111'
+      brand: ARÇELİK
+      model: 278552 EI AI Fit
+      source: arcelik
+    - sku: '7296520186'
+      brand: ARÇELİK
+      model: 283616 EI
+      source: arcelik
+    - sku: '7295520166'
+      brand: ARÇELİK
+      model: 391572 EB
+      source: arcelik
+    - sku: '7291727736'
+      brand: ARÇELİK
+      model: 574509 MI
+      source: arcelik
+    - sku: '7296520147'
+      brand: ARÇELİK
+      model: 283613 EB
+      source: arcelik
+    - sku: '7296529446'
+      brand: ARÇELİK
+      model: 283616 IEBI
+      source: arcelik
+    - sku: '7285520143'
+      brand: ARÇELİK
+      model: 391641 EI
+      source: arcelik
+    - sku: '7289120164'
+      brand: ARÇELİK
+      model: 583632 EI Fit
+      source: arcelik
+    - sku: '7289120188'
+      brand: ARÇELİK
+      model: 578557 EB Fit
+      source: arcelik
+    - sku: '7289120157'
+      brand: ARÇELİK
+      model: 583632 EB Fit
+      source: arcelik
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
@@ -109,6 +151,8 @@ categories:
         path: /tr/urunler/sogutma/derin-dondurucular
       siemens:
         path: /tr/urunler/sogutma/derin-dondurucular
+      arcelik:
+        path: /derin-dondurucu
     tracked_skus:
     - sku: '7254120290'
       brand: Beko
@@ -150,6 +194,46 @@ categories:
       brand: Beko
       model: 7072 MB
       source: beko
+    - sku: '7285920110'
+      brand: ARÇELİK
+      model: 2162 NFB
+      source: arcelik
+    - sku: '7294220114'
+      brand: ARÇELİK
+      model: 2175 JEB
+      source: arcelik
+    - sku: '7294220115'
+      brand: ARÇELİK
+      model: 2783 DEB
+      source: arcelik
+    - sku: '7294920110'
+      brand: ARÇELİK
+      model: 2053 MB
+      source: arcelik
+    - sku: '7294220194'
+      brand: ARÇELİK
+      model: 2175 JEI
+      source: arcelik
+    - sku: '7294920116'
+      brand: ARÇELİK
+      model: 2053 NFB
+      source: arcelik
+    - sku: '7284740110'
+      brand: ARÇELİK
+      model: 2071 NFB
+      source: arcelik
+    - sku: '7278420190'
+      brand: ARÇELİK
+      model: 2682 NFI
+      source: arcelik
+    - sku: '7278420010'
+      brand: ARÇELİK
+      model: 2682 NFB
+      source: arcelik
+    - sku: '7279720011'
+      brand: ARÇELİK
+      model: 2071 MNFB
+      source: arcelik
   bulasik_makinesi:
     label: Bulaşık Makinesi
     sources:
@@ -163,6 +247,8 @@ categories:
         path: /tr/urunler/bulasik-yikama/bulasik-makineleri
       siemens:
         path: /tr/urunler/bulasik-yikama/bulasik-makineleri
+      arcelik:
+        path: /bulasik-makinesi
     tracked_skus:
     - sku: dw8700-dw60bb890fapml-8-place-settings-satin-beige-dw60db890faptr
       brand: Samsung
@@ -228,6 +314,46 @@ categories:
       brand: Beko
       model: BM 3143
       source: beko
+    - sku: '7631710177'
+      brand: ARÇELİK
+      model: 6444 OK
+      source: arcelik
+    - sku: '7635210177'
+      brand: ARÇELİK
+      model: '6466'
+      source: arcelik
+    - sku: '7639810177'
+      brand: ARÇELİK
+      model: A 710 sc
+      source: arcelik
+    - sku: '7640010177'
+      brand: ARÇELİK
+      model: A 710 bc
+      source: arcelik
+    - sku: '7629710177'
+      brand: ARÇELİK
+      model: '6433'
+      source: arcelik
+    - sku: '7630110177'
+      brand: ARÇELİK
+      model: '6444'
+      source: arcelik
+    - sku: '7631810177'
+      brand: ARÇELİK
+      model: 6444 OK I
+      source: arcelik
+    - sku: '7631910177'
+      brand: ARÇELİK
+      model: 6444 OK A
+      source: arcelik
+    - sku: '7632010177'
+      brand: ARÇELİK
+      model: 6688 DI
+      source: arcelik
+    - sku: '7632110177'
+      brand: ARÇELİK
+      model: 6455 WF I
+      source: arcelik
   firin_ocak:
     label: Fırın ve Ocaklar
     sources:
@@ -239,6 +365,8 @@ categories:
         path: /tr/urunler/pisirme-ve-firinda-pisirme
       siemens:
         path: /tr/urunler/pisirme-ve-firinda-pisirme
+      arcelik:
+        path: /ankastre-firin
     tracked_skus:
     - sku: '7779420286'
       brand: Beko
@@ -280,6 +408,46 @@ categories:
       brand: Beko
       model: BFM 310 S
       source: beko
+    - sku: '7779420287'
+      brand: ARÇELİK
+      model: AFC 362 B
+      source: arcelik
+    - sku: '7768280102'
+      brand: ARÇELİK
+      model: AFC 341 B
+      source: arcelik
+    - sku: '7768270202'
+      brand: ARÇELİK
+      model: AFC 361 B
+      source: arcelik
+    - sku: '7768270201'
+      brand: ARÇELİK
+      model: AFC 361 S
+      source: arcelik
+    - sku: '7768270185'
+      brand: ARÇELİK
+      model: AFC 330 B
+      source: arcelik
+    - sku: '7768270190'
+      brand: ARÇELİK
+      model: AFC 330 S
+      source: arcelik
+    - sku: '7768270204'
+      brand: ARÇELİK
+      model: AFC 330 G
+      source: arcelik
+    - sku: '7768270162'
+      brand: ARÇELİK
+      model: AFM 130 B
+      source: arcelik
+    - sku: '7768270165'
+      brand: ARÇELİK
+      model: AFM 130 S
+      source: arcelik
+    - sku: '7768270161'
+      brand: ARÇELİK
+      model: AFM 130 I
+      source: arcelik
   camasir_makinesi:
     label: Çamaşır Makinesi
     sources:
@@ -293,6 +461,8 @@ categories:
         path: /tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri
       siemens:
         path: /tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri
+      arcelik:
+        path: /camasir-makinesi
     tracked_skus:
     - sku: ww8400d-front-loading-smartthings-ai-energy-made-a-xx-percent-extra-energy-efficiency-ai-ecobubble-11kg-white-ww11db8b95ghah
       brand: Samsung
@@ -374,6 +544,46 @@ categories:
       brand: Beko
       model: CMX 8100
       source: beko
+    - sku: '457100000020'
+      brand: ARÇELİK
+      model: 9120 DMX
+      source: arcelik
+    - sku: '457100000011'
+      brand: ARÇELİK
+      model: 10120 MX
+      source: arcelik
+    - sku: '7175750900'
+      brand: ARÇELİK
+      model: 9140 MP OG
+      source: arcelik
+    - sku: '457100000035'
+      brand: ARÇELİK
+      model: 8100 MX
+      source: arcelik
+    - sku: '457100000019'
+      brand: ARÇELİK
+      model: 9120 DMXS
+      source: arcelik
+    - sku: '457100034700'
+      brand: ARÇELİK
+      model: 9120 TMX
+      source: arcelik
+    - sku: '457100007200'
+      brand: ARÇELİK
+      model: 9100 DMX
+      source: arcelik
+    - sku: '457100000015'
+      brand: ARÇELİK
+      model: 10120 MXS
+      source: arcelik
+    - sku: '7170520100'
+      brand: ARÇELİK
+      model: 10120 IMP
+      source: arcelik
+    - sku: '7115421400'
+      brand: ARÇELİK
+      model: 9120 MP O
+      source: arcelik
   kurutma_makinesi:
     label: Çamaşır Kurutma Makinesi
     sources:
@@ -387,6 +597,8 @@ categories:
         path: /tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri
       siemens:
         path: /tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri
+      arcelik:
+        path: /kurutma-makinesi
     tracked_skus:
     - sku: '7188870280'
       brand: Beko
@@ -428,6 +640,46 @@ categories:
       brand: Beko
       model: KMB 1011 IG
       source: beko
+    - sku: '7188270150'
+      brand: ARÇELİK
+      model: 901 KMP I
+      source: arcelik
+    - sku: '7184270110'
+      brand: ARÇELİK
+      model: 1001 KMX
+      source: arcelik
+    - sku: '7188270180'
+      brand: ARÇELİK
+      model: 901 KMP IG
+      source: arcelik
+    - sku: '7188270170'
+      brand: ARÇELİK
+      model: 1001 KMX S
+      source: arcelik
+    - sku: '7184270100'
+      brand: ARÇELİK
+      model: 1101 KMX
+      source: arcelik
+    - sku: '7188270160'
+      brand: ARÇELİK
+      model: 901 KMX S
+      source: arcelik
+    - sku: '7184270190'
+      brand: ARÇELİK
+      model: 1002 KMP HA
+      source: arcelik
+    - sku: '7184270230'
+      brand: ARÇELİK
+      model: 1201 KMX
+      source: arcelik
+    - sku: '7184270150'
+      brand: ARÇELİK
+      model: 1011 KMP IG
+      source: arcelik
+    - sku: '7184170120'
+      brand: ARÇELİK
+      model: 802 KMX
+      source: arcelik
   klima:
     label: Klima
     sources:
@@ -439,6 +691,8 @@ categories:
         path: /klima
       bosch:
         path: /tr/urunler/isitma-ve-sicak-su/klimalar
+      arcelik:
+        path: /klima
     tracked_skus:
     - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h24cacw-sk
       brand: Samsung
@@ -523,6 +777,46 @@ categories:
       brand: Beko
       model: '75526'
       source: beko
+    - sku: '8866271100'
+      brand: ARÇELİK
+      model: 18325 EKOLOJİK
+      source: arcelik
+    - sku: '9209361100'
+      brand: ARÇELİK
+      model: 09325 A
+      source: arcelik
+    - sku: '9208011100'
+      brand: ARÇELİK
+      model: '12670'
+      source: arcelik
+    - sku: '8511191100'
+      brand: ARÇELİK
+      model: 12220 P
+      source: arcelik
+    - sku: '8510851100'
+      brand: ARÇELİK
+      model: 34726 Monofaze Inverter Salon Tipi Klima
+      source: arcelik
+    - sku: '9209721100'
+      brand: ARÇELİK
+      model: 15325 S
+      source: arcelik
+    - sku: '9215521100'
+      brand: ARÇELİK
+      model: '26326'
+      source: arcelik
+    - sku: '8868301100'
+      brand: ARÇELİK
+      model: A24D30
+      source: arcelik
+    - sku: '8866251100'
+      brand: ARÇELİK
+      model: 24325 EKOLOJİK
+      source: arcelik
+    - sku: '9205831100'
+      brand: ARÇELİK
+      model: 07325 A
+      source: arcelik
   elektrikli_supurge:
     label: Elektrikli Süpürge
     sources:
@@ -536,6 +830,8 @@ categories:
         path: /tr/urunler/elektrikli-supurgeler
       siemens:
         path: /tr/urunler/elektrikli-supurgeler
+      arcelik:
+        path: /elektrikli-supurge
     tracked_skus:
     - sku: bespoke-ai-jet-ultra-elite-extra-black-vs90f40dak-tr
       brand: Samsung
@@ -617,6 +913,46 @@ categories:
       brand: Beko
       model: PowerClean® Pro 3.0 VRT 97325 VY
       source: beko
+    - sku: '990427100088'
+      brand: ARÇELİK
+      model: Imperium® Slim 3.0 SDI 9524
+      source: arcelik
+    - sku: '8904520100'
+      brand: ARÇELİK
+      model: S 7610 Robotto
+      source: arcelik
+    - sku: '8914131100'
+      brand: ARÇELİK
+      model: Comfort-X™ 3.0 TSZ 6282 T
+      source: arcelik
+    - sku: '8918441100'
+      brand: ARÇELİK
+      model: Imperium® Robo 4.0 RS 9551
+      source: arcelik
+    - sku: '8919431100'
+      brand: ARÇELİK
+      model: Imperium® Slim 1.0 SDI 3575
+      source: arcelik
+    - sku: '8918411100'
+      brand: ARÇELİK
+      model: STSZ 9525
+      source: arcelik
+    - sku: '8919451100'
+      brand: ARÇELİK
+      model: RS 6121
+      source: arcelik
+    - sku: '8919461100'
+      brand: ARÇELİK
+      model: RS 6131
+      source: arcelik
+    - sku: '8813101100'
+      brand: ARÇELİK
+      model: Comfort-X™ 2.0 S 7564
+      source: arcelik
+    - sku: '8813081100'
+      brand: ARÇELİK
+      model: TRB 6986 B
+      source: arcelik
   blender:
     label: Blender / Kesici Aletler
     sources:
@@ -628,6 +964,8 @@ categories:
         path: /tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme
       siemens:
         path: /tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme
+      arcelik:
+        path: /blender
     tracked_skus:
     - sku: '8910731200'
       brand: Beko
@@ -649,12 +987,34 @@ categories:
       brand: Beko
       model: KB 8408 Vitaminist® 5in1
       source: beko
+    - sku: '8913001100'
+      brand: ARÇELİK
+      model: KB 6234 T
+      source: arcelik
+    - sku: '8919931100'
+      brand: ARÇELİK
+      model: KB 6534 TT
+      source: arcelik
+    - sku: '8919921100'
+      brand: ARÇELİK
+      model: KB 6534 TM
+      source: arcelik
+    - sku: '8912221100'
+      brand: ARÇELİK
+      model: TB 9285 CI
+      source: arcelik
+    - sku: '8918571100'
+      brand: ARÇELİK
+      model: KB 9408 B-Fit 5in1®
+      source: arcelik
   kucuk_ev_aleti:
     label: Elektrikli Küçük Ev Aletleri
     sources:
       vestel:
         cat_id: 31
       beko:
+        path: /kucuk-ev-aletleri
+      arcelik:
         path: /kucuk-ev-aletleri
     tracked_skus:
     - sku: '7489470200'
@@ -677,6 +1037,46 @@ categories:
       brand: Beko
       model: BKK 2221 C Beko Dem® Çay Makinesi
       source: beko
+    - sku: '7466000100'
+      brand: ARÇELİK
+      model: TKM 6448 Telve-X Sütlü
+      source: arcelik
+    - sku: '7465000102'
+      brand: ARÇELİK
+      model: TKM 3341 Telve-X Siyah
+      source: arcelik
+    - sku: '7489770133'
+      brand: ARÇELİK
+      model: K 3300 Mini Telve Beyaz
+      source: arcelik
+    - sku: '7465000101'
+      brand: ARÇELİK
+      model: TKM 3341 Telve-X Beyaz
+      source: arcelik
+    - sku: '7489770136'
+      brand: ARÇELİK
+      model: K 3300 Mini Telve Grion
+      source: arcelik
+    - sku: '7489470107'
+      brand: ARÇELİK
+      model: TKM 9961 G
+      source: arcelik
+    - sku: '7489770141'
+      brand: ARÇELİK
+      model: K 3300 LT
+      source: arcelik
+    - sku: '7489770140'
+      brand: ARÇELİK
+      model: K 3300 LS
+      source: arcelik
+    - sku: '8916021100'
+      brand: ARÇELİK
+      model: FRA 6244 Gurme Fry
+      source: arcelik
+    - sku: '8916981100'
+      brand: ARÇELİK
+      model: FRA 9494 Gurme TrioFry®
+      source: arcelik
   cay_makinesi:
     label: Elektrikli Çay Makinesi
     sources:
@@ -688,6 +1088,8 @@ categories:
         path: /tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma
       siemens:
         path: /tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma
+      arcelik:
+        path: /cay-makinesi
     tracked_skus:
     - sku: '8813221200'
       brand: Beko
@@ -725,6 +1127,46 @@ categories:
       brand: Beko
       model: CM 5582 I
       source: beko
+    - sku: '8916531100'
+      brand: ARÇELİK
+      model: CM 6964 G
+      source: arcelik
+    - sku: '7460020100'
+      brand: ARÇELİK
+      model: CFM 9449 S
+      source: arcelik
+    - sku: '8815551100'
+      brand: ARÇELİK
+      model: CM 6964 K Resital
+      source: arcelik
+    - sku: '8815561100'
+      brand: ARÇELİK
+      model: CM 6964 S Resital
+      source: arcelik
+    - sku: '8918781100'
+      brand: ARÇELİK
+      model: CM 6582 I
+      source: arcelik
+    - sku: '8919961100'
+      brand: ARÇELİK
+      model: CM 3626 IC
+      source: arcelik
+    - sku: '8818131100'
+      brand: ARÇELİK
+      model: CM 6964 Resital
+      source: arcelik
+    - sku: '8916341100'
+      brand: ARÇELİK
+      model: CM 6342 IN
+      source: arcelik
+    - sku: '8813221100'
+      brand: ARÇELİK
+      model: K 3281 C
+      source: arcelik
+    - sku: '8918041100'
+      brand: ARÇELİK
+      model: CM 6587 G
+      source: arcelik
   utu:
     label: Ütü
     sources:
@@ -736,6 +1178,8 @@ categories:
         path: /tr/urunler/kucuk-ev-aletleri/utu-yapma
       siemens:
         path: /tr/urunler/kucuk-ev-aletleri/utu-yapma
+      arcelik:
+        path: /utu
     tracked_skus:
     - sku: '8911061200'
       brand: Beko
@@ -777,3 +1221,43 @@ categories:
       brand: Beko
       model: ActiPress® Expert BEU 8030 M
       source: beko
+    - sku: '8817311100'
+      brand: ARÇELİK
+      model: Aria™ Expert BEU 9030 D
+      source: arcelik
+    - sku: '8817321100'
+      brand: ARÇELİK
+      model: Aria® Expert BEU 9030 M
+      source: arcelik
+    - sku: '8918321100'
+      brand: ARÇELİK
+      model: BEU 6024
+      source: arcelik
+    - sku: '8817331100'
+      brand: ARÇELİK
+      model: Aria™ Expert BEU 6024 M
+      source: arcelik
+    - sku: '8911061100'
+      brand: ARÇELİK
+      model: Aria™ MasterPro BKU 9130
+      source: arcelik
+    - sku: '8915951100'
+      brand: ARÇELİK
+      model: Aria™ Master BKU 6030
+      source: arcelik
+    - sku: '8917621100'
+      brand: ARÇELİK
+      model: Aria™ Master Station BIU 6324
+      source: arcelik
+    - sku: '8916871100'
+      brand: ARÇELİK
+      model: BSU 2110 S
+      source: arcelik
+    - sku: '8918351100'
+      brand: ARÇELİK
+      model: BKG 7122
+      source: arcelik
+    - sku: '8918371100'
+      brand: ARÇELİK
+      model: BEU 4024 M
+      source: arcelik

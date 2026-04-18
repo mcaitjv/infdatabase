@@ -75,6 +75,7 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.vestel import VestelScraper
         from modules.m05_household.scrapers.samsung import SamsungScraper
         from modules.m05_household.scrapers.beko import BekoScraper
+        from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
 
         categories = _load_tracked()
@@ -102,6 +103,13 @@ class HouseholdModule(BaseModule):
             if "beko" in sources:
                 async with BekoScraper() as scraper:
                     products = await scraper.discover_category(sources["beko"]["path"], cat_key)
+                    discovered.extend(products[:10])
+                    await scraper._sleep(5.0, 10.0)
+
+            # Arçelik
+            if "arcelik" in sources:
+                async with ArcelikScraper() as scraper:
+                    products = await scraper.discover_category(sources["arcelik"]["path"], cat_key)
                     discovered.extend(products[:10])
                     await scraper._sleep(5.0, 10.0)
 
@@ -210,6 +218,7 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.vestel import VestelScraper
         from modules.m05_household.scrapers.samsung import SamsungScraper
         from modules.m05_household.scrapers.beko import BekoScraper
+        from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
 
         categories = _load_tracked()
@@ -235,6 +244,11 @@ class HouseholdModule(BaseModule):
         # Beko (Playwright)
         async with BekoScraper() as beko:
             r, _ = await self._scrape_source("beko", beko, categories, dry_run)
+            runs.extend(r)
+
+        # Arçelik (Playwright)
+        async with ArcelikScraper() as arcelik:
+            r, _ = await self._scrape_source("arcelik", arcelik, categories, dry_run)
             runs.extend(r)
 
         # Bosch (Playwright)
