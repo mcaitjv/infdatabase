@@ -77,6 +77,25 @@ def _build_html(report: PipelineHealthReport) -> str:
           </td>
         </tr>"""
 
+    new_cat_html = ""
+    if report.new_category_alerts:
+        items = "".join(
+            f"<li style='margin:4px 0'>{a}</li>"
+            for a in report.new_category_alerts
+        )
+        new_cat_html = f"""
+    <div style='padding:16px 24px;border-top:1px solid #e5e7eb'>
+      <div style='font-size:13px;font-weight:600;color:#374151;margin-bottom:6px'>
+        🔍 Yeni Kategori Keşifleri (haftalık tarama)
+      </div>
+      <ul style='margin:0;padding:0 0 0 16px;font-size:13px;color:#374151'>
+        {items}
+      </ul>
+      <div style='font-size:12px;color:#9ca3af;margin-top:6px'>
+        tracked.yaml'a eklemek için onay gerekiyor.
+      </div>
+    </div>"""
+
     return f"""<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -106,6 +125,8 @@ def _build_html(report: PipelineHealthReport) -> str:
       </thead>
       <tbody>{rows}</tbody>
     </table>
+
+    {new_cat_html}
 
     <!-- Footer -->
     <div style='padding:16px 24px;background:#f9fafb;font-size:12px;color:#9ca3af'>

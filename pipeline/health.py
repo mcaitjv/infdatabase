@@ -78,6 +78,7 @@ class PipelineHealthReport:
     date: date
     overall_status: str = "ok"
     modules: list[ModuleHealthReport] = field(default_factory=list)
+    new_category_alerts: list[str] = field(default_factory=list)
 
 
 # ── Yardımcı fonksiyonlar ─────────────────────────────────────────────────────
@@ -375,6 +376,65 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
     return report
 
 
+# ── Haftalık yeni kategori taraması ──────────────────────────────────────────
+
+# Marka + kategori → candidate path (şu an takip edilmiyor, haftalık kontrol edilir)
+_CANDIDATE_PATHS: dict[tuple[str, str], str] = {
+    ("siemens", "blender"):        "/tr/tr/category/mutfak-aletleri/blenderlar",
+    ("siemens", "cay_makinesi"):   "/tr/tr/category/mutfak-aletleri/cay-makineleri",
+    ("siemens", "kucuk_ev_aleti"): "/tr/tr/category/mutfak-aletleri",
+    ("siemens", "utu"):            "/tr/tr/category/yikama-ve-utuleme-grubu/utuler",
+    ("bosch",   "utu"):            "/tr/category/yikama-ve-utuleme-grubu/utuler",
+    ("samsung", "firin_ocak"):     "/tr/cooking-appliances/all-ovens/",
+    ("samsung", "blender"):        "/tr/kitchen-appliances/all-blenders/",
+    ("samsung", "utu"):            "/tr/ironing/all-irons/",
+}
+
+
+async def check_new_categories(target_date: date) -> list[str]:
+    """Pazar günleri: takip edilmeyen marka+kategori combolarını tarayıp yeni ürün çıktıysa bildirir."""
+    if target_date.weekday() != 6:  # Sadece Pazar
+        return []
+
+    yaml_path = Path("modules/m05_household/config/tracked.yaml")
+    if not yaml_path.exists():
+        return []
+
+    data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    tracked: set[tuple[str, str]] = set()
+    for cat_key, cat in data.get("categories", {}).items():
+        for src in (cat.get("sources") or {}):
+            tracked.add((src, cat_key))
+
+    alerts: list[str] = []
+    for (brand, cat), path in _CANDIDATE_PATHS.items():
+        if (brand, cat) in tracked:
+            continue
+        try:
+            from modules.m05_household.scrapers.bsh import BshScraper
+            from modules.m05_household.scrapers.samsung import SamsungScraper
+
+            if brand in ("bosch", "siemens"):
+                async with BshScraper(brand=brand) as s:
+                    prods = await s.discover_category(path, cat)
+            elif brand == "samsung":
+                async with SamsungScraper() as s:
+                    prods = await s.discover_category(path, cat)
+            else:
+                continue
+
+            if prods:
+                alerts.append(
+                    f"{brand} / {cat}: {len(prods)} ürün bulundu "
+                    f"— tracked.yaml'a eklenebilir"
+                )
+                logger.info("[health] Yeni kategori keşfi: %s/%s → %d ürün", brand, cat, len(prods))
+        except Exception as exc:
+            logger.debug("[health] Yeni kategori kontrolü atlandı %s/%s: %s", brand, cat, exc)
+
+    return alerts
+
+
 # ── Ana entry point ───────────────────────────────────────────────────────────
 
 
@@ -397,6 +457,11 @@ async def run_health_check(
             pipeline.modules.append(mod_report)
         except Exception as exc:
             logger.error("[health] %s kontrolü sırasında hata: %s", check_fn.__name__, exc, exc_info=True)
+
+    try:
+        pipeline.new_category_alerts = await check_new_categories(target_date)
+    except Exception as exc:
+        logger.warning("[health] Yeni kategori taraması başarısız: %s", exc)
 
     # Genel durum: en kötü modül durumunu al
     statuses = {r.status for r in pipeline.modules}
