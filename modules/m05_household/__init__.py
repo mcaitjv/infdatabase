@@ -184,8 +184,7 @@ class HouseholdModule(BaseModule):
                 if dry_run:
                     logger.info("[m05:%s] Dry-run %s: %d urun", source_name, cat_key, len(valid))
                     for r in valid[:3]:
-                        disc = f" -> {r.discounted_price} TL" if r.discounted_price else ""
-                        print(f"  [{source_name}] {r.brand} {r.model[:40]} | {r.price} TL{disc}")
+                        print(f"  [{source_name}] {r.model[:50]} | {r.price} TL")
                     if len(valid) > 3:
                         print(f"  ... ve {len(valid) - 3} urun daha")
                 else:

@@ -267,7 +267,7 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
     thr = _THRESHOLDS["appliance"]
     anomalies = await conn.fetch(
         """
-        SELECT a.sku, a.brand, a.model,
+        SELECT a.sku, a.source, a.model,
                a.price AS today_price, y.price AS yesterday_price
         FROM appliance_prices a
         JOIN appliance_prices y ON a.sku = y.sku AND a.source = y.source
@@ -289,7 +289,7 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
         today_p = float(row[3])
         yest_p  = float(row[4])
         pct     = (today_p - yest_p) / yest_p * 100
-        label   = f"{row[1]} {str(row[2])[:35]}"
+        label   = f"{row[1]} {str(row[2])[:45]}"
         report.anomalies.append(PriceAnomaly(label, yest_p, today_p, round(pct, 1)))
         if abs(pct) / 100 > thr["error"]:
             report.add_error(f"Kritik fiyat değişimi: {label} {_pct_label(pct)}")

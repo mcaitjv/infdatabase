@@ -79,11 +79,9 @@ class SamsungScraper(BaseScraper):
                 if price > 0 and sku:
                     products.append({
                         "sku": str(sku),
-                        "brand": "Samsung",
                         "model": name,
                         "category": category,
                         "price": price,
-                        "discounted_price": None,
                     })
         return products
 
@@ -114,11 +112,9 @@ class SamsungScraper(BaseScraper):
                 records.append(AppliancePriceRecord(
                     source="samsung",
                     sku=p["sku"],
-                    brand="Samsung",
                     model=p["model"],
                     category=category,
                     price=p["price"],
-                    discounted_price=p["discounted_price"],
                     date=today,
                 ))
         return records

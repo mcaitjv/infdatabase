@@ -70,16 +70,14 @@ CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON fuel_prices(provider, city);
 
 -- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05)
 CREATE TABLE IF NOT EXISTS appliance_prices (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    source           TEXT    NOT NULL,
-    sku              TEXT    NOT NULL,
-    brand            TEXT    NOT NULL,
-    model            TEXT    NOT NULL,
-    category         TEXT    NOT NULL,
-    price            REAL    NOT NULL,
-    discounted_price REAL,
-    date             TEXT    NOT NULL,
-    scraped_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    source     TEXT    NOT NULL,
+    sku        TEXT    NOT NULL,
+    model      TEXT    NOT NULL,
+    category   TEXT    NOT NULL,
+    price      REAL    NOT NULL,
+    date       TEXT    NOT NULL,
+    scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(source, sku, date)
 );
 

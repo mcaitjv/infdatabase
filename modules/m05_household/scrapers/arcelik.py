@@ -125,11 +125,9 @@ class ArcelikScraper:
                 continue
             products.append({
                 "sku": sku_val,
-                "brand": brd.group(1) if brd else "Arçelik",
                 "model": name.group(1).strip(),
                 "category": category,
                 "price": price,
-                "discounted_price": None,
             })
         return products
 
@@ -153,11 +151,9 @@ class ArcelikScraper:
                 records.append(AppliancePriceRecord(
                     source="arcelik",
                     sku=p["sku"],
-                    brand="Arçelik",
                     model=p["model"],
                     category=category,
                     price=p["price"],
-                    discounted_price=p["discounted_price"],
                     date=today,
                 ))
         return records

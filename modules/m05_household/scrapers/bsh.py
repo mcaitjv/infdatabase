@@ -154,11 +154,9 @@ class BshScraper:
             seen.add(sku)
             products.append({
                 "sku": sku,
-                "brand": self.brand.capitalize(),
                 "model": name,
                 "category": category,
                 "price": price,
-                "discounted_price": None,
             })
         return products
 
@@ -182,11 +180,9 @@ class BshScraper:
                 records.append(AppliancePriceRecord(
                     source=self.brand,
                     sku=p["sku"],
-                    brand=p["brand"],
                     model=p["model"],
                     category=category,
                     price=p["price"],
-                    discounted_price=p["discounted_price"],
                     date=today,
                 ))
         return records

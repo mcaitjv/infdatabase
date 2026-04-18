@@ -106,11 +106,9 @@ class VestelScraper(BaseScraper):
             seen.add(sku)
             products.append({
                 "sku": sku,
-                "brand": "Vestel",
                 "model": name,
                 "category": category,
                 "price": price,
-                "discounted_price": discounted,
             })
         return products
 
@@ -149,11 +147,9 @@ class VestelScraper(BaseScraper):
                 records.append(AppliancePriceRecord(
                     source="vestel",
                     sku=p["sku"],
-                    brand="Vestel",
                     model=p["model"],
                     category=category,
                     price=p["price"],
-                    discounted_price=p["discounted_price"],
                     date=today,
                 ))
         return records

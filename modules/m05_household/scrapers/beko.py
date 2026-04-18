@@ -125,11 +125,9 @@ class BekoScraper:
                 continue
             products.append({
                 "sku": sku_val,
-                "brand": brd.group(1) if brd else "Beko",
                 "model": name.group(1).strip(),
                 "category": category,
                 "price": price,
-                "discounted_price": None,
             })
         return products
 
@@ -153,11 +151,9 @@ class BekoScraper:
                 records.append(AppliancePriceRecord(
                     source="beko",
                     sku=p["sku"],
-                    brand="Beko",
                     model=p["model"],
                     category=category,
                     price=p["price"],
-                    discounted_price=p["discounted_price"],
                     date=today,
                 ))
         return records

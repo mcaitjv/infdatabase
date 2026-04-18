@@ -332,17 +332,15 @@ async def upsert_appliance_price(conn, record: AppliancePriceRecord) -> bool:
     result = await conn.execute(
         """
         INSERT INTO appliance_prices
-            (source, sku, brand, model, category, price, discounted_price, date)
-        VALUES ($1, $2, $3, $4, $5, $6::numeric, $7::numeric, $8::date)
+            (source, sku, model, category, price, date)
+        VALUES ($1, $2, $3, $4, $5::numeric, $6::date)
         ON CONFLICT (source, sku, date) DO NOTHING
         """,
         record.source,
         record.sku,
-        record.brand,
         record.model,
         record.category,
         float(record.price),
-        float(record.discounted_price) if record.discounted_price else None,
         record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date)),
     )
     return result == "INSERT 0 1"
