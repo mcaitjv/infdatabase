@@ -673,29 +673,9 @@ categories:
       brand: Beko
       model: BKK 2300 Mini Keyf Rose Gold
       source: beko
-    - sku: '3585030100'
-      brand: Beko
-      model: KARAF GRUBU ARCELIK
-      source: beko
-    - sku: '3003750900'
-      brand: Beko
-      model: PISIRME HAZNESI GRUBU AKROMID GRI
-      source: beko
     - sku: '8813221200'
       brand: Beko
       model: BKK 2221 C Beko Dem® Çay Makinesi
-      source: beko
-    - sku: '8835771200'
-      brand: Beko
-      model: BKS 2540 T
-      source: beko
-    - sku: '8817621200'
-      brand: Beko
-      model: ActiPress® Expert BEU 8030 D
-      source: beko
-    - sku: '8910731200'
-      brand: Beko
-      model: TB 8180 CI Starlight™
       source: beko
   cay_makinesi:
     label: Elektrikli Çay Makinesi
