@@ -12,9 +12,9 @@ categories:
       beko:
         path: /no-frost-buzdolabi
       bosch:
-        path: /tr/urunler/sogutma/buzdolaplari
+        path: /tr/category/buzdolaplari-derin-dondurucular/buzdolaplari
       siemens:
-        path: /tr/urunler/sogutma/buzdolaplari
+        path: /tr/tr/category/buzdolaplari-ve-derin-dondurucular/solo-buzdolaplari-ve-derin-dondurucular
       arcelik:
         path: /buzdolabi
     tracked_skus:
@@ -138,6 +138,88 @@ categories:
       brand: ARÇELİK
       model: 583632 EB Fit
       source: arcelik
+    - sku: KBN96ADD0
+      brand: Bosch
+      model: Serie 6 Alttan Donduruculu Ankastre Buzdolabı 193.5 x 70.8 cm softClosing
+        Düz Menteşe
+      source: bosch
+    - sku: KFN96VPEA
+      brand: Bosch
+      model: Serie 4 Gardırop Tipi Buzdolabı 183 x 90.5 cm Paslanmaz çelik
+      source: bosch
+    - sku: KGP86AXB0N
+      brand: Bosch
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Parmak izi bırakmayan
+        siyah inoks
+      source: bosch
+    - sku: KGP86FIC0N
+      brand: Bosch
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: bosch
+    - sku: KGP86FWC0N
+      brand: Bosch
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total No Frost
+      source: bosch
+    - sku: KDN86AID1N
+      brand: Bosch
+      model: Serie 6 Üstten Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: bosch
+    - sku: KGP76AIC0N
+      brand: Bosch
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
+      source: bosch
+    - sku: KGA76PIE0N
+      brand: Bosch
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
+      source: bosch
+    - sku: KGN86AID2N
+      brand: Bosch
+      model: Serie 6 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: bosch
+    - sku: KDN86AWE1N
+      brand: Bosch
+      model: Serie 6 Üstten Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total No Frost
+      source: bosch
+    - sku: KF96RSBEA
+      brand: Siemens
+      model: iQ700 Gardırop Tipi Buzdolabı, Cam Kapı 183 x 90.5 cm Siyah, Total noFrost
+      source: siemens
+    - sku: KF96NAXEA
+      brand: Siemens
+      model: iQ300 Gardırop Tipi Buzdolabı 183 x 90.5 cm BlackSteel, Total noFrost
+      source: siemens
+    - sku: KF96NVPEA
+      brand: Siemens
+      model: iQ300 Gardırop Tipi Buzdolabı 183 x 90.5 cm Paslanmaz çelik
+      source: siemens
+    - sku: KG86PAXB0N
+      brand: Siemens
+      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 86 cm BlackSteel
+      source: siemens
+    - sku: KG86PFIC0N
+      brand: Siemens
+      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: siemens
+    - sku: KG86PFWC0N
+      brand: Siemens
+      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total noFrost
+      source: siemens
+    - sku: KD86NAID1N
+      brand: Siemens
+      model: iQ500 Üstten Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: siemens
+    - sku: KG76PAIC0N
+      brand: Siemens
+      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
+      source: siemens
+    - sku: KG86NAID2N
+      brand: Siemens
+      model: iQ500 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      source: siemens
+    - sku: KD86NAWE1N
+      brand: Siemens
+      model: iQ500 Üstten Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total noFrost
+      source: siemens
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
@@ -148,9 +230,9 @@ categories:
       beko:
         path: /derin-dondurucu
       bosch:
-        path: /tr/urunler/sogutma/derin-dondurucular
+        path: /tr/category/buzdolaplari-derin-dondurucular/derin-dondurucular
       siemens:
-        path: /tr/urunler/sogutma/derin-dondurucular
+        path: /tr/tr/category/buzdolaplari-ve-derin-dondurucular/solo-buzdolaplari-ve-derin-dondurucular/solo-derin-dondurucular
       arcelik:
         path: /derin-dondurucu
     tracked_skus:
@@ -234,6 +316,38 @@ categories:
       brand: ARÇELİK
       model: 2071 MNFB
       source: arcelik
+    - sku: GSN36VIE0N
+      brand: Bosch
+      model: Serie 4 Solo Derin Dondurucu 186 x 60 cm Paslanmaz çelik
+      source: bosch
+    - sku: GSN36VIEP
+      brand: Bosch
+      model: Serie 4 Solo Derin Dondurucu 186 x 60 cm Paslanmaz çelik
+      source: bosch
+    - sku: GSV33VIE0N
+      brand: Bosch
+      model: Serie 4 Solo Derin Dondurucu 176 x 60 cm Paslanmaz çelik
+      source: bosch
+    - sku: GSV29VWE0N
+      brand: Bosch
+      model: Serie 4 Solo Derin Dondurucu 161 x 60 cm Beyaz
+      source: bosch
+    - sku: GSV24VWE0N
+      brand: Bosch
+      model: Serie 4 Solo Derin Dondurucu 146 x 60 cm Beyaz
+      source: bosch
+    - sku: GS36NVIEP
+      brand: Siemens
+      model: iQ300 Solo Derin Dondurucu 186 x 60 cm Paslanmaz çelik
+      source: siemens
+    - sku: GS24VVWE0N
+      brand: Siemens
+      model: iQ300 Solo Derin Dondurucu 146 x 60 cm Beyaz
+      source: siemens
+    - sku: GS36NVIE0N
+      brand: Siemens
+      model: iQ300 Solo Derin Dondurucu 186 x 60 cm Paslanmaz çelik
+      source: siemens
   bulasik_makinesi:
     label: Bulaşık Makinesi
     sources:
@@ -244,9 +358,9 @@ categories:
       beko:
         path: /bulasik-makinesi
       bosch:
-        path: /tr/urunler/bulasik-yikama/bulasik-makineleri
+        path: /tr/category/bulasik-makineleri
       siemens:
-        path: /tr/urunler/bulasik-yikama/bulasik-makineleri
+        path: /tr/tr/category/bulasik-makineleri
       arcelik:
         path: /bulasik-makinesi
     tracked_skus:
@@ -354,6 +468,86 @@ categories:
       brand: ARÇELİK
       model: 6455 WF I
       source: arcelik
+    - sku: SMI8ZDS81T
+      brand: Bosch
+      model: Serie 8 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
+      source: bosch
+    - sku: SMI6EKS81T
+      brand: Bosch
+      model: Serie 6 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
+      source: bosch
+    - sku: SMS6ECI83T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: bosch
+    - sku: SMS6EAI81T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: bosch
+    - sku: SMS4HMY62T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm
+      source: bosch
+    - sku: SMS6ENW60T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Beyaz
+      source: bosch
+    - sku: SMS6ENY60T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm
+      source: bosch
+    - sku: SMS6ENB60T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Siyah
+      source: bosch
+    - sku: SMS6EMI63T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: bosch
+    - sku: SMP6ENC60T
+      brand: Bosch
+      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Siyah Inox
+      source: bosch
+    - sku: SN57ZS82DT
+      brand: Siemens
+      model: iQ700 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
+      source: siemens
+    - sku: SN27YI82DT
+      brand: Siemens
+      model: iQ700 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: siemens
+    - sku: SN55ES82KT
+      brand: Siemens
+      model: iQ500 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
+      source: siemens
+    - sku: SN25EI83CT
+      brand: Siemens
+      model: iQ500 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: siemens
+    - sku: SN63HX62MT
+      brand: Siemens
+      model: iQ500 Tam Ankastre Bulaşık Makinesi 60 cm
+      source: siemens
+    - sku: SN23HW62MT
+      brand: Siemens
+      model: iQ500 Solo Bulaşık Makinesi 60 cm Beyaz
+      source: siemens
+    - sku: SN23HY62MT
+      brand: Siemens
+      model: iQ500 Solo Bulaşık Makinesi 60 cm
+      source: siemens
+    - sku: SN45EB01NT
+      brand: Siemens
+      model: iQ500 Tezgah Altı Bulaşık Makinesi 60 cm Siyah
+      source: siemens
+    - sku: SN45EY01NT
+      brand: Siemens
+      model: iQ500 Tezgah Altı Bulaşık Makinesi 60 cm
+      source: siemens
+    - sku: SN25EI63MT
+      brand: Siemens
+      model: iQ500 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
+      source: siemens
   firin_ocak:
     label: Fırın ve Ocaklar
     sources:
@@ -362,9 +556,9 @@ categories:
       beko:
         path: /ankastre-firin
       bosch:
-        path: /tr/urunler/pisirme-ve-firinda-pisirme
+        path: /tr/category/pisirme-grubu/ankastre-firinlar
       siemens:
-        path: /tr/urunler/pisirme-ve-firinda-pisirme
+        path: /tr/tr/category/pisirme-grubu/firinlar/ankastre-firinlar
       arcelik:
         path: /ankastre-firin
     tracked_skus:
@@ -448,6 +642,86 @@ categories:
       brand: ARÇELİK
       model: AFM 130 I
       source: arcelik
+    - sku: HBG7764B1
+      brand: Bosch
+      model: Serie 8 Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: HRG7361B1
+      brand: Bosch
+      model: Serie 8 Buhar Destekli Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: CMG7241B1
+      brand: Bosch
+      model: Serie 8 Mikrodalga Fonksiyonlu Kompakt Ankastre Fırın 60 x 45 cm Siyah
+      source: bosch
+    - sku: HBG7563B1
+      brand: Bosch
+      model: Serie 8 Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: HBG7341W1
+      brand: Bosch
+      model: Serie 8 Ankastre Fırın 60 x 60 cm Beyaz
+      source: bosch
+    - sku: HBG7341B1
+      brand: Bosch
+      model: Serie 8 Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: HBJ559EB6T
+      brand: Bosch
+      model: Serie 6 Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: HBJ559EH6T
+      brand: Bosch
+      model: Serie 6 Ankastre Fırın 60 x 60 cm
+      source: bosch
+    - sku: HBJ559EW6T
+      brand: Bosch
+      model: Serie 6 Ankastre Fırın 60 x 60 cm Beyaz
+      source: bosch
+    - sku: HJG852YB0T
+      brand: Bosch
+      model: Serie 6 Ankastre Fırın 60 x 60 cm Siyah
+      source: bosch
+    - sku: HB776G1B1
+      brand: Siemens
+      model: iQ700 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
+    - sku: HB734G1B1
+      brand: Siemens
+      model: iQ700 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
+    - sku: HB557JEB6T
+      brand: Siemens
+      model: iQ500 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
+    - sku: HJ852GYB0T
+      brand: Siemens
+      model: iQ500 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
+    - sku: HJ852GYN0T
+      brand: Siemens
+      model: iQ500 Ankastre Fırın 60 x 60 cm
+      source: siemens
+    - sku: HJ852GYW0T
+      brand: Siemens
+      model: iQ500 Ankastre Fırın 60 x 60 cm Beyaz
+      source: siemens
+    - sku: HB012FBB1T
+      brand: Siemens
+      model: iQ100 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
+    - sku: HB012FBH1T
+      brand: Siemens
+      model: iQ100 Ankastre Fırın 60 x 60 cm
+      source: siemens
+    - sku: HB012FBW1T
+      brand: Siemens
+      model: iQ100 Ankastre Fırın 60 x 60 cm Beyaz
+      source: siemens
+    - sku: HB011FBA1T
+      brand: Siemens
+      model: iQ100 Ankastre Fırın 60 x 60 cm Siyah
+      source: siemens
   camasir_makinesi:
     label: Çamaşır Makinesi
     sources:
@@ -458,9 +732,9 @@ categories:
       beko:
         path: /camasir-makinesi
       bosch:
-        path: /tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri
+        path: /tr/category/camasir-ve-kurutma-makineleri/camasir-makineleri
       siemens:
-        path: /tr/urunler/camasir-yikama-ve-kurutma/camasir-makineleri
+        path: /tr/tr/category/yikama-ve-utuleme-grubu/camasir-makineleri
       arcelik:
         path: /camasir-makinesi
     tracked_skus:
@@ -584,6 +858,86 @@ categories:
       brand: ARÇELİK
       model: 9120 MP O
       source: arcelik
+    - sku: WGK264ZRTR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak., Antrasit
+      source: bosch
+    - sku: WGK264F0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGK252ZXTR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 10 kg maks. 1200 dev./dak., Gümüş
+      source: bosch
+    - sku: WGK264Y0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGK254Y0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGK264Z0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGA244Z1TR
+      brand: Bosch
+      model: Serie 4 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGK252Z0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
+      source: bosch
+    - sku: WGK242ZXTR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 9 kg maks. 1200 dev./dak., Gümüş
+      source: bosch
+    - sku: WGK244Z0TR
+      brand: Bosch
+      model: Serie 6 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WG44B2A0TR
+      brand: Siemens
+      model: iQ700 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG64K2ZRTR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak., Antrasit
+      source: siemens
+    - sku: WG64K2F0TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG52K2ZXTR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak., Gümüş
+      source: siemens
+    - sku: WG64K2Y0TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG54K2Y0TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG64K2Z0TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG44A2Z1TR
+      brand: Siemens
+      model: iQ300 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
+      source: siemens
+    - sku: WG52K2Z0TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
+      source: siemens
+    - sku: WG52K2Z1TR
+      brand: Siemens
+      model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
+      source: siemens
   kurutma_makinesi:
     label: Çamaşır Kurutma Makinesi
     sources:
@@ -594,9 +948,9 @@ categories:
       beko:
         path: /kurutma-makinesi
       bosch:
-        path: /tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri
+        path: /tr/category/camasir-ve-kurutma-makineleri/kurutma-makineleri
       siemens:
-        path: /tr/urunler/camasir-yikama-ve-kurutma/kurutma-makineleri
+        path: /tr/tr/category/yikama-ve-utuleme-grubu/kurutma-makineleri
       arcelik:
         path: /kurutma-makinesi
     tracked_skus:
@@ -680,6 +1034,86 @@ categories:
       brand: ARÇELİK
       model: 802 KMX
       source: arcelik
+    - sku: WQB245AXTR
+      brand: Bosch
+      model: Serie 8 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
+      source: bosch
+    - sku: WQB245A0TR
+      brand: Bosch
+      model: Serie 8 Isı Pompalı Kurutma Makinesi 9 kg
+      source: bosch
+    - sku: WQJ2520RTR
+      brand: Bosch
+      model: Serie 6 Isı Pompalı Kurutma Makinesi 10 kg Antrasit
+      source: bosch
+    - sku: WQK25200TR
+      brand: Bosch
+      model: Serie 6 Isı Pompalı Kurutma Makinesi 10 kg
+      source: bosch
+    - sku: WQJ2420XTR
+      brand: Bosch
+      model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
+      source: bosch
+    - sku: WQK242C0TR
+      brand: Bosch
+      model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg
+      source: bosch
+    - sku: WQG25201TR
+      brand: Bosch
+      model: Serie 4 Isı Pompalı Kurutma Makinesi 10 kg
+      source: bosch
+    - sku: WQJ24200TR
+      brand: Bosch
+      model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg
+      source: bosch
+    - sku: WQA24201TR
+      brand: Bosch
+      model: Serie 4 Isı Pompalı Kurutma Makinesi 9 kg
+      source: bosch
+    - sku: WTH22202TR
+      brand: Bosch
+      model: Serie 4 Isı Pompalı Kurutma Makinesi 8 kg
+      source: bosch
+    - sku: WQ45B2AXTR
+      brand: Siemens
+      model: iQ700 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
+      source: siemens
+    - sku: WQ45B2A0TR
+      brand: Siemens
+      model: iQ700 Isı Pompalı Kurutma Makinesi 9 kg
+      source: siemens
+    - sku: WQ52J20RTR
+      brand: Siemens
+      model: iQ500 Isı Pompalı Kurutma Makinesi 10 kg Antrasit
+      source: siemens
+    - sku: WQ52K200TR
+      brand: Siemens
+      model: iQ500 Isı Pompalı Kurutma Makinesi 10 kg
+      source: siemens
+    - sku: WQ42J20XTR
+      brand: Siemens
+      model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
+      source: siemens
+    - sku: WQ43J2C0TR
+      brand: Siemens
+      model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg
+      source: siemens
+    - sku: WQ42J200TR
+      brand: Siemens
+      model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg
+      source: siemens
+    - sku: WQ52G201TR
+      brand: Siemens
+      model: iQ300 Isı Pompalı Kurutma Makinesi 10 kg
+      source: siemens
+    - sku: WQ42A201TR
+      brand: Siemens
+      model: iQ300 Isı Pompalı Kurutma Makinesi 9 kg
+      source: siemens
+    - sku: WT00H201TR
+      brand: Siemens
+      model: iQ300 Isı Pompalı Kurutma Makinesi 8 kg
+      source: siemens
   klima:
     label: Klima
     sources:
@@ -690,9 +1124,11 @@ categories:
       beko:
         path: /klima
       bosch:
-        path: /tr/urunler/isitma-ve-sicak-su/klimalar
+        path: /tr/category/klimalar
       arcelik:
         path: /klima
+      siemens:
+        path: /tr/tr/category/klimalar
     tracked_skus:
     - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h24cacw-sk
       brand: Samsung
@@ -817,6 +1253,54 @@ categories:
       brand: ARÇELİK
       model: 07325 A
       source: arcelik
+    - sku: ASX18XB32N
+      brand: Bosch
+      model: Klima, Ev Tipi ,
+      source: bosch
+    - sku: ASI18XB32N
+      brand: Bosch
+      model: ', , ,'
+      source: bosch
+    - sku: ASI12XB32N
+      brand: Bosch
+      model: ', , ,'
+      source: bosch
+    - sku: ASI09VW32N
+      brand: Bosch
+      model: ', , ,'
+      source: bosch
+    - sku: ASI24VW32N
+      brand: Bosch
+      model: ', , ,'
+      source: bosch
+    - sku: ASI12VW32N
+      brand: Bosch
+      model: ', , ,'
+      source: bosch
+    - sku: AS12XVW32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
+    - sku: AS12IVW32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
+    - sku: AS09IVW32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
+    - sku: AS12IXB32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
+    - sku: AS18IVW32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
+    - sku: AS18IXB32N
+      brand: Siemens
+      model: Klima, Ev Tipi ,
+      source: siemens
   elektrikli_supurge:
     label: Elektrikli Süpürge
     sources:
@@ -827,9 +1311,9 @@ categories:
       beko:
         path: /elektrikli-supurge
       bosch:
-        path: /tr/urunler/elektrikli-supurgeler
+        path: /tr/category/elektrikli-supurgeler
       siemens:
-        path: /tr/urunler/elektrikli-supurgeler
+        path: /tr/tr/category/elektrikli-supurgeler
       arcelik:
         path: /elektrikli-supurge
     tracked_skus:
@@ -953,6 +1437,86 @@ categories:
       brand: ARÇELİK
       model: TRB 6986 B
       source: arcelik
+    - sku: BCRDW3BX
+      brand: Bosch
+      model: Robot Süpürge Spotless Max Cam
+      source: bosch
+    - sku: BCRD2W
+      brand: Bosch
+      model: Robot Süpürge Spotless Advanced +
+      source: bosch
+    - sku: BCS1041WAC
+      brand: Bosch
+      model: Şarjlı Süpürge Unlimited 10 Beyaz
+      source: bosch
+    - sku: BCRC2W
+      brand: Bosch
+      model: Robot Süpürge Spotless Advanced
+      source: bosch
+    - sku: BCRC1W
+      brand: Bosch
+      model: Robot Süpürge Spotless
+      source: bosch
+    - sku: BCS71HYG1
+      brand: Bosch
+      model: 2'si 1 arada Süpürme ve Silme Unlimited 7 ProHygienic Aqua Beyaz
+      source: bosch
+    - sku: BBS71HYGTR
+      brand: Bosch
+      model: 2'si 1 arada Süpürme ve Silme Unlimited 7 ProHygienic Aqua Beyaz
+      source: bosch
+    - sku: BCS931WBA
+      brand: Bosch
+      model: Şarjlı Süpürge Unlimited 9 Beyaz
+      source: bosch
+    - sku: BCS712XXL
+      brand: Bosch
+      model: Şarjlı Süpürge Unlimited 7 Siyah
+      source: bosch
+    - sku: BGS7POW2
+      brand: Bosch
+      model: Serie 8 Toz torbasız Süpürge ProPower Siyah
+      source: bosch
+    - sku: VSM120HYG
+      brand: Siemens
+      model: Şarjlı Süpürge iQ500 Mavi
+      source: siemens
+    - sku: VSX7XTRM
+      brand: Siemens
+      model: iQ700 Toz torbasız Süpürge Siyah
+      source: siemens
+    - sku: VSM120XXL
+      brand: Siemens
+      model: Şarjlı Süpürge iQ500 Mavi
+      source: siemens
+    - sku: VSC7SIL1
+      brand: Siemens
+      model: iQ700 Toz torbalı Süpürge Beyaz
+      source: siemens
+    - sku: VSM120B
+      brand: Siemens
+      model: Şarjlı Süpürge iQ500 Mavi
+      source: siemens
+    - sku: VSP3AAAA
+      brand: Siemens
+      model: Toz torbalı Süpürge iQ300 Plus Limited Edition Kırmızı
+      source: siemens
+    - sku: VSX41XTRM
+      brand: Siemens
+      model: iQ500 Toz torbasız Süpürge Siyah
+      source: siemens
+    - sku: VSX21A320
+      brand: Siemens
+      model: iQ300 Toz torbasız Süpürge Mavi
+      source: siemens
+    - sku: VSX41A300
+      brand: Siemens
+      model: iQ500 Toz torbasız Süpürge Kırmızı
+      source: siemens
+    - sku: VSC3A330
+      brand: Siemens
+      model: iQ300 Toz torbalı Süpürge Mavi
+      source: siemens
   blender:
     label: Blender / Kesici Aletler
     sources:
@@ -961,9 +1525,7 @@ categories:
       beko:
         path: /blender
       bosch:
-        path: /tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme
-      siemens:
-        path: /tr/urunler/kucuk-ev-aletleri/hazirlama-ve-pisirme
+        path: /tr/category/mutfak-aletleri/blenderlar
       arcelik:
         path: /blender
     tracked_skus:
@@ -1007,6 +1569,18 @@ categories:
       brand: ARÇELİK
       model: KB 9408 B-Fit 5in1®
       source: arcelik
+    - sku: MMB6654B
+      brand: Bosch
+      model: Serie 6 High performance Blender VitaPower 1800 W Siyah
+      source: bosch
+    - sku: MMB6177S
+      brand: Bosch
+      model: Serie 4 Blender VitaPower 1200 W Gümüş
+      source: bosch
+    - sku: MMB2111M
+      brand: Bosch
+      model: Serie 2 Blender VitaPower 450 W Paslanmaz çelik
+      source: bosch
   kucuk_ev_aleti:
     label: Elektrikli Küçük Ev Aletleri
     sources:
@@ -1016,6 +1590,8 @@ categories:
         path: /kucuk-ev-aletleri
       arcelik:
         path: /kucuk-ev-aletleri
+      bosch:
+        path: /tr/category/mutfak-aletleri
     tracked_skus:
     - sku: '7489470200'
       brand: Beko
@@ -1077,6 +1653,47 @@ categories:
       brand: ARÇELİK
       model: FRA 9494 Gurme TrioFry®
       source: arcelik
+    - sku: MMB6654B
+      brand: Bosch
+      model: Serie 6 High performance Blender VitaPower 1800 W Siyah
+      source: bosch
+    - sku: MFWS682B
+      brand: Bosch
+      model: Serie 6 Gıda Kıyma Makinesi MultiPower 2100 W Siyah, Metalik gümüş
+      source: bosch
+    - sku: MESM731M
+      brand: Bosch
+      model: VitaExtract Yavaş Sıkım Katı Meyve Sıkacağı VitaExtract 150 W Siyah,
+        Paslanmaz çelik
+      source: bosch
+    - sku: MES4010
+      brand: Bosch
+      model: VitaJuice Geleneksel Katı Meyve Sıkacağı VitaJuice 4 1200 W Gümüş, Siyah
+      source: bosch
+    - sku: MFWS440B
+      brand: Bosch
+      model: Serie 4 Gıda Kıyma Makinesi MultiPower 1900 W Siyah, Siyah
+      source: bosch
+    - sku: MMB6177S
+      brand: Bosch
+      model: Serie 4 Blender VitaPower 1200 W Gümüş
+      source: bosch
+    - sku: MSM6M974
+      brand: Bosch
+      model: Serie 6 El Blenderı ErgoMaster 1600 W Paslanmaz çelik
+      source: bosch
+    - sku: TCG4215
+      brand: Bosch
+      model: Tost Makinesi Gümüş
+      source: bosch
+    - sku: MSM4B674
+      brand: Bosch
+      model: Serie 4 El Blenderı ErgoMaster 1000 W Siyah, Antrasit
+      source: bosch
+    - sku: MSM4B654
+      brand: Bosch
+      model: Serie 4 El Blenderı ErgoMaster 1000 W Siyah, Antrasit
+      source: bosch
   cay_makinesi:
     label: Elektrikli Çay Makinesi
     sources:
@@ -1085,9 +1702,7 @@ categories:
       beko:
         path: /cay-makinesi
       bosch:
-        path: /tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma
-      siemens:
-        path: /tr/urunler/kucuk-ev-aletleri/kahve-yapimi-ve-su-isitma
+        path: /tr/category/mutfak-aletleri/cay-makineleri
       arcelik:
         path: /cay-makinesi
     tracked_skus:
@@ -1167,6 +1782,14 @@ categories:
       brand: ARÇELİK
       model: CM 6587 G
       source: arcelik
+    - sku: TTA5883
+      brand: Bosch
+      model: Çay Makinesi
+      source: bosch
+    - sku: TTA5603
+      brand: Bosch
+      model: Çay Makinesi
+      source: bosch
   utu:
     label: Ütü
     sources:
@@ -1174,10 +1797,6 @@ categories:
         cat_id: 33
       beko:
         path: /utu
-      bosch:
-        path: /tr/urunler/kucuk-ev-aletleri/utu-yapma
-      siemens:
-        path: /tr/urunler/kucuk-ev-aletleri/utu-yapma
       arcelik:
         path: /utu
     tracked_skus:

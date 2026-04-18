@@ -18,8 +18,8 @@ from db.models import AppliancePriceRecord
 logger = logging.getLogger(__name__)
 
 _BASES = {
-    "bosch":   "https://www.bosch-home.com",
-    "siemens": "https://siemens-home.bsh-group.com",
+    "bosch":   "https://www.bosch-home.com.tr",
+    "siemens": "https://www.siemens-home.bsh-group.com",
 }
 
 _BUNDLE_PATTERNS = re.compile(r"\bset\b|hediyeli|\+.*birlikte|kampanya.*paket", re.IGNORECASE)
@@ -59,11 +59,55 @@ class BshScraper:
         url = f"{self.base_url}{path}"
         logger.info("[%s] Sayfa yukleniyor: %s", self.brand, url)
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page(
-                extra_http_headers={"Accept-Language": "tr-TR,tr;q=0.9"}
+            browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox",
+                ],
             )
+            ctx = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Linux; Android 13; SM-S918B) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Mobile Safari/537.36"
+                ),
+                viewport={"width": 412, "height": 915},
+                device_scale_factor=2.625,
+                is_mobile=True,
+                has_touch=True,
+                locale="tr-TR",
+                timezone_id="Europe/Istanbul",
+                extra_http_headers={
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not=A?Brand";v="24"',
+                    "Sec-Ch-Ua-Mobile": "?1",
+                    "Sec-Ch-Ua-Platform": '"Android"',
+                    "Sec-Fetch-Dest": "document",
+                    "Sec-Fetch-Mode": "navigate",
+                    "Sec-Fetch-Site": "none",
+                    "Upgrade-Insecure-Requests": "1",
+                    "DNT": "1",
+                },
+            )
+            await ctx.add_init_script(
+                """
+                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
+                Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
+                window.chrome = { runtime: {} };
+                """
+            )
+            page = await ctx.new_page()
             try:
+                # Cookie warmup: önce anasayfa (BSH-WAF cookie set etsin)
+                await page.goto(f"{self.base_url}/tr", wait_until="networkidle", timeout=60000)
+                await page.wait_for_timeout(4000)
+
+                # Hedef kategori
                 await page.goto(url, wait_until="networkidle", timeout=45000)
                 await page.wait_for_timeout(3000)
                 await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
@@ -74,64 +118,48 @@ class BshScraper:
         return html
 
     def _parse_products(self, html: str, category: str) -> list[dict]:
+        """BSH sites embed product data as escaped JSON:
+           \"productCode\":\"KBN96ADD0\" ... \"productName\":[...] ... \"price\":{...\"amount\":127110...}
+        """
         products = []
-        # BSH sites use structured product tiles
-        cards = re.findall(
-            r'data-product-id=["\']([^"\']+)["\'].*?'
-            r'product-name["\'][^>]*>([^<]+)<.*?'
-            r'price["\'][^>]*>([\d.,\s]+)',
-            html, re.DOTALL
-        )
-        if not cards:
-            # Fallback: JSON-LD
-            import json
-            for m in re.finditer(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html, re.DOTALL):
-                try:
-                    data = json.loads(m.group(1))
-                except json.JSONDecodeError:
-                    continue
-                items = data if isinstance(data, list) else [data]
-                for item in items:
-                    if not isinstance(item, dict) or item.get("@type") not in ("Product", "IndividualProduct"):
-                        continue
-                    name = item.get("name", "")
-                    if _BUNDLE_PATTERNS.search(name):
-                        continue
-                    offers = item.get("offers", {})
-                    if isinstance(offers, list):
-                        offers = offers[0] if offers else {}
-                    price_str = str(offers.get("price", ""))
-                    sku = item.get("sku") or item.get("productID") or item.get("mpn", "")
-                    if price_str and sku:
-                        try:
-                            price = Decimal(price_str)
-                        except Exception:
-                            continue
-                        if price > 0:
-                            products.append({
-                                "sku": str(sku),
-                                "brand": self.brand.capitalize(),
-                                "model": name,
-                                "category": category,
-                                "price": price,
-                                "discounted_price": None,
-                            })
-                return products
+        seen: set[str] = set()
 
-        for sku, name, price_text in cards:
-            name = name.strip()
-            if _BUNDLE_PATTERNS.search(name):
+        pattern = re.compile(
+            r'\\"productCode\\":\\"(?P<sku>[A-Z0-9]{6,20})\\"'
+            r'.{0,400}?'
+            r'\\"productName\\":\[(?P<name_arr>[^\]]{0,500})\]'
+            r'.{0,15000}?'
+            r'\\"price\\":\{\\"kind\\":\\"SHOP_PRICE\\",\\"vatIncluded\\":(?:true|false),'
+            r'\\"amount\\":(?P<amount>\d+),\\"currency\\":\\"TRY\\"',
+            re.DOTALL,
+        )
+        for m in pattern.finditer(html):
+            sku = m.group("sku")
+            if sku in seen:
                 continue
-            price = _parse_price(price_text)
-            if price:
-                products.append({
-                    "sku": sku.strip(),
-                    "brand": self.brand.capitalize(),
-                    "model": name,
-                    "category": category,
-                    "price": price,
-                    "discounted_price": None,
-                })
+
+            raw_parts = re.findall(r'\\"([^"\\]+)\\"', m.group("name_arr"))
+            name_parts = [p for p in raw_parts if p.strip()]
+            name = " ".join(name_parts).strip()
+            if not name or _BUNDLE_PATTERNS.search(name):
+                continue
+
+            try:
+                price = Decimal(m.group("amount"))
+            except Exception:
+                continue
+            if price <= 0:
+                continue
+
+            seen.add(sku)
+            products.append({
+                "sku": sku,
+                "brand": self.brand.capitalize(),
+                "model": name,
+                "category": category,
+                "price": price,
+                "discounted_price": None,
+            })
         return products
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=10, max=30))
