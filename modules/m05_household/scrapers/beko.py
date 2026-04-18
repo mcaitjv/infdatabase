@@ -1,6 +1,6 @@
 """
 Beko Scraper — beko.com.tr
-Cloudflare/WAF korumalı → Playwright ile render.
+Akamai WAF korumalı → Playwright headless + mobile UA + cookie warmup.
 """
 
 import logging
@@ -16,15 +16,6 @@ logger = logging.getLogger(__name__)
 
 _BASE = "https://www.beko.com.tr"
 _BUNDLE_PATTERNS = re.compile(r"\bset\b|hediyeli|\+.*birlikte|kampanya.*paket", re.IGNORECASE)
-
-
-def _parse_price(text: str) -> Decimal | None:
-    cleaned = text.replace(".", "").replace(",", ".").strip()
-    match = re.search(r"(\d+(?:\.\d+)?)", cleaned)
-    if match:
-        val = Decimal(match.group(1))
-        return val if val > 0 else None
-    return None
 
 
 class BekoScraper:
@@ -45,14 +36,57 @@ class BekoScraper:
         url = f"{_BASE}{path}"
         logger.info("[beko] Sayfa yukleniyor: %s", url)
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page(
-                extra_http_headers={"Accept-Language": "tr-TR,tr;q=0.9"}
+            browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox",
+                ],
             )
+            ctx = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Linux; Android 13; SM-S918B) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Mobile Safari/537.36"
+                ),
+                viewport={"width": 412, "height": 915},
+                device_scale_factor=2.625,
+                is_mobile=True,
+                has_touch=True,
+                locale="tr-TR",
+                timezone_id="Europe/Istanbul",
+                extra_http_headers={
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not=A?Brand";v="24"',
+                    "Sec-Ch-Ua-Mobile": "?1",
+                    "Sec-Ch-Ua-Platform": '"Android"',
+                    "Sec-Fetch-Dest": "document",
+                    "Sec-Fetch-Mode": "navigate",
+                    "Sec-Fetch-Site": "none",
+                    "Upgrade-Insecure-Requests": "1",
+                    "DNT": "1",
+                },
+            )
+            await ctx.add_init_script(
+                """
+                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
+                Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
+                window.chrome = { runtime: {} };
+                """
+            )
+            page = await ctx.new_page()
             try:
+                # Cookie warmup: önce anasayfa (Akamai cookie set etsin)
+                await page.goto(_BASE + "/", wait_until="networkidle", timeout=60000)
+                await page.wait_for_timeout(4000)
+
+                # Hedef kategori
                 await page.goto(url, wait_until="networkidle", timeout=45000)
                 await page.wait_for_timeout(3000)
-                # Scroll to load lazy content
                 await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
                 await page.wait_for_timeout(2000)
                 html = await page.content()
@@ -61,35 +95,42 @@ class BekoScraper:
         return html
 
     def _parse_products(self, html: str, category: str) -> list[dict]:
+        # Beko kartları GTM impression JSON'unu `data-gtm-impression` attribute'unda tutuyor:
+        # &quot;name&quot;, &quot;id&quot;, &quot;price&quot;, &quot;brand&quot; alanları.
         products = []
-        cards = re.findall(
-            r'data-productcode=["\']([^"\']+)["\'].*?'
-            r'product-title["\'][^>]*>([^<]+)<.*?'
-            r'price["\'][^>]*>([\d.,\s]+)',
-            html, re.DOTALL
+        seen = set()
+        pattern = re.compile(
+            r'data-gtm-impression="(\{[^"]*?&quot;name&quot;[^"]*?\})"',
+            re.DOTALL,
         )
-        if not cards:
-            cards = re.findall(
-                r'href=["\'][^"\']*?/([A-Z0-9-]+)-p-\d+["\'].*?'
-                r'(?:title|name)["\'][^>]*>([^<]+)<.*?'
-                r'(\d[\d.,\s]*(?:TL|₺))',
-                html, re.DOTALL
-            )
-
-        for sku, name, price_text in cards:
-            name = name.strip()
-            if _BUNDLE_PATTERNS.search(name):
+        for m in pattern.finditer(html):
+            raw = m.group(1).replace("&quot;", '"').replace("\\/", "/")
+            name = re.search(r'"name"\s*:\s*"([^"]+)"', raw)
+            sku  = re.search(r'"id"\s*:\s*"([^"]+)"', raw)
+            prc  = re.search(r'"price"\s*:\s*"([\d.]+)"', raw)
+            brd  = re.search(r'"brand"\s*:\s*"([^"]+)"', raw)
+            if not (name and sku and prc):
                 continue
-            price = _parse_price(price_text)
-            if price:
-                products.append({
-                    "sku": sku.strip(),
-                    "brand": "Beko",
-                    "model": name,
-                    "category": category,
-                    "price": price,
-                    "discounted_price": None,
-                })
+            sku_val = sku.group(1)
+            if sku_val in seen:
+                continue
+            seen.add(sku_val)
+            if _BUNDLE_PATTERNS.search(name.group(1)):
+                continue
+            try:
+                price = Decimal(prc.group(1))
+            except Exception:
+                continue
+            if price <= 0:
+                continue
+            products.append({
+                "sku": sku_val,
+                "brand": brd.group(1) if brd else "Beko",
+                "model": name.group(1).strip(),
+                "category": category,
+                "price": price,
+                "discounted_price": None,
+            })
         return products
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=10, max=30))
