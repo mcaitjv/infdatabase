@@ -75,22 +75,28 @@ CREATE INDEX IF NOT EXISTS idx_fp_provider_city
     ON fuel_prices(provider, city);
 
 
--- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05)
-CREATE TABLE IF NOT EXISTS appliance_prices (
-    id         BIGSERIAL     PRIMARY KEY,
-    source     VARCHAR(50)   NOT NULL,
-    sku        VARCHAR(255)  NOT NULL,
-    model      TEXT          NOT NULL,
-    category   VARCHAR(100)  NOT NULL,
-    price      NUMERIC(12,2) NOT NULL,
-    date       DATE          NOT NULL,
-    scraped_at TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(source, sku, date)
+-- Beyaz eşya & küçük ev aletleri — Modül 05 (Dimensional Model)
+CREATE TABLE IF NOT EXISTS dim_appliance (
+    appliance_key BIGSERIAL    PRIMARY KEY,
+    source        VARCHAR(50)  NOT NULL,
+    sku           VARCHAR(255) NOT NULL,
+    model         TEXT         NOT NULL,
+    category      VARCHAR(100) NOT NULL,
+    UNIQUE(source, sku)
 );
 
-CREATE INDEX IF NOT EXISTS idx_ap_date     ON appliance_prices(date);
-CREATE INDEX IF NOT EXISTS idx_ap_source   ON appliance_prices(source, date);
-CREATE INDEX IF NOT EXISTS idx_ap_category ON appliance_prices(category, date);
+CREATE TABLE IF NOT EXISTS fact_appliance_price (
+    price_key     BIGSERIAL     PRIMARY KEY,
+    appliance_key BIGINT        NOT NULL REFERENCES dim_appliance(appliance_key),
+    price         NUMERIC(12,2) NOT NULL,
+    date          DATE          NOT NULL,
+    UNIQUE(appliance_key, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fap_date     ON fact_appliance_price(date);
+CREATE INDEX IF NOT EXISTS idx_fap_key_date ON fact_appliance_price(appliance_key, date);
+CREATE INDEX IF NOT EXISTS idx_dim_category ON dim_appliance(category);
+CREATE INDEX IF NOT EXISTS idx_dim_source   ON dim_appliance(source);
 
 -- ---- Performans indeksleri ----
 

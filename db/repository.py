@@ -326,23 +326,44 @@ async def batch_upsert_fuel_prices(conn, records: list[FuelPriceRecord]) -> int:
     return inserted
 
 
-# ── Modül 05 — Beyaz eşya fiyatları ─────────────────────────────────────────
+# ── Modül 05 — Beyaz eşya fiyatları (Dimensional Model) ─────────────────────
 
 async def upsert_appliance_price(conn, record: AppliancePriceRecord) -> bool:
-    result = await conn.execute(
-        """
-        INSERT INTO appliance_prices
-            (source, sku, model, category, price, date)
-        VALUES ($1, $2, $3, $4, $5::numeric, $6::date)
-        ON CONFLICT (source, sku, date) DO NOTHING
-        """,
-        record.source,
-        record.sku,
-        record.model,
-        record.category,
-        float(record.price),
-        record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date)),
-    )
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        await conn.execute(
+            "INSERT OR IGNORE INTO dim_appliance (source, sku, model, category) VALUES (?, ?, ?, ?)",
+            record.source, record.sku, record.model, record.category,
+        )
+        row = await conn.fetchrow(
+            "SELECT appliance_key FROM dim_appliance WHERE source=? AND sku=?",
+            record.source, record.sku,
+        )
+        appliance_key = row[0]
+        result = await conn.execute(
+            "INSERT OR IGNORE INTO fact_appliance_price (appliance_key, price, date) VALUES (?, ?, ?)",
+            appliance_key, float(record.price), str(rec_date),
+        )
+    else:
+        row = await conn.fetchrow(
+            """
+            INSERT INTO dim_appliance (source, sku, model, category)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (source, sku) DO UPDATE SET model = EXCLUDED.model
+            RETURNING appliance_key
+            """,
+            record.source, record.sku, record.model, record.category,
+        )
+        appliance_key = row[0]
+        result = await conn.execute(
+            """
+            INSERT INTO fact_appliance_price (appliance_key, price, date)
+            VALUES ($1, $2::numeric, $3::date)
+            ON CONFLICT (appliance_key, date) DO NOTHING
+            """,
+            appliance_key, float(record.price), rec_date,
+        )
     return result == "INSERT 0 1"
 
 

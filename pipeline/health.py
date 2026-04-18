@@ -238,7 +238,12 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Bugün DB'de olan (source, sku) çiftleri
     rows_today = await conn.fetch(
-        "SELECT source, sku FROM appliance_prices WHERE date = $1",
+        """
+        SELECT d.source, d.sku
+        FROM fact_appliance_price f
+        JOIN dim_appliance d ON f.appliance_key = d.appliance_key
+        WHERE f.date = $1
+        """,
         target_date,
     )
     found_skus = {(str(row[0]), str(row[1])) for row in rows_today}
@@ -246,7 +251,7 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Dün
     rows_yest = await conn.fetch(
-        "SELECT COUNT(*) as cnt FROM appliance_prices WHERE date = $1",
+        "SELECT COUNT(*) as cnt FROM fact_appliance_price WHERE date = $1",
         yesterday,
     )
     report.records_yesterday = int(rows_yest[0][0]) if rows_yest else 0
@@ -260,25 +265,26 @@ async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
         report.add_warning(f"Eksik SKU: {label}")
 
     if report.records_today == 0 and report.expected > 0:
-        report.add_error("Bugün appliance_prices tablosuna hiç kayıt yazılmamış")
+        report.add_error("Bugün fact_appliance_price tablosuna hiç kayıt yazılmamış")
         return report
 
     # Fiyat anomalisi
     thr = _THRESHOLDS["appliance"]
     anomalies = await conn.fetch(
         """
-        SELECT a.sku, a.source, a.model,
-               a.price AS today_price, y.price AS yesterday_price
-        FROM appliance_prices a
-        JOIN appliance_prices y ON a.sku = y.sku AND a.source = y.source
-        WHERE a.date = $1
-          AND y.date = $2
-          AND y.price > 0
-          AND ABS(CAST(a.price AS REAL) - CAST(y.price AS REAL))
-              / CAST(y.price AS REAL) > $3
+        SELECT d.source, d.sku, d.model,
+               f.price AS today_price, fy.price AS yesterday_price
+        FROM fact_appliance_price f
+        JOIN dim_appliance d  ON f.appliance_key  = d.appliance_key
+        JOIN fact_appliance_price fy ON fy.appliance_key = f.appliance_key
+        WHERE f.date  = $1
+          AND fy.date = $2
+          AND fy.price > 0
+          AND ABS(CAST(f.price AS REAL) - CAST(fy.price AS REAL))
+              / CAST(fy.price AS REAL) > $3
         ORDER BY
-            ABS(CAST(a.price AS REAL) - CAST(y.price AS REAL))
-            / CAST(y.price AS REAL) DESC
+            ABS(CAST(f.price AS REAL) - CAST(fy.price AS REAL))
+            / CAST(fy.price AS REAL) DESC
         LIMIT 20
         """,
         target_date,
