@@ -1,6 +1,8 @@
 # Modül 05 — Beyaz Eşya & Küçük Ev Aletleri Takip Listesi
 # --discover-m05 ile güncellenir. Eksik SKU'lar self-heal ile yenilenir.
 
+label: "Beyaz Eşya & Küçük Ev Aletleri"
+
 categories:
   buzdolabi:
     label: Buzdolabı

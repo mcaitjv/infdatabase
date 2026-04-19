@@ -15,7 +15,9 @@ Tip B: Discovery + Tracked
 
 import logging
 import os
+from collections import defaultdict
 from datetime import date, datetime
+from pathlib import Path
 
 import yaml
 
@@ -25,25 +27,41 @@ from modules.base import BaseModule
 
 logger = logging.getLogger(__name__)
 _MODULE_DIR = os.path.dirname(__file__)
+_CONFIG_DIR = Path(_MODULE_DIR) / "config"
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-def _load_tracked() -> dict:
-    path = os.path.join(_MODULE_DIR, "config", "tracked.yaml")
-    with open(path, encoding="utf-8") as f:
-        return yaml.safe_load(f).get("categories", {})
+def _load_tracked() -> tuple[dict, dict]:
+    """config/*.yaml dosyalarını yükler. (categories, part_map) döner.
+    part_map: {cat_key → Path}
+    """
+    categories: dict = {}
+    part_map: dict = {}
+    for path in sorted(_CONFIG_DIR.glob("*.yaml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        for cat_key, cat_data in data.get("categories", {}).items():
+            categories[cat_key] = cat_data
+            part_map[cat_key] = path
+    return categories, part_map
 
 
-def _write_tracked(categories: dict) -> None:
-    path = os.path.join(_MODULE_DIR, "config", "tracked.yaml")
-    header = (
-        "# Modül 05 — Beyaz Eşya & Küçük Ev Aletleri Takip Listesi\n"
-        "# --discover-m05 ile güncellenir. Eksik SKU'lar self-heal ile yenilenir.\n\n"
-    )
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(header)
-        yaml.dump({"categories": categories}, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+def _write_tracked(categories: dict, part_map: dict) -> None:
+    """Kategorileri part_map'e göre ilgili config dosyalarına yazar."""
+    by_file: dict = defaultdict(dict)
+    for cat_key, cat_data in categories.items():
+        file_path = part_map.get(cat_key)
+        if file_path:
+            by_file[file_path][cat_key] = cat_data
+
+    for file_path, cats in by_file.items():
+        existing = yaml.safe_load(Path(file_path).read_text(encoding="utf-8")) or {}
+        label = existing.get("label", Path(file_path).stem.replace("_", " ").title())
+        with open(file_path, "w", encoding="utf-8") as f:
+            yaml.dump(
+                {"label": label, "categories": cats},
+                f, allow_unicode=True, default_flow_style=False, sort_keys=False,
+            )
 
 
 # ── Validation + heal ─────────────────────────────────────────────────────────
@@ -78,64 +96,62 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
 
-        categories = _load_tracked()
+        categories, part_map = _load_tracked()
         total_skus = 0
+
+        _SOURCE_SCRAPERS = {
+            "vestel":  lambda cfg: (VestelScraper(),  "cat_id"),
+            "samsung": lambda cfg: (SamsungScraper(),  "path"),
+            "beko":    lambda cfg: (BekoScraper(),     "path"),
+            "arcelik": lambda cfg: (ArcelikScraper(),  "path"),
+            "bosch":   lambda cfg: (BshScraper(brand="bosch"),    "path"),
+            "siemens": lambda cfg: (BshScraper(brand="siemens"),  "path"),
+        }
 
         for cat_key, cat_data in categories.items():
             sources = cat_data.get("sources", {})
             discovered: list[dict] = []
 
-            # Vestel
-            if "vestel" in sources:
-                async with VestelScraper() as scraper:
-                    products = await scraper.discover_category(sources["vestel"]["cat_id"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(2.0, 4.0)
-
-            # Samsung
-            if "samsung" in sources:
-                async with SamsungScraper() as scraper:
-                    products = await scraper.discover_category(sources["samsung"]["path"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(2.0, 4.0)
-
-            # Beko
-            if "beko" in sources:
-                async with BekoScraper() as scraper:
-                    products = await scraper.discover_category(sources["beko"]["path"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(5.0, 10.0)
-
-            # Arçelik
-            if "arcelik" in sources:
-                async with ArcelikScraper() as scraper:
-                    products = await scraper.discover_category(sources["arcelik"]["path"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(5.0, 10.0)
-
-            # Bosch
-            if "bosch" in sources:
-                async with BshScraper(brand="bosch") as scraper:
-                    products = await scraper.discover_category(sources["bosch"]["path"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(5.0, 10.0)
-
-            # Siemens
-            if "siemens" in sources:
-                async with BshScraper(brand="siemens") as scraper:
-                    products = await scraper.discover_category(sources["siemens"]["path"], cat_key)
-                    discovered.extend(products[:10])
-                    await scraper._sleep(5.0, 10.0)
+            for src_name, src_cfg in sources.items():
+                sleep_s = (2.0, 4.0) if src_name in ("vestel", "samsung") else (5.0, 10.0)
+                try:
+                    if src_name == "vestel":
+                        async with VestelScraper() as s:
+                            prods = await s.discover_category(src_cfg["cat_id"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "samsung":
+                        async with SamsungScraper() as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "beko":
+                        async with BekoScraper() as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "arcelik":
+                        async with ArcelikScraper() as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name in ("bosch", "siemens"):
+                        async with BshScraper(brand=src_name) as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    else:
+                        continue
+                    for p in prods:
+                        p["source"] = src_name
+                    discovered.extend(prods[:10])
+                except Exception as exc:
+                    logger.warning("[m05:discover] %s/%s hata: %s", src_name, cat_key, exc)
 
             cat_data["tracked_skus"] = [
-                {"sku": p["sku"], "brand": p["brand"], "model": p["model"], "source": p.get("source", p["brand"].lower())}
+                {"sku": p["sku"], "model": p["model"], "source": p["source"]}
                 for p in discovered
             ]
             total_skus += len(discovered)
             logger.info("[m05:discover] %s: %d SKU", cat_key, len(discovered))
 
-        _write_tracked(categories)
-        logger.info("[m05:discover] tracked.yaml guncellendi — %d kategori, %d toplam SKU",
+        _write_tracked(categories, part_map)
+        logger.info("[m05:discover] config guncellendi — %d kategori, %d toplam SKU",
                     len(categories), total_skus)
 
     # ── Tracked scraping ──────────────────────────────────────────────────────
@@ -220,7 +236,7 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
 
-        categories = _load_tracked()
+        categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []
 
         total_tracked = sum(len(c.get("tracked_skus", [])) for c in categories.values())

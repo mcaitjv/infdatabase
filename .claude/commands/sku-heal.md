@@ -43,7 +43,7 @@ Tablo yoksa veya boşsa Yöntem B'ye geç.
 
 #### Yöntem B — tracked.yaml → canlı keşif karşılaştırma:
 
-`modules/m05_household/config/tracked.yaml` oku. Her kaynak için `discover_category`
+`modules/m05_household/config/appliances.yaml` oku. Her kaynak için `discover_category`
 çalıştır, dönen SKU setini tracked set ile karşılaştır. Kesişimde olmayan tracked SKU'lar = düştü.
 
 Her kaynak için geçici probe scripti:
@@ -53,7 +53,7 @@ import asyncio, sys, yaml
 sys.path.insert(0, '.')
 from modules.m05_household.scrapers.<source> import <Scraper>
 
-YAML = 'modules/m05_household/config/tracked.yaml'
+YAML = 'modules/m05_household/config/appliances.yaml'
 SOURCE = '<source>'
 
 async def main():
