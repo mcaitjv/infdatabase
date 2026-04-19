@@ -1,15 +1,17 @@
 # /modul-ekle — Modül Session Başlatıcı
 
-Tek bir komut, iki iş yapar:
+Tek bir komut, üç iş yapar:
 - **(a)** Yeni COICOP modülü ekle (scaffold + dal + scraper referansı)
 - **(b)** Mevcut bir modül üzerinde çalışmaya başla (dal + context)
+- **(c)** Mevcut Tip B modüle yeni part ekle (yeni config YAML + scraper iskeleti)
 
 ## Kullanım
 
 ```
-/modul-ekle              → interaktif (önerilen)
-/modul-ekle 03 giyim 6.91   → yeni modül, parametreler hazır
-/modul-ekle 05               → mevcut modülde çalış
+/modul-ekle                        → interaktif (önerilen)
+/modul-ekle 03 giyim 6.91          → yeni modül, parametreler hazır
+/modul-ekle 05                     → mevcut modülde çalış
+/modul-ekle 05 mobilya             → M05'e "mobilya" adlı yeni part ekle
 ```
 
 ---
@@ -35,6 +37,7 @@ Kullanıcı argüman vermemişse `AskUserQuestion` ile sor:
   - `b) Mevcut modülde çalış` — mevcut modülün dalına geç ve context hazırla
 
 Tek sayısal argüman verilmişse (`/modul-ekle 05`) ve `modules/m05_*/` varsa **(b)**'ye geç.
+İki argüman verilmişse (`/modul-ekle 05 mobilya`) → **(c)**'ye geç.
 Üç argüman verilmişse (kod/ad/ağırlık) **(a)**'ya geç.
 
 ### 2. (a) Yeni modül ekle
@@ -115,9 +118,82 @@ Kullanıcıya sor: **"Hangi kısımdan başlayalım?"**
 - Keyword/lokasyon listesi doldurma
 - DB schema (yeni tablo gerekiyor mu?)
 
-### 3. (b) Mevcut modülde çalış
+### 3. (c) Mevcut Tip B modüle yeni part ekle
 
-#### 3.1 Modül seç
+Sadece **Tip B (Discovery + Tracked)** modüller için geçerlidir.
+M05 gibi multi-part config yapısı (`config/*.yaml` glob) olan modüllerde yeni bir ürün grubu ekler.
+
+#### 3c.1 Parametreleri topla
+
+Eksik olanları `AskUserQuestion` ile sor:
+- **Modül kodu** (hangi modüle ekleniyor): `05`
+- **Part slug** (ASCII, küçük harf, alt çizgi): `mobilya`, `tekstil`, `temizlik`
+- **Part label** (Türkçe, görünen ad): `"Mobilya & Ev Tekstili"`
+- **Kategoriler** (virgülle): `koltuk, masa, yatak, hali` vb.
+- **Kaynaklar** (her kategori için hangi siteler): IKEA, Trendyol, Karaca vb.
+
+#### 3c.2 Dal kontrolü
+
+```bash
+git checkout feature/module-<KOD>-<slug>
+```
+Dal yoksa `git checkout -b feature/module-<KOD>-<slug>`.
+
+#### 3c.3 Config dosyası oluştur
+
+`modules/m<KOD>_<slug>/config/<part_slug>.yaml` dosyasını yarat:
+
+```yaml
+label: "<Part Label>"
+
+categories:
+  <kategori_1>:
+    label: <Türkçe ad>
+    sources:
+      <kaynak_slug>:
+        path: <URL yolu veya cat_id>
+    tracked_skus: []
+  <kategori_2>:
+    ...
+```
+
+Her kategori için kullanıcının belirttiği kaynakları `sources:` altına ekle.
+`tracked_skus: []` boş bırak — discovery komutu dolduracak.
+
+#### 3c.4 Scraper iskeleti sor
+
+Her yeni kaynak (site) için scraper yazılması gerekir. Kullanıcıya sor:
+
+> "Şu kaynaklar için scraper yazalım mı? [kaynak listesi]
+> Yoksa mevcut bir scraper'ı mı genişletelim?"
+
+Cevaba göre:
+- **Yeni scraper** → `modules/m<KOD>_<slug>/scrapers/<kaynak>.py` iskelet dosyası oluştur (BaseScraper extend, `discover_category` + `scrape_tracked` boş method stub)
+- **Mevcut scraper genişletme** → ilgili scraper'a kategori mapping ekle
+
+#### 3c.5 `__init__.py` dispatch güncelle
+
+Yeni kaynak `__init__.py`'nin `_scrape_source` dispatcher'ında tanımlı değilse uyar:
+
+> "`<kaynak>` scraper'ı henüz `run()` fonksiyonuna eklenmemiş. Ekleyeyim mi?"
+
+Onay alınırsa `run()` içine yeni scraper bloğunu ekle.
+
+#### 3c.6 Commit
+
+```
+feat(m<KOD>): <part_slug> part eklendi — <N> kategori, <kaynak listesi>
+```
+
+#### 3c.7 Sonraki adım
+
+> "Scraper'ları yazıp discovery çalıştıralım mı?"
+
+---
+
+### 4. (b) Mevcut modülde çalış
+
+#### 4.1 Modül seç
 
 Argüman yoksa `modules/m*_*/` klasörlerini listele, `AskUserQuestion` ile seçtir.
 
