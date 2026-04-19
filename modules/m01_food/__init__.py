@@ -58,7 +58,7 @@ class FoodModule(BaseModule):
     weight = 24.44
 
     async def setup_schema(self, conn) -> None:
-        """Gıda modülü mevcut ortak şemayı kullanır (market_products + price_snapshots)."""
+        """Gıda modülü mevcut ortak şemayı kullanır (m01_market_products + m01_price_snapshots)."""
         await apply_schema(conn)
 
     async def run(self, dry_run: bool = False) -> list[ScrapeRun]:

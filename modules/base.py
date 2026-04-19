@@ -35,7 +35,7 @@ class BaseModule(ABC):
 
     async def health_check(self, conn, target_date: date | None = None):
         """
-        Post-run veri kalitesi kontrolü. Varsayılan: scrape_runs bazlı özet.
+        Post-run veri kalitesi kontrolü. Varsayılan: shared_scrape_runs bazlı özet.
         Yeni modüller pipeline/health.py'ye özel check fonksiyonu ekleyip
         bu metodu override ederek sisteme dahil olur.
         Döndürür: ModuleHealthReport (pipeline.health modülünden)
@@ -56,7 +56,7 @@ class BaseModule(ABC):
         rows = await conn.fetch(
             """
             SELECT market, status, products_scraped, errors_count
-            FROM scrape_runs
+            FROM shared_scrape_runs
             WHERE run_date = $1 AND market LIKE $2
             """,
             str(target_date),
@@ -64,7 +64,7 @@ class BaseModule(ABC):
         )
 
         if not rows:
-            report.add_warning(f"Modül {self.coicop_code} için bugün scrape_runs kaydı yok")
+            report.add_warning(f"Modül {self.coicop_code} için bugün shared_scrape_runs kaydı yok")
             return report
 
         report.records_today = sum(int(r[2] or 0) for r in rows)

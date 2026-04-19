@@ -115,7 +115,7 @@ def _pct_label(pct: float) -> str:
 
 async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
     """
-    M01 + M05 Phase 1: price_snapshots bütünlük ve anomali kontrolü.
+    M01 + M05 Phase 1: m01_price_snapshots bütünlük ve anomali kontrolü.
     Her iki modül de aynı tabloyu kullandığı için birlikte kontrol edilir.
     """
     yesterday = target_date - timedelta(days=1)
@@ -127,11 +127,11 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Bugün ve dün yazılan toplam snapshot sayısı
     row_today = await conn.fetchrow(
-        "SELECT COUNT(*) as cnt FROM price_snapshots WHERE snapshot_date = $1",
+        "SELECT COUNT(*) as cnt FROM m01_price_snapshots WHERE snapshot_date = $1",
         target_date,
     )
     row_yest = await conn.fetchrow(
-        "SELECT COUNT(*) as cnt FROM price_snapshots WHERE snapshot_date = $1",
+        "SELECT COUNT(*) as cnt FROM m01_price_snapshots WHERE snapshot_date = $1",
         yesterday,
     )
     report.records_today     = int(row_today[0]) if row_today else 0
@@ -139,7 +139,7 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Dün hiç veri yoksa (ilk gün) anomali karşılaştırması atlanır
     if report.records_today == 0:
-        report.add_error("Bugün price_snapshots tablosuna hiç kayıt yazılmamış")
+        report.add_error("Bugün m01_price_snapshots tablosuna hiç kayıt yazılmamış")
         return report
 
     # Dünkü veriye kıyasla ±%20'den fazla değişim → uyarı
@@ -151,12 +151,12 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
                 f"({report.records_yesterday} → {report.records_today})"
             )
 
-    # Başarısız scrape_runs: MarketFiyati run'ları (Trendyol hariç)
+    # Başarısız shared_scrape_runs: MarketFiyati run'ları (Trendyol hariç)
     # Aynı market için birden fazla run varsa (scheduler + manuel), en az biri success ise OK
     failed_runs = await conn.fetch(
         """
         SELECT market
-        FROM scrape_runs
+        FROM shared_scrape_runs
         WHERE run_date = $1
           AND (market LIKE 'm01:%' OR (market LIKE 'm05:%' AND market NOT LIKE 'm05:trendyol%'))
         GROUP BY market
@@ -176,10 +176,10 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
         SELECT mp.market, mp.market_sku, mp.market_name,
                MAX(CAST(t.price AS REAL))  AS today_price,
                MAX(CAST(y.price AS REAL))  AS yesterday_price
-        FROM price_snapshots t
-        JOIN price_snapshots y
+        FROM m01_price_snapshots t
+        JOIN m01_price_snapshots y
             ON t.market_product_id = y.market_product_id
-        JOIN market_products mp ON mp.id = t.market_product_id
+        JOIN m01_market_products mp ON mp.id = t.market_product_id
         WHERE t.snapshot_date = $1
           AND y.snapshot_date = $2
           AND y.price > 0
@@ -218,8 +218,8 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
     rows_today = await conn.fetch(
         """
         SELECT d.source, d.sku, d.category
-        FROM fact_appliance_price f
-        JOIN dim_appliance d ON f.appliance_key = d.appliance_key
+        FROM m05_fact_appliance_price f
+        JOIN m05_dim_appliance d ON f.appliance_key = d.appliance_key
         WHERE f.date = $1
         """,
         target_date,
@@ -227,7 +227,7 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
     found_skus: set[tuple[str, str]] = {(str(r[0]), str(r[1])) for r in rows_today}
 
     rows_yest = await conn.fetchrow(
-        "SELECT COUNT(*) FROM fact_appliance_price WHERE date = $1", yesterday
+        "SELECT COUNT(*) FROM m05_fact_appliance_price WHERE date = $1", yesterday
     )
     total_yesterday = int(rows_yest[0]) if rows_yest else 0
 
@@ -236,9 +236,9 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
         """
         SELECT d.source, d.sku, d.model,
                f.price AS today_price, fy.price AS yesterday_price
-        FROM fact_appliance_price f
-        JOIN dim_appliance d ON f.appliance_key = d.appliance_key
-        JOIN fact_appliance_price fy ON fy.appliance_key = f.appliance_key
+        FROM m05_fact_appliance_price f
+        JOIN m05_dim_appliance d ON f.appliance_key = d.appliance_key
+        JOIN m05_fact_appliance_price fy ON fy.appliance_key = f.appliance_key
         WHERE f.date  = $1
           AND fy.date = $2
           AND fy.price > 0
@@ -310,7 +310,7 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
 
 
 async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
-    """M07: fuel_prices bütünlük ve anomali kontrolü."""
+    """M07: m07_fuel_prices bütünlük ve anomali kontrolü."""
     yesterday = target_date - timedelta(days=1)
     report = ModuleHealthReport(
         module_code="07",
@@ -330,7 +330,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Bugün DB'de olanlar
     rows_today = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM fuel_prices WHERE date = $1",
+        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
         target_date,
     )
     report.records_today = len(rows_today)
@@ -343,7 +343,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Dün
     rows_yest = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM fuel_prices WHERE date = $1",
+        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
         yesterday,
     )
     yest_prices: dict[tuple[str, str, str], float] = {}
@@ -353,7 +353,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
     report.records_yesterday = len(rows_yest)
 
     if report.records_today == 0 and report.expected > 0:
-        report.add_error("Bugün fuel_prices tablosuna hiç kayıt yazılmamış")
+        report.add_error("Bugün m07_fuel_prices tablosuna hiç kayıt yazılmamış")
         return report
 
     # Eksik kombinasyonlar

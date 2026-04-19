@@ -52,7 +52,7 @@ class FuelModule(BaseModule):
     weight = 16.62
 
     async def setup_schema(self, conn) -> None:
-        """fuel_prices tablosunu oluşturur."""
+        """m07_fuel_prices tablosunu oluşturur."""
         schema_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "db",
@@ -61,10 +61,10 @@ class FuelModule(BaseModule):
         with open(schema_path, encoding="utf-8") as f:
             sql = f.read()
 
-        # Sadece fuel_prices ile ilgili CREATE TABLE bloğunu çalıştır
+        # Sadece m07_fuel_prices ile ilgili CREATE TABLE bloğunu çalıştır
         import re
         match = re.search(
-            r"(CREATE TABLE IF NOT EXISTS fuel_prices.*?;)",
+            r"(CREATE TABLE IF NOT EXISTS m07_fuel_prices.*?;)",
             sql,
             re.DOTALL,
         )
@@ -83,7 +83,7 @@ class FuelModule(BaseModule):
                 except Exception:
                     pass  # İndeks zaten varsa sorun değil
 
-        logger.info("[m07] fuel_prices şeması uygulandı.")
+        logger.info("[m07] m07_fuel_prices şeması uygulandı.")
 
     async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Shell ve Opet fiyatlarını çeker, DB'ye yazar."""
