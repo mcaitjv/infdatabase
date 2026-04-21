@@ -89,6 +89,25 @@ class AppliancePriceRecord(BaseModel):
         return v
 
 
+class CarPriceRecord(BaseModel):
+    """Modül 07 — Sıfır araç fiyat kaydı (marka sitelerinden)."""
+    brand:      str        # "toyota" | "renault" | "volkswagen" | ...
+    model:      str        # "Corolla" | "Clio" | ...
+    variant:    str        # "1.5 VVT-i Dream CVT" | ...
+    segment:    str        # "binek" | "suv"
+    price:      Decimal
+    currency:   str = "TRY"
+    date:       date
+    source_url: str | None = None
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Araç fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str

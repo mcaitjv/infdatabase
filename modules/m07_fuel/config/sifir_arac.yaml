@@ -1,0 +1,53 @@
+label: "Sıfır Araç Satışları"
+
+# path değerleri discovery aşamasında doldurulacak.
+# tracked_skus: discovery sonrası otomatik dolar.
+
+categories:
+  binek:
+    label: Binek (Sedan / Hatchback)
+    sources:
+      renault:    {path: ""}
+      fiat:       {path: ""}
+      volkswagen: {path: ""}
+      ford:       {path: ""}
+      toyota:     {path: ""}
+      peugeot:    {path: ""}
+      opel:       {path: ""}
+      citroen:    {path: ""}
+      hyundai:    {path: ""}
+      skoda:      {path: ""}
+      kia:        {path: ""}
+      dacia:      {path: ""}
+      honda:      {path: ""}
+      nissan:     {path: ""}
+      mercedes:   {path: ""}
+      bmw:        {path: ""}
+      audi:       {path: ""}
+    tracked_skus: []
+
+  suv:
+    label: SUV / Crossover
+    sources:
+      toyota:      {path: ""}
+      volkswagen:  {path: ""}
+      ford:        {path: ""}
+      hyundai:     {path: ""}
+      byd:         {path: ""}
+      mercedes:    {path: ""}
+      togg:        {path: ""}
+      bmw:         {path: ""}
+      tesla:       {path: ""}
+      chery:       {path: ""}
+      kg_mobility: {path: ""}
+      audi:        {path: ""}
+      volvo:       {path: ""}
+      renault:     {path: ""}
+      nissan:      {path: ""}
+      kia:         {path: ""}
+      peugeot:     {path: ""}
+      citroen:     {path: ""}
+      skoda:       {path: ""}
+      opel:        {path: ""}
+      ssangyong:   {path: ""}
+    tracked_skus: []

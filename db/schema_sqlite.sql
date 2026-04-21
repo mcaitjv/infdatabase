@@ -91,6 +91,24 @@ CREATE INDEX IF NOT EXISTS idx_fap_key_date ON m05_fact_appliance_price(applianc
 CREATE INDEX IF NOT EXISTS idx_dim_category ON m05_dim_appliance(category);
 CREATE INDEX IF NOT EXISTS idx_dim_source   ON m05_dim_appliance(source);
 
+-- Sıfır araç fiyatları (Modül 07 — COICOP 07.1)
+CREATE TABLE IF NOT EXISTS m07_car_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    brand       TEXT    NOT NULL,
+    model       TEXT    NOT NULL,
+    variant     TEXT    NOT NULL,
+    segment     TEXT    NOT NULL,
+    price       REAL    NOT NULL,
+    currency    TEXT    DEFAULT 'TRY',
+    date        TEXT    NOT NULL,
+    source_url  TEXT,
+    UNIQUE (brand, model, variant, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_date     ON m07_car_prices(date);
+CREATE INDEX IF NOT EXISTS idx_cp_brand    ON m07_car_prices(brand);
+CREATE INDEX IF NOT EXISTS idx_cp_segment  ON m07_car_prices(segment);
+
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON m01_price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON m01_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON m01_price_snapshots(location);

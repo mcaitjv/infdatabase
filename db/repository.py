@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
+from db.models import AppliancePriceRecord, CarPriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
 
 logger = logging.getLogger(__name__)
 
@@ -371,6 +371,44 @@ async def batch_upsert_appliance_prices(conn, records: list[AppliancePriceRecord
     inserted = 0
     for r in records:
         if await upsert_appliance_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+# ── Modül 07 — Sıfır araç fiyatları ─────────────────────────────────────────
+
+async def upsert_car_price(conn, record: CarPriceRecord) -> bool:
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT OR IGNORE INTO m07_car_prices
+                (brand, model, variant, segment, price, currency, date, source_url)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            float(record.price), record.currency, str(rec_date), record.source_url,
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_car_prices
+                (brand, model, variant, segment, price, currency, date, source_url)
+            VALUES ($1, $2, $3, $4, $5::numeric, $6, $7::date, $8)
+            ON CONFLICT (brand, model, variant, date) DO NOTHING
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            float(record.price), record.currency, rec_date, record.source_url,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_car_prices(conn, records: list[CarPriceRecord]) -> int:
+    """Toplu araç fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_car_price(conn, r):
             inserted += 1
     return inserted
 
