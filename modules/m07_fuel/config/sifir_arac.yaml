@@ -7,8 +7,8 @@ categories:
   binek:
     label: Binek (Sedan / Hatchback)
     sources:
-      renault:    {path: ""}
-      fiat:       {path: ""}
+      renault:    {path: "/fiyat-listesi.html"}
+      fiat:       {path: ""}  # prlapi.now.tofas.com.tr — fiyatlar API'de sıfır, araştırılacak
       volkswagen: {path: ""}
       ford:       {path: ""}
       toyota:     {path: ""}
@@ -30,7 +30,7 @@ categories:
     label: SUV / Crossover
     sources:
       toyota:      {path: ""}
-      volkswagen:  {path: ""}
+      volkswagen:  {path: ""}  # Cloudflare koruması — araştırılacak
       ford:        {path: ""}
       hyundai:     {path: ""}
       byd:         {path: ""}
@@ -42,7 +42,7 @@ categories:
       kg_mobility: {path: ""}
       audi:        {path: ""}
       volvo:       {path: ""}
-      renault:     {path: ""}
+      renault:     {path: "/fiyat-listesi.html"}
       nissan:      {path: ""}
       kia:         {path: ""}
       peugeot:     {path: ""}
