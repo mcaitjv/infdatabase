@@ -4,7 +4,7 @@ Modül 07 — Sıfır Araç Fiyat Scraper
 Her marka için fiyat listesi sayfasından model/varyant/fiyat üçlüsü çeker.
 
 Desteklenen markalar (23):
-  Renault ✓ | Fiat ✗(API fiyat sıfır) | Volkswagen ✗(Cloudflare) | ...
+  Renault ✓ httpx | Toyota ✓ Playwright | Fiat ✗ | VW ✗ | Ford ✗ | Peugeot ✗ | ...
 """
 
 from __future__ import annotations
@@ -73,6 +73,9 @@ _SEGMENT_RULES: dict[str, list[str]] = {
         "xc40", "xc60", "xc90",
         "cx-3", "cx-5", "cx-60",
         "kuga", "terreno",
+        # Toyota
+        "yaris cross", "corolla cross", "c-hr", "chr", "rav4", "rav 4",
+        "land cruiser", "fortuner", "hilux",
         "atto", "yuan", "han", "tang", "seal", "dolphin",
         "tivoli", "torres", "rexton", "musso", "korando",
         "600", "grande panda",
@@ -175,9 +178,77 @@ class CarBrandScraper:
         logger.info("[car_brands] renault/%s: %d kayıt", segment, len(records))
         return records
 
+    # ── Toyota ─────────────────────────────────────────────────────────────────
+
+    async def _scrape_toyota(self, segment: str, path: str) -> list[CarPriceRecord]:
+        from playwright.async_api import async_playwright
+
+        url = "https://www.toyota.com.tr/modeller"
+        records: list[CarPriceRecord] = []
+        today = date.today()
+
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto(url, timeout=30000, wait_until="networkidle")
+            content = await page.content()
+            await browser.close()
+
+        soup = BeautifulSoup(content, "html.parser")
+
+        # Her kart: <a href=".../araba-modelleri/{model}">
+        #   └─ span.dxp-mega-menu__card__header__car-information__car-name__title → model adı
+        #   └─ span.dxp-mega-menu__card__details__car-pricing__wrapper__price → fiyat
+        cards = soup.find_all(
+            "a",
+            href=lambda h: h and "/araba-modelleri/" in h,
+        )
+
+        for card in cards:
+            name_el = card.find(
+                "span",
+                class_=lambda c: c and "car-name__title" in c,
+            )
+            price_el = card.find(
+                "span",
+                class_=lambda c: c and "car-pricing__wrapper__price" in c,
+            )
+            if not name_el or not price_el:
+                continue
+
+            model_name = name_el.get_text(strip=True)
+            price = _parse_price(price_el.get_text())
+            if not price or not model_name:
+                continue
+
+            seg = _guess_segment(model_name)
+            if seg != segment:
+                continue
+
+            records.append(CarPriceRecord(
+                brand="toyota",
+                model=model_name,
+                variant="başlangıç",
+                segment=seg,
+                price=price,
+                date=today,
+                source_url=url,
+            ))
+
+        logger.info("[car_brands] toyota/%s: %d kayıt", segment, len(records))
+        return records
+
     # ── Volkswagen ─────────────────────────────────────────────────────────────
     # volkswagen.com.tr → SSLv3 hatası; vw.com.tr → Cloudflare koruması.
     # Erişim kazanıldığında implementasyon eklenecek.
+
+    # ── Ford ───────────────────────────────────────────────────────────────────
+    # ford.com.tr/fiyat-listesi → Anti-bot; headless'ta fiyatlar yüklenmiyor.
+    # reCAPTCHA koruması tespit edildi. Alternatif kaynak araştırılacak.
+
+    # ── Peugeot ────────────────────────────────────────────────────────────────
+    # peugeot.com.tr → Stellantis platformu; networkidle timeout.
+    # Fiyatlar JS ile lazy-load ediliyor, headless'ta erişilemiyor.
 
     # ── Fiat ───────────────────────────────────────────────────────────────────
     # prlapi.now.tofas.com.tr/api/VehicleVersion/model/{id} → basePrice: 0.0

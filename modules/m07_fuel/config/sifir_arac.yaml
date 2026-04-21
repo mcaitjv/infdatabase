@@ -11,8 +11,8 @@ categories:
       fiat:       {path: ""}  # prlapi.now.tofas.com.tr — fiyatlar API'de sıfır, araştırılacak
       volkswagen: {path: ""}
       ford:       {path: ""}
-      toyota:     {path: ""}
-      peugeot:    {path: ""}
+      toyota:     {path: "/modeller"}
+      peugeot:    {path: ""}  # Stellantis — fiyatlar lazy-load, headless'ta erişilemiyor
       opel:       {path: ""}
       citroen:    {path: ""}
       hyundai:    {path: ""}
@@ -29,7 +29,7 @@ categories:
   suv:
     label: SUV / Crossover
     sources:
-      toyota:      {path: ""}
+      toyota:      {path: "/modeller"}
       volkswagen:  {path: ""}  # Cloudflare koruması — araştırılacak
       ford:        {path: ""}
       hyundai:     {path: ""}
