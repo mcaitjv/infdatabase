@@ -1,0 +1,190 @@
+{
+  "date": "2026-04-17",
+  "overall_status": "warning",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "warning",
+      "records_today": 3788,
+      "records_yesterday": 3788,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 20,
+      "anomalies": [
+        {
+          "identifier": "a101 / Nimet Bazlama Ekmek 300 Gr",
+          "yesterday": 39.75,
+          "today": 45.95000076293945,
+          "change_pct": 15.6
+        },
+        {
+          "identifier": "a101 / Nimet Bazlama Ekmek 150 Gr",
+          "yesterday": 31.950000762939453,
+          "today": 31.950000762939453,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "a101 / Torku Beyaz Peynir 1 Kg",
+          "yesterday": 299.0,
+          "today": 299.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Monster Ultra Enerji İçeceği 500 Ml",
+          "yesterday": 70.9000015258789,
+          "today": 70.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Prima Aktif Bebek Eko Paketi 4 Numara Be",
+          "yesterday": 797.9000244140625,
+          "today": 797.9000244140625,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Doğadan Fonksiyonel Karma Çay 18 Adet",
+          "yesterday": 116.0,
+          "today": 116.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Kuru Fasulye 1 Kg",
+          "yesterday": 137.25,
+          "today": 137.25,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Duru Yeşil Mercimek 1 Kg",
+          "yesterday": 163.5,
+          "today": 163.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Doğadan Sade Beyaz Çay 18 Adet",
+          "yesterday": 116.0,
+          "today": 116.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Coffee Mate Kahve Beyazlatıcısı 500 Gr",
+          "yesterday": 333.0,
+          "today": 333.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Pınar Su 9 Lt",
+          "yesterday": 158.0,
+          "today": 158.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Calve Ketçap/Light Mayonez 1.15 Kg",
+          "yesterday": 189.9499969482422,
+          "today": 189.9499969482422,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Doğadan Yeşil Çay 20 Adet",
+          "yesterday": 116.0,
+          "today": 116.0,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Yudum Egemden Riviera Zeytinyağı 1 Lt",
+          "yesterday": 363.5,
+          "today": 363.5,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Maret Sosis 10 Adet 432 Gr",
+          "yesterday": 504.8999938964844,
+          "today": 504.8999938964844,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Komili Riviera Zeytinyağı 500 Ml",
+          "yesterday": 204.89999389648438,
+          "today": 204.89999389648438,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Sleepy Bio Natural Junior Bebek Bezi 58 ",
+          "yesterday": 489.95001220703125,
+          "today": 489.95001220703125,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Indomie Spesiyel Tavuk Paket Noodle 75 G",
+          "yesterday": 20.25,
+          "today": 20.25,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Uni Baby Aktif Islak Mendil 72 Adet",
+          "yesterday": 66.9000015258789,
+          "today": 66.9000015258789,
+          "change_pct": 0.0
+        },
+        {
+          "identifier": "carrefour / Uni Baby Aktif Islak Mendil 208 Adet",
+          "yesterday": 167.5,
+          "today": 167.5,
+          "change_pct": 0.0
+        }
+      ],
+      "warnings": [
+        "Fiyat değişimi: a101 / Nimet Bazlama Ekmek 300 Gr +15.6%",
+        "Fiyat değişimi: a101 / Nimet Bazlama Ekmek 150 Gr +0.0%",
+        "Fiyat değişimi: a101 / Torku Beyaz Peynir 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Monster Ultra Enerji İçeceği 500 Ml +0.0%",
+        "Fiyat değişimi: carrefour / Prima Aktif Bebek Eko Paketi 4 Numara Be +0.0%",
+        "Fiyat değişimi: carrefour / Doğadan Fonksiyonel Karma Çay 18 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Duru Kuru Fasulye 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Duru Yeşil Mercimek 1 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Doğadan Sade Beyaz Çay 18 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Coffee Mate Kahve Beyazlatıcısı 500 Gr +0.0%",
+        "Fiyat değişimi: carrefour / Pınar Su 9 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Calve Ketçap/Light Mayonez 1.15 Kg +0.0%",
+        "Fiyat değişimi: carrefour / Doğadan Yeşil Çay 20 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Yudum Egemden Riviera Zeytinyağı 1 Lt +0.0%",
+        "Fiyat değişimi: carrefour / Maret Sosis 10 Adet 432 Gr +0.0%",
+        "Fiyat değişimi: carrefour / Komili Riviera Zeytinyağı 500 Ml +0.0%",
+        "Fiyat değişimi: carrefour / Sleepy Bio Natural Junior Bebek Bezi 58  +0.0%",
+        "Fiyat değişimi: carrefour / Indomie Spesiyel Tavuk Paket Noodle 75 G +0.0%",
+        "Fiyat değişimi: carrefour / Uni Baby Aktif Islak Mendil 72 Adet +0.0%",
+        "Fiyat değişimi: carrefour / Uni Baby Aktif Islak Mendil 208 Adet +0.0%"
+      ],
+      "errors": []
+    },
+    {
+      "module_code": "05p2+3",
+      "module_name": "Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
+      "status": "ok",
+      "records_today": 0,
+      "records_yesterday": 0,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "ok",
+      "records_today": 27,
+      "records_yesterday": 27,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}

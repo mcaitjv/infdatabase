@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- Market bazında ürün eşlemeleri: aynı ürünün her marketteki karşılığı
-CREATE TABLE IF NOT EXISTS market_products (
+CREATE TABLE IF NOT EXISTS m01_market_products (
     id          BIGSERIAL    PRIMARY KEY,
     product_id  BIGINT       REFERENCES products(id) ON DELETE CASCADE,
     market      VARCHAR(50)  NOT NULL,             -- migros / a101 / bim / sok
@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS market_products (
 );
 
 -- Günlük fiyat kayıtları (zaman serisi — ana tablo)
-CREATE TABLE IF NOT EXISTS price_snapshots (
+CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     id                BIGSERIAL     PRIMARY KEY,
-    market_product_id BIGINT        NOT NULL REFERENCES market_products(id) ON DELETE CASCADE,
+    market_product_id BIGINT        NOT NULL REFERENCES m01_market_products(id) ON DELETE CASCADE,
     snapshot_date     DATE          NOT NULL,
     price             NUMERIC(10,2) NOT NULL,      -- normal (etiket) fiyatı
     discounted_price  NUMERIC(10,2),               -- indirimli fiyat (NULL = indirim yok)
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS price_snapshots (
 );
 
 -- Scraper çalışma logları: her run kaydedilir
-CREATE TABLE IF NOT EXISTS scrape_runs (
+CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               SERIAL       PRIMARY KEY,
     market           VARCHAR(50)  NOT NULL,
     run_date         DATE         NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS scrape_runs (
 );
 
 -- Yakıt fiyatları (Modül 07 — Ulaştırma)
-CREATE TABLE IF NOT EXISTS fuel_prices (
+CREATE TABLE IF NOT EXISTS m07_fuel_prices (
     id          SERIAL        PRIMARY KEY,
     provider    VARCHAR(50)   NOT NULL,              -- 'shell' | 'opet'
     city        VARCHAR(50)   NOT NULL,              -- 'istanbul' | 'ankara' | 'izmir'
@@ -69,29 +69,52 @@ CREATE TABLE IF NOT EXISTS fuel_prices (
 );
 
 CREATE INDEX IF NOT EXISTS idx_fp_date
-    ON fuel_prices(date);
+    ON m07_fuel_prices(date);
 
 CREATE INDEX IF NOT EXISTS idx_fp_provider_city
-    ON fuel_prices(provider, city);
+    ON m07_fuel_prices(provider, city);
 
+
+-- Beyaz eşya & küçük ev aletleri — Modül 05 (Dimensional Model)
+CREATE TABLE IF NOT EXISTS m05_dim_appliance (
+    appliance_key BIGSERIAL    PRIMARY KEY,
+    source        VARCHAR(50)  NOT NULL,
+    sku           VARCHAR(255) NOT NULL,
+    model         TEXT         NOT NULL,
+    category      VARCHAR(100) NOT NULL,
+    UNIQUE(source, sku)
+);
+
+CREATE TABLE IF NOT EXISTS m05_fact_appliance_price (
+    price_key     BIGSERIAL     PRIMARY KEY,
+    appliance_key BIGINT        NOT NULL REFERENCES m05_dim_appliance(appliance_key),
+    price         NUMERIC(12,2) NOT NULL,
+    date          DATE          NOT NULL,
+    UNIQUE(appliance_key, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fap_date     ON m05_fact_appliance_price(date);
+CREATE INDEX IF NOT EXISTS idx_fap_key_date ON m05_fact_appliance_price(appliance_key, date);
+CREATE INDEX IF NOT EXISTS idx_dim_category ON m05_dim_appliance(category);
+CREATE INDEX IF NOT EXISTS idx_dim_source   ON m05_dim_appliance(source);
 
 -- ---- Performans indeksleri ----
 
 -- Tarih bazlı sorgular (enflasyon hesaplama, trend)
 CREATE INDEX IF NOT EXISTS idx_ps_date
-    ON price_snapshots(snapshot_date);
+    ON m01_price_snapshots(snapshot_date);
 
 -- Ürün + tarih bazlı sorgular (tek ürünün fiyat geçmişi)
 CREATE INDEX IF NOT EXISTS idx_ps_product_date
-    ON price_snapshots(market_product_id, snapshot_date);
+    ON m01_price_snapshots(market_product_id, snapshot_date);
 
 -- Konum bazlı filtreler (marketfiyati şube karşılaştırması)
 CREATE INDEX IF NOT EXISTS idx_ps_location
-    ON price_snapshots(location) WHERE location IS NOT NULL;
+    ON m01_price_snapshots(location) WHERE location IS NOT NULL;
 
 -- Market bazlı filtreler
 CREATE INDEX IF NOT EXISTS idx_mp_market
-    ON market_products(market);
+    ON m01_market_products(market);
 
 -- Barkod aramaları
 CREATE INDEX IF NOT EXISTS idx_products_barcode

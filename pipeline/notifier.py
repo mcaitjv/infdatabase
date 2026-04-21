@@ -24,7 +24,7 @@ _STATUS_LABEL = {
 }
 
 
-def _build_html(report: PipelineHealthReport) -> str:
+def _build_html(report: PipelineHealthReport) -> str:  # noqa: C901
     status_color = _STATUS_COLOR.get(report.overall_status, "#6b7280")
     status_label = _STATUS_LABEL.get(report.overall_status, report.overall_status.upper())
 
@@ -63,12 +63,27 @@ def _build_html(report: PipelineHealthReport) -> str:
                 f"<ul style='margin:4px 0 0 16px;padding:0;font-size:13px'>{items}{more}</ul>"
             )
 
+        errors_html = ""
+        if mod.errors:
+            err_items = "".join(
+                f"<li style='margin:2px 0;color:#b91c1c'>{e}</li>"
+                for e in mod.errors[:5]
+            )
+            err_more = (
+                f"<li style='color:#6b7280'>... ve {len(mod.errors)-5} hata daha — "
+                f"detay için <code>logs/health_{report.date}.json</code></li>"
+            ) if len(mod.errors) > 5 else ""
+            errors_html = (
+                f"<div style='font-size:12px;color:#b91c1c;margin-top:6px;font-weight:600'>Hatalar:</div>"
+                f"<ul style='margin:4px 0 0 16px;padding:0;font-size:13px'>{err_items}{err_more}</ul>"
+            )
+
         rows += f"""
         <tr>
           <td style='padding:12px 16px;border-bottom:1px solid #f3f4f6;vertical-align:top'>
             <div style='font-weight:600'>{mod.module_name}</div>
             <div style='font-size:13px;color:#6b7280;margin-top:2px'>{records}</div>
-            {missing_html}{anomaly_html}
+            {missing_html}{anomaly_html}{errors_html}
           </td>
           <td style='padding:12px 16px;border-bottom:1px solid #f3f4f6;vertical-align:top;white-space:nowrap'>
             <span style='background:{col};color:#fff;padding:3px 10px;border-radius:12px;font-size:13px;font-weight:600'>
@@ -76,6 +91,25 @@ def _build_html(report: PipelineHealthReport) -> str:
             </span>
           </td>
         </tr>"""
+
+    new_cat_html = ""
+    if report.new_category_alerts:
+        items = "".join(
+            f"<li style='margin:4px 0'>{a}</li>"
+            for a in report.new_category_alerts
+        )
+        new_cat_html = f"""
+    <div style='padding:16px 24px;border-top:1px solid #e5e7eb'>
+      <div style='font-size:13px;font-weight:600;color:#374151;margin-bottom:6px'>
+        🔍 Yeni Kategori Keşifleri (haftalık tarama)
+      </div>
+      <ul style='margin:0;padding:0 0 0 16px;font-size:13px;color:#374151'>
+        {items}
+      </ul>
+      <div style='font-size:12px;color:#9ca3af;margin-top:6px'>
+        tracked.yaml'a eklemek için onay gerekiyor.
+      </div>
+    </div>"""
 
     return f"""<!DOCTYPE html>
 <html>
@@ -107,6 +141,8 @@ def _build_html(report: PipelineHealthReport) -> str:
       <tbody>{rows}</tbody>
     </table>
 
+    {new_cat_html}
+
     <!-- Footer -->
     <div style='padding:16px 24px;background:#f9fafb;font-size:12px;color:#9ca3af'>
       Detaylı rapor: <code>logs/health_{report.date}.json</code>
@@ -135,12 +171,22 @@ def send_health_email(report: PipelineHealthReport) -> bool:
         status_label = _STATUS_LABEL.get(report.overall_status, report.overall_status.upper())
         subject = f"[infdatabase] {report.date} — {status_label}"
 
-        _resend.Emails.send({
+        payload: dict = {
             "from":    "infdatabase <onboarding@resend.dev>",
             "to":      [to_email],
             "subject": subject,
             "html":    _build_html(report),
-        })
+        }
+
+        log_path = os.path.join("logs", f"health_{report.date}.json")
+        if os.path.exists(log_path):
+            with open(log_path, "rb") as f:
+                payload["attachments"] = [{
+                    "filename": f"health_{report.date}.json",
+                    "content":  list(f.read()),
+                }]
+
+        _resend.Emails.send(payload)
 
         logger.info("[notifier] Sağlık raporu gönderildi → %s", to_email)
         return True
