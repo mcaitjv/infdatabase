@@ -69,7 +69,7 @@ _SEGMENT_RULES: dict[str, list[str]] = {
         "tucson", "santa fe", "kona", "creta",
         "puma", "kuga", "explorer", "bronco", "ecosport",
         "tiguan", "taigo", "t-cross", "touareg", "t-roc",
-        "arona", "ateca", "karoq", "kodiaq", "enyaq",
+        "arona", "ateca", "karoq", "kodiaq", "enyaq", "elroq", "kamiq",
         "2008", "3008", "5008", "e-2008",
         "mokka", "grandland",
         "c3 aircross", "c5 aircross",
