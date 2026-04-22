@@ -12,13 +12,13 @@ categories:
       volkswagen: {path: ""}  # SSL / Cloudflare koruması
       ford:       {path: ""}  # reCAPTCHA koruması
       toyota:     {path: "/modeller"}
-      peugeot:    {path: ""}  # Stellantis — fiyatlar lazy-load, headless'ta erişilemiyor
+      peugeot:    {path: "/fiyat-listesi/"}
       opel:       {path: "/binek-araclar"}
       citroen:    {path: ""}
       hyundai:    {path: ""}  # fiyat-listesi 522, Playwright 6 KB (bot koruması)
       skoda:      {path: "/fiyat-listesi"}
       kia:        {path: ""}  # Playwright networkidle timeout
-      dacia:      {path: ""}  # Fiyatlar JS-only
+      dacia:      {path: "/dacia-fiyat-listesi.html"}
       honda:      {path: "/otomobil/otomobil-fiyat-listesi-2025"}
       nissan:     {path: "/fiyat-listesi.html"}
       mercedes:   {path: ""}  # SSL/bot koruması
@@ -45,7 +45,7 @@ categories:
       renault:     {path: "/fiyat-listesi.html"}
       nissan:      {path: "/fiyat-listesi.html"}
       kia:         {path: ""}  # Playwright timeout
-      peugeot:     {path: ""}  # Stellantis
+      peugeot:     {path: "/fiyat-listesi/"}
       citroen:     {path: ""}
       skoda:       {path: "/fiyat-listesi"}
       opel:        {path: "/binek-araclar"}

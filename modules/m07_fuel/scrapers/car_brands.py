@@ -448,19 +448,115 @@ class CarBrandScraper:
         return records
 
     # ── Volkswagen ─────────────────────────────────────────────────────────────
-    # volkswagen.com.tr → SSLv3 hatası; vw.com.tr → Cloudflare koruması.
-    # Erişim kazanıldığında implementasyon eklenecek.
+    # binekarac.vw.com.tr → httpx 200 ama fiyatlar JS ile render ediliyor.
 
     # ── Ford ───────────────────────────────────────────────────────────────────
-    # ford.com.tr/fiyat-listesi → Anti-bot; headless'ta fiyatlar yüklenmiyor.
-    # reCAPTCHA koruması tespit edildi. Alternatif kaynak araştırılacak.
+    # ford.com.tr/fiyat-listesi → reCAPTCHA; statik HTML'de fiyat yok.
 
     # ── Peugeot ────────────────────────────────────────────────────────────────
-    # peugeot.com.tr → Stellantis platformu; networkidle timeout.
-    # Fiyatlar JS ile lazy-load ediliyor, headless'ta erişilemiyor.
+
+    _PEUGEOT_COMMERCIAL = {"van", "minibüs", "boxer", "rifter", "partner", "expert", "traveller"}
+
+    async def _scrape_peugeot(self, segment: str, path: str) -> list[CarPriceRecord]:
+        url = "https://kampanya.peugeot.com.tr/fiyat-listesi/"
+        r = await self._client.get(url)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        records: list[CarPriceRecord] = []
+        today = date.today()
+
+        for row in soup.find_all("tr"):
+            cells = [td.get_text(strip=True) for td in row.find_all(["td", "th"])]
+            if len(cells) < 2:
+                continue
+            raw = cells[0]
+            price_raw = cells[1]
+
+            # Ticari araç filtresi
+            if any(kw in raw.lower() for kw in self._PEUGEOT_COMMERCIAL):
+                continue
+            # Fiyat yoksa atla
+            price = _parse_price(price_raw)
+            if not price or price < 500_000:
+                continue
+
+            # "Yeni 408 ALLURE..." → model="Yeni 408", variant="ALLURE..."
+            yeni = raw.startswith("Yeni ")
+            name_part = raw[5:] if yeni else raw
+            parts = name_part.split(maxsplit=1)
+            model_name = ("Yeni " if yeni else "") + parts[0]
+            variant = parts[1] if len(parts) > 1 else "başlangıç"
+
+            seg = _guess_segment(model_name)
+            if seg != segment:
+                continue
+
+            records.append(CarPriceRecord(
+                brand="peugeot",
+                model=model_name,
+                variant=variant,
+                segment=seg,
+                price=price,
+                date=today,
+                source_url=url,
+            ))
+
+        logger.info("[car_brands] peugeot/%s: %d kayıt", segment, len(records))
+        return records
+
+    # ── Dacia ──────────────────────────────────────────────────────────────────
+
+    async def _scrape_dacia(self, segment: str, path: str) -> list[CarPriceRecord]:
+        url = "https://www.dacia.com.tr/dacia-fiyat-listesi.html"
+        r = await self._client.get(url)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        records: list[CarPriceRecord] = []
+        today = date.today()
+        _MODEL_PAT = re.compile(
+            r"(SANDERO\s+STEPWAY|SANDERO|DUSTER|JOGGER|SPRING|LOGAN|BIGSTER)",
+            re.I,
+        )
+
+        for p_el in soup.find_all(class_="NormalizedPrice"):
+            price = _parse_price(p_el.get_text())
+            if not price or price < 200_000:
+                continue
+            # Model adını bul: üst elemanlarda ara
+            model_name = None
+            el = p_el
+            for _ in range(10):
+                el = el.parent
+                if not el:
+                    break
+                m = _MODEL_PAT.search(el.get_text())
+                if m:
+                    model_name = m.group(1).title()
+                    break
+            if not model_name:
+                continue
+
+            seg = _guess_segment(model_name)
+            if seg != segment:
+                continue
+
+            records.append(CarPriceRecord(
+                brand="dacia",
+                model=model_name,
+                variant="başlangıç",
+                segment=seg,
+                price=price,
+                date=today,
+                source_url=url,
+            ))
+
+        logger.info("[car_brands] dacia/%s: %d kayıt", segment, len(records))
+        return records
 
     # ── Fiat ───────────────────────────────────────────────────────────────────
-    # prlapi.now.tofas.com.tr/api/VehicleVersion/model/{id} → basePrice: 0.0
+    # talep.fiat.com.tr → httpx 200 ama fiyatlar statik HTML'de yok (JS-render).
     # Fiyatlar API'ye yazılmamış; sayfa kaynağı araştırılacak.
 
     # ── Hyundai ────────────────────────────────────────────────────────────────
