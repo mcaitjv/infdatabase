@@ -19,6 +19,7 @@ build/
 
 # Loglar
 logs/*.log
+logs/health_*.json
 
 # Playwright browser binary'leri
 .playwright/

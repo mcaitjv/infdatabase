@@ -32,15 +32,7 @@ python -m pipeline.runner --dry-run
 
 ## Veritabanı
 
-**Varsayılan:** `data/prices.db` — yerel SQLite, sıfır kurulum.  
 **Production:** Neon PostgreSQL (neon.tech free tier, 512 MB).
-
-```python
-import duckdb
-con = duckdb.connect("data/prices.db")
-con.sql("SELECT market, COUNT(*) FROM market_products GROUP BY 1 ORDER BY 2 DESC").show()
-con.sql("SELECT provider, city, fuel_type, price, date FROM fuel_prices ORDER BY date DESC LIMIT 20").show()
-```
 
 ---
 
@@ -177,7 +169,6 @@ async def test():
 asyncio.run(test())
 "
 ```
-
 ---
 
 ## Otomasyon
@@ -191,6 +182,5 @@ asyncio.run(test())
 
 - `data/prices.db` ve `.env` git'e eklenmez
 - CSV arşiv: 60 günden eski veriler otomatik export edilir → `data/exports/`
-- Shell TR (`shell.com.tr`) headless Chromium'u bloklar — Petrol Ofisi kullan
 - Opet İstanbul slug: `istanbul-anadolu`
 - `config/branches.yaml` yoksa proximity search'e fallback (Modül 01)
