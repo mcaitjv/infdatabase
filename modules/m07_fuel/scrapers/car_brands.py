@@ -6,8 +6,8 @@ Her marka için fiyat listesi sayfasından model/varyant/fiyat üçlüsü çeker
 Desteklenen markalar:
   ✓ httpx: Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia,
            TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen, Ford
-  ✓ Playwright: Toyota, Opel, BMW (Borusa iframe)
-  ✗ Engellenmiş: Kia (timeout), Tesla (SPA), Volvo (403)
+  ✓ Playwright: Toyota, Opel, BMW (Borusa iframe), Kia
+  ✗ Engellenmiş: Tesla (SPA), Volvo (403)
 """
 
 from __future__ import annotations
@@ -86,7 +86,7 @@ _SEGMENT_RULES: dict[str, list[str]] = {
         "togg t10x", "t10x",
         "chery",
         "frontera",
-        "stonic", "sorento", "sportage", "niro",
+        "stonic", "sorento", "sportage", "niro", "xceed", "ev3", "ev6", "ev9",
         "qashqai", "juke", "x-trail", "x trail", "pathfinder",
         "hr-v", "hr v", "cr-v", "cr v",
         "duster",
@@ -932,8 +932,78 @@ class CarBrandScraper:
         return records
 
     # ── Kia ────────────────────────────────────────────────────────────────────
-    # kia.com/tr → Playwright networkidle timeout (30s+).
-    # Alternatif yol araştırılacak.
+    # kia.com/tr SPA; Playwright + domcontentloaded (networkidle timeout verirdi).
+    # Fiyatlar sec_scroll tablolarında; 2025 varsayılan sekme, 2026 sekme click ile.
+
+    async def _scrape_kia(self, segment: str, path: str) -> list[CarPriceRecord]:
+        """Kia Türkiye — Playwright ile 2025+2026 model fiyatları."""
+        from playwright.async_api import async_playwright
+
+        base = BRAND_BASES["kia"]
+        url = base + path
+        today = date.today()
+        records: list[CarPriceRecord] = []
+
+        def _parse_kia_html(html: str, target_year: str) -> None:
+            soup = BeautifulSoup(html, "html.parser")
+            for h2 in soup.find_all("h2", class_="tit"):
+                a_tag = h2.find("a", href=True)
+                if not a_tag:
+                    continue
+                heading = a_tag.get_text(strip=True)
+                model_name = heading.replace("Fiyat Listesi", "").strip()
+                seg = _guess_segment(model_name)
+                if seg != segment:
+                    continue
+
+                spec_id = a_tag["href"].lstrip("#")
+                div = soup.find(id=spec_id)
+                if not div:
+                    continue
+
+                variant_counts: dict[str, int] = {}
+                for row in div.find_all("tr", attrs={"data-year": target_year}):
+                    cells = [td.get_text(strip=True) for td in row.find_all(["th", "td"])]
+                    if len(cells) < 4:
+                        continue
+                    trim = cells[2]
+                    price = _parse_price(cells[3])
+                    if price is None or price < 500_000:
+                        continue
+                    base_variant = f"{trim} MY{target_year}"
+                    variant_counts[base_variant] = variant_counts.get(base_variant, 0) + 1
+                    n = variant_counts[base_variant]
+                    variant = base_variant if n == 1 else f"{base_variant} #{n}"
+                    records.append(CarPriceRecord(
+                        brand="kia",
+                        model=model_name,
+                        variant=variant,
+                        segment=seg,
+                        price=price,
+                        date=today,
+                        source_url=url,
+                    ))
+
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            try:
+                await page.goto(url, timeout=45000, wait_until="domcontentloaded")
+                await page.wait_for_timeout(5000)
+
+                _parse_kia_html(await page.content(), "2025")
+
+                try:
+                    await page.click("a.tabYear[data-year='2026']", timeout=5000)
+                    await page.wait_for_timeout(3000)
+                    _parse_kia_html(await page.content(), "2026")
+                except Exception:
+                    logger.debug("[car_brands] kia: 2026 sekmesi bulunamadı")
+            finally:
+                await browser.close()
+
+        logger.info("[car_brands] kia/%s: %d kayıt", segment, len(records))
+        return records
 
     # ── Dacia ──────────────────────────────────────────────────────────────────
     # dacia.com.tr → Fiyatlar JS ile yükleniyor; static HTML'de yok.

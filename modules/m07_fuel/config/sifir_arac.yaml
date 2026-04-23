@@ -17,7 +17,7 @@ categories:
       citroen:    {path: "/fiyat-listesi"}
       hyundai:    {path: "/tr/tr/satis/fiyat-listesi.html"}
       skoda:      {path: "/fiyat-listesi"}
-      kia:        {path: ""}  # Playwright networkidle timeout
+      kia:        {path: "/satis-merkezi/fiyat-listesi.html"}
       dacia:      {path: "/dacia-fiyat-listesi.html"}
       honda:      {path: "/otomobil/otomobil-fiyat-listesi-2025"}
       nissan:     {path: "/fiyat-listesi.html"}
@@ -45,7 +45,7 @@ categories:
       volvo:       {path: ""}  # 403
       renault:     {path: "/fiyat-listesi.html"}
       nissan:      {path: "/fiyat-listesi.html"}
-      kia:         {path: ""}  # Playwright timeout
+      kia:         {path: "/satis-merkezi/fiyat-listesi.html"}
       peugeot:     {path: "/fiyat-listesi/"}
       citroen:     {path: "/fiyat-listesi"}
       skoda:       {path: "/fiyat-listesi"}
