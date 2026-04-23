@@ -5,10 +5,9 @@ Her marka için fiyat listesi sayfasından model/varyant/fiyat üçlüsü çeker
 
 Desteklenen markalar:
   ✓ httpx: Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia,
-           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai
+           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen
   ✓ Playwright: Toyota, Opel, BMW (Borusa iframe)
-  ✗ Engellenmiş: VW (Cloudflare), Ford (reCAPTCHA),
-                  Kia (timeout), Tesla (SPA), Volvo (403)
+  ✗ Engellenmiş: Ford (reCAPTCHA), Kia (timeout), Tesla (SPA), Volvo (403)
 """
 
 from __future__ import annotations
@@ -67,7 +66,7 @@ _SEGMENT_RULES: dict[str, list[str]] = {
         "duster", "captur", "austral", "rafale", "espace", "koleos",
         "tucson", "santa fe", "kona", "creta",
         "puma", "kuga", "explorer", "bronco", "ecosport",
-        "tiguan", "taigo", "t-cross", "touareg", "t-roc",
+        "tiguan", "tayron", "taigo", "t-cross", "touareg", "t-roc",
         "arona", "ateca", "karoq", "kodiaq", "enyaq", "elroq", "kamiq",
         "2008", "3008", "5008", "e-2008",
         "mokka", "grandland",
@@ -451,7 +450,85 @@ class CarBrandScraper:
         return records
 
     # ── Volkswagen ─────────────────────────────────────────────────────────────
-    # binekarac.vw.com.tr → httpx 200 ama fiyatlar JS ile render ediliyor.
+    # binekarac.vw.com.tr SPA; sayfa client-side render ediyor ama feature-app
+    # aşağıdaki JSON'ı çekiyor — doğrudan httpx ile alıyoruz.
+
+    async def _scrape_volkswagen(self, segment: str, path: str) -> list[CarPriceRecord]:
+        import json as _json
+
+        api_url = (
+            "https://binekarac2.vw.com.tr/app/local/fiyatlardata/"
+            "fiyatlar666.json?v=20262303"
+        )
+        source_url = "https://binekarac.vw.com.tr" + path
+        r = await self._client.get(api_url, headers={"Accept": "application/json"})
+        r.raise_for_status()
+        data = _json.loads(r.content.decode("utf-8", errors="replace"))
+
+        fiyat_bilgisi = data.get("Data", {}).get("FiyatBilgisi", [])
+        active = next((x for x in fiyat_bilgisi if x.get("Aktif") == "1"), None)
+        if not active:
+            logger.warning("[car_brands] volkswagen: aktif liste bulunamadı")
+            return []
+
+        records: list[CarPriceRecord] = []
+        today = date.today()
+
+        for arac in active.get("Arac", []):
+            pd = arac.get("AracXML", {}).get("PriceData", {})
+            model_name = (pd.get("-ModelName") or "").strip()
+            if not model_name:
+                continue
+
+            seg = _guess_segment(model_name)
+            if seg != segment:
+                continue
+
+            items = pd.get("SubList", {}).get("Item", [])
+            if isinstance(items, dict):
+                items = [items]
+
+            variant_counts: dict[str, int] = {}
+            for it in items:
+                subs = it.get("SubItem", [])
+                if not isinstance(subs, list):
+                    continue
+                fields = {s.get("-Title", ""): s.get("-Value", "") for s in subs}
+                motor = (fields.get("Motor") or "").strip()
+                sanz = (fields.get("Şanzıman") or "").strip()
+                dona = (fields.get("Donanım") or "").strip() or "başlangıç"
+
+                # "Opak Renk Tavsiye Edilen Anahtar Teslim Fiyatı" — final fiyat.
+                # Format: "₺2.186.000,00" — virgülden sonrası kuruş; ",00" kuyruğu
+                # _parse_price'a girerse digit olarak okunup fiyatı 100× şişirir.
+                key_price_raw = next(
+                    (v for k, v in fields.items() if "Anahtar Teslim Fiyat" in k),
+                    "",
+                ).split(",")[0]
+                price = _parse_price(key_price_raw)
+                if not price or price < 500_000:
+                    continue
+
+                base_variant = f"{dona} – {motor} {sanz}".strip()
+                # Aynı motor+şanzıman+donanım kombinasyonu tekrar ederse (Tayron'da
+                # paket farkı nedeniyle oluyor) sıra numarası ekle ki UNIQUE
+                # (brand, model, variant, date) çakışmasın.
+                variant_counts[base_variant] = variant_counts.get(base_variant, 0) + 1
+                n = variant_counts[base_variant]
+                variant = base_variant if n == 1 else f"{base_variant} #{n}"
+
+                records.append(CarPriceRecord(
+                    brand="volkswagen",
+                    model=model_name,
+                    variant=variant,
+                    segment=seg,
+                    price=price,
+                    date=today,
+                    source_url=source_url,
+                ))
+
+        logger.info("[car_brands] volkswagen/%s: %d kayıt", segment, len(records))
+        return records
 
     # ── Ford ───────────────────────────────────────────────────────────────────
     # ford.com.tr/fiyat-listesi → reCAPTCHA; statik HTML'de fiyat yok.
