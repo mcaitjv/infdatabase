@@ -38,7 +38,7 @@ categories:
       mercedes:    {path: "/model"}
       togg:        {path: "/price-list"}
       bmw:         {path: "/tr/fastlane/bmw-fiyat-listesi.html"}
-      tesla:       {path: ""}  # React SPA, statik HTML'de fiyat yok
+      tesla:       {path: ""}  # arabam.com kaynak; _scrape_tesla URL'i sabit kullanır
       chery:       {path: "/sifir-arac-fiyatlari/"}
       kg_mobility: {path: "/fiyat-listesi"}
       audi:        {path: "/2026"}

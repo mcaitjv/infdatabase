@@ -5,9 +5,10 @@ Her marka için fiyat listesi sayfasından model/varyant/fiyat üçlüsü çeker
 
 Desteklenen markalar:
   ✓ httpx: Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia,
-           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen, Ford
+           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen, Ford,
+           Tesla (arabam.com üzerinden — resmi site Akamai ile korumalı)
   ✓ Playwright: Toyota, Opel, BMW (Borusa iframe), Kia
-  ✗ Engellenmiş: Tesla (Akamai Bot Manager — httpx/Playwright/stealth hepsi 403), Volvo (403)
+  ✗ Engellenmiş: Volvo (403)
 """
 
 from __future__ import annotations
@@ -1360,9 +1361,70 @@ class CarBrandScraper:
         return records
 
     # ── Tesla ──────────────────────────────────────────────────────────────────
-    # tesla.com/tr_TR → Akamai Bot Manager koruması — httpx/curl_cffi/Playwright/stealth/
-    # undetected-chromedriver hepsi "Access Denied" (308b) döndürüyor. Residential proxy
-    # olmadan geçmek mümkün değil.
+    # tesla.com/tr_TR → Akamai Bot Manager koruması; resmi site kazınamıyor.
+    # arabam.com aylık fiyat tablosu alternatif kaynak olarak kullanılıyor.
+
+    async def _scrape_tesla(self, segment: str, path: str) -> list[CarPriceRecord]:
+        """Tesla Model Y — arabam.com aylık fiyat tablosu (ÖTV+KDV dahil)."""
+        if segment != "suv":
+            return []
+        url = "https://www.arabam.com/blog/otomobil-inceleme/fiyat-listeleri/tesla-fiyat-listesi/"
+        today = date.today()
+        records: list[CarPriceRecord] = []
+
+        r = await self._client.get(url)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        table = soup.find("table")
+        if not table:
+            logger.warning("[car_brands] tesla: tablo bulunamadı")
+            return records
+
+        rows = table.find_all("tr")
+        if not rows:
+            return records
+
+        # Sütun başlıklarından en son (güncel ay) sütunun indeksini bul
+        header_cells = [th.get_text(strip=True) for th in rows[0].find_all(["th", "td"])]
+        # Son fiyat sütunu: "X Fiyatı" pattern'ına uyan en sağdaki indeks
+        price_col = len(header_cells) - 1  # varsayılan: son sütun
+        for i, h in enumerate(header_cells):
+            if "fiyat" in h.lower() or "fiyatı" in h.lower():
+                price_col = i  # en son eşleşeni al
+
+        for row in rows[1:]:
+            cells = [td.get_text(strip=True) for td in row.find_all(["th", "td"])]
+            if len(cells) <= price_col:
+                continue
+            raw_model = cells[0]
+            # "Tesla Model Y – Arkadan Çekiş" → model="Model Y", variant="Arkadan Çekiş"
+            name = raw_model.replace("Tesla", "").strip()
+            if "–" in name:
+                model_part, variant = name.split("–", 1)
+            elif "-" in name:
+                model_part, variant = name.split("-", 1)
+            else:
+                model_part, variant = name, "Standart"
+            model_name = model_part.strip()
+            variant = variant.strip()
+
+            price = _parse_price(cells[price_col])
+            if price is None or price < 1_000_000:
+                continue
+
+            records.append(CarPriceRecord(
+                brand="tesla",
+                model=model_name,
+                variant=variant,
+                segment="suv",
+                price=price,
+                date=today,
+                source_url=url,
+            ))
+
+        logger.info("[car_brands] tesla/suv: %d kayıt", len(records))
+        return records
 
     # ── TOGG ───────────────────────────────────────────────────────────────────
 
