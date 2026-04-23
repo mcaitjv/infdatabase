@@ -7,7 +7,7 @@ Desteklenen markalar:
   ✓ httpx: Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia,
            TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen, Ford
   ✓ Playwright: Toyota, Opel, BMW (Borusa iframe), Kia
-  ✗ Engellenmiş: Tesla (SPA), Volvo (403)
+  ✗ Engellenmiş: Tesla (Akamai Bot Manager — httpx/Playwright/stealth hepsi 403), Volvo (403)
 """
 
 from __future__ import annotations
@@ -1360,7 +1360,9 @@ class CarBrandScraper:
         return records
 
     # ── Tesla ──────────────────────────────────────────────────────────────────
-    # tesla.com/tr_TR → 200 ama fiyatlar static HTML'de yok (React SPA).
+    # tesla.com/tr_TR → Akamai Bot Manager koruması — httpx/curl_cffi/Playwright/stealth/
+    # undetected-chromedriver hepsi "Access Denied" (308b) döndürüyor. Residential proxy
+    # olmadan geçmek mümkün değil.
 
     # ── TOGG ───────────────────────────────────────────────────────────────────
 
