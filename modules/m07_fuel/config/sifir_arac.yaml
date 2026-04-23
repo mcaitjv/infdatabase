@@ -10,7 +10,7 @@ categories:
       renault:    {path: "/fiyat-listesi.html"}
       fiat:       {path: "/fiyat-listesi"}
       volkswagen: {path: "/tr/modeller-fiyatlar/volkswagen-fiyat-listesi.html"}
-      ford:       {path: ""}  # reCAPTCHA koruması
+      ford:       {path: "/fiyat-listesi/otomobil"}
       toyota:     {path: "/modeller"}
       peugeot:    {path: "/fiyat-listesi/"}
       opel:       {path: "/binek-araclar"}
@@ -31,7 +31,7 @@ categories:
     sources:
       toyota:      {path: "/modeller"}
       volkswagen:  {path: "/tr/modeller-fiyatlar/volkswagen-fiyat-listesi.html"}
-      ford:        {path: ""}  # reCAPTCHA
+      ford:        {path: "/fiyat-listesi/otomobil"}
       hyundai:     {path: "/tr/tr/satis/fiyat-listesi.html"}
       byd:         {path: "/fiyat-listesi"}
       fiat:        {path: "/fiyat-listesi"}

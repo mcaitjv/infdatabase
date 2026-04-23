@@ -5,9 +5,9 @@ Her marka için fiyat listesi sayfasından model/varyant/fiyat üçlüsü çeker
 
 Desteklenen markalar:
   ✓ httpx: Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia,
-           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen
+           TOGG, KG Mobility, Fiat, Mercedes, Citroen, Hyundai, Volkswagen, Ford
   ✓ Playwright: Toyota, Opel, BMW (Borusa iframe)
-  ✗ Engellenmiş: Ford (reCAPTCHA), Kia (timeout), Tesla (SPA), Volvo (403)
+  ✗ Engellenmiş: Kia (timeout), Tesla (SPA), Volvo (403)
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ _SEGMENT_RULES: dict[str, list[str]] = {
     "suv": [
         "duster", "captur", "austral", "rafale", "espace", "koleos",
         "tucson", "santa fe", "kona", "creta",
-        "puma", "kuga", "explorer", "bronco", "ecosport",
+        "puma", "kuga", "explorer", "bronco", "ecosport", "capri", "edge", "f-150",
         "tiguan", "tayron", "taigo", "t-cross", "touareg", "t-roc",
         "arona", "ateca", "karoq", "kodiaq", "enyaq", "elroq", "kamiq",
         "2008", "3008", "5008", "e-2008",
@@ -531,7 +531,74 @@ class CarBrandScraper:
         return records
 
     # ── Ford ───────────────────────────────────────────────────────────────────
-    # ford.com.tr/fiyat-listesi → reCAPTCHA; statik HTML'de fiyat yok.
+    # ford.com.tr SPA; fiyatlar /fwebapi/main/carPriceListNewUI JSON endpoint'inden
+    # httpx ile çekiliyor. reCAPTCHA sadece iletişim formunu koruyor, API açık.
+
+    async def _scrape_ford(self, segment: str, path: str) -> list[CarPriceRecord]:
+        """Ford Türkiye — /fwebapi JSON API üzerinden 2025/2026 model fiyatları."""
+        CARTYPES = [
+            ("Binek",     "/fiyat-listesi/otomobil"),
+            ("FordStore", "/fiyat-listesi/ford-store-araclar"),
+        ]
+        ALLOWED_YEARS = {"2025", "2026"}
+        base = BRAND_BASES["ford"]
+
+        records: list[CarPriceRecord] = []
+        today = date.today()
+        source_url = base + path
+
+        for cartype, referer_path in CARTYPES:
+            api_url = f"{base}/fwebapi/main/carPriceListNewUI?searchparam=&cartype={cartype}"
+            r = await self._client.get(
+                api_url, headers={"Referer": base + referer_path}
+            )
+            r.raise_for_status()
+            data = r.json()
+
+            for car in data.get("carPriceList", []):
+                model_name = car["modelName"]
+                seg = _guess_segment(model_name)
+                if seg != segment:
+                    continue
+
+                variant_counts: dict[str, int] = {}
+
+                for entity in car.get("entities", []):
+                    model_year = entity.get("modelYear", "")
+                    if model_year not in ALLOWED_YEARS:
+                        continue
+
+                    raw_price = (
+                        entity.get("deliveredTurnkeyListPrice")
+                        or entity.get("campaignedTurnkeyPrice")
+                    )
+                    if not raw_price:
+                        continue
+                    price = _parse_price(str(raw_price))
+                    if price is None or price < 500_000:
+                        continue
+
+                    series = entity.get("series") or "Standart"
+                    engine = entity.get("engine") or ""
+                    gearbox = entity.get("gearbox") or ""
+                    base_variant = f"{series} - {engine} - {gearbox} MY{model_year}".strip(" -")
+
+                    variant_counts[base_variant] = variant_counts.get(base_variant, 0) + 1
+                    n = variant_counts[base_variant]
+                    variant = base_variant if n == 1 else f"{base_variant} #{n}"
+
+                    records.append(CarPriceRecord(
+                        brand="ford",
+                        model=model_name,
+                        variant=variant,
+                        segment=seg,
+                        price=price,
+                        date=today,
+                        source_url=source_url,
+                    ))
+
+        logger.info("[car_brands] ford/%s: %d kayıt", segment, len(records))
+        return records
 
     # ── Peugeot ────────────────────────────────────────────────────────────────
 
