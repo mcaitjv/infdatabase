@@ -384,22 +384,22 @@ async def upsert_car_price(conn, record: CarPriceRecord) -> bool:
         result = await conn.execute(
             """
             INSERT OR IGNORE INTO m07_car_prices
-                (brand, model, variant, segment, price, currency, date, source_url)
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             record.brand, record.model, record.variant, record.segment,
-            float(record.price), record.currency, str(rec_date), record.source_url,
+            record.yakit_tipi, float(record.price), record.currency, str(rec_date),
         )
     else:
         result = await conn.execute(
             """
             INSERT INTO m07_car_prices
-                (brand, model, variant, segment, price, currency, date, source_url)
-            VALUES ($1, $2, $3, $4, $5::numeric, $6, $7::date, $8)
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7, $8::date)
             ON CONFLICT (brand, model, variant, date) DO NOTHING
             """,
             record.brand, record.model, record.variant, record.segment,
-            float(record.price), record.currency, rec_date, record.source_url,
+            record.yakit_tipi, float(record.price), record.currency, rec_date,
         )
     return result == "INSERT 0 1"
 

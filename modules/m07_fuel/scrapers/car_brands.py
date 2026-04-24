@@ -107,6 +107,40 @@ def _guess_segment(model_name: str) -> str:
     return "binek"
 
 
+def _infer_yakit(brand: str, model: str, variant: str) -> str:
+    text = f"{brand} {model} {variant}".lower()
+
+    if any(k in text for k in ["hibrit", "hybrid", "phev", "plug-in"]):
+        return "hibrit"
+
+    if brand in ("tesla", "togg", "byd"):
+        return "elektrik"
+
+    elektrik_keys = [
+        "elektrikli", "elektrik ", "bev",
+        "e-tron", "eqa", "eqb", "eqc", "eqe", "eqs",
+        "ev3", "ev6", "ev9",
+        "ioniq", "inster",
+        "atto", "seal", "dolphin", "sealion",
+        "elroq", "enyaq",
+        "renault 5",
+        "topolino", "500e", "grande panda elektri",
+        "torres evx", "musso ev",
+        "e-208", "e-2008", "e-308", "e-3008", "e-5008",
+        "journey courier bev", "capri",
+    ]
+    if any(k in text for k in elektrik_keys):
+        return "elektrik"
+
+    if brand == "bmw" and any(k in text for k in ["ix1", "ix2", "ix3", " i4 ", " i5 ", " i7 "]):
+        return "elektrik"
+
+    if any(k in text for k in ["tdi", "bluehdi", "ecoblue", "d2.2", "hdi"]):
+        return "dizel"
+
+    return "benzin"
+
+
 def _parse_price(text: str) -> Decimal | None:
     digits = re.sub(r'[^\d]', '', text)
     if len(digits) < 6:
@@ -139,7 +173,11 @@ class CarBrandScraper:
         method = getattr(self, f"_scrape_{brand}", None)
         if method is None:
             raise NotImplementedError(f"{brand} scraper henüz yok")
-        return await method(segment, path)
+        records = await method(segment, path)
+        return [
+            r.model_copy(update={"yakit_tipi": _infer_yakit(r.brand, r.model, r.variant)})
+            for r in records
+        ]
 
     # ── Renault ────────────────────────────────────────────────────────────────
 

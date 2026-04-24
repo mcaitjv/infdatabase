@@ -95,10 +95,10 @@ class CarPriceRecord(BaseModel):
     model:      str        # "Corolla" | "Clio" | ...
     variant:    str        # "1.5 VVT-i Dream CVT" | ...
     segment:    str        # "binek" | "suv"
+    yakit_tipi: str = "benzin"  # "benzin" | "dizel" | "elektrik" | "hibrit"
     price:      Decimal
     currency:   str = "TRY"
     date:       date
-    source_url: str | None = None
 
     @field_validator("price")
     @classmethod

@@ -105,10 +105,10 @@ CREATE TABLE IF NOT EXISTS m07_car_prices (
     model       VARCHAR(255)  NOT NULL,
     variant     VARCHAR(255)  NOT NULL,
     segment     VARCHAR(50)   NOT NULL,
+    yakit_tipi  VARCHAR(20)   NOT NULL DEFAULT 'benzin',
     price       NUMERIC(12,2) NOT NULL,
     currency    VARCHAR(10)   DEFAULT 'TRY',
     date        DATE          NOT NULL,
-    source_url  TEXT,
     UNIQUE (brand, model, variant, date)
 );
 
