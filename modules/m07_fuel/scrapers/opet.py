@@ -41,12 +41,12 @@ _COL_MAP: dict[int, str | None] = {
 
 
 def _parse_price(text: str) -> Decimal | None:
-    """'63.59 TL/L' gibi metinden Decimal fiyat çıkarır."""
-    match = re.search(r"(\d+)[,.](\d+)", text)
+    """'63.59 TL/L' veya '64 TL/L' gibi metinden Decimal fiyat çıkarır."""
+    match = re.search(r"(\d+)(?:[,.](\d+))?\s*TL", text)
     if not match:
         return None
     try:
-        val = Decimal(f"{match.group(1)}.{match.group(2)}")
+        val = Decimal(f"{match.group(1)}.{match.group(2) or '0'}")
         return val if val > 0 else None
     except InvalidOperation:
         return None
