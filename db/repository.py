@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
+from db.models import AppliancePriceRecord, CarPriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
 
 logger = logging.getLogger(__name__)
 
@@ -104,12 +104,12 @@ async def upsert_market_product(
     volume: str | None = None,
 ) -> int:
     """
-    market_products tablosuna ürünü ekler veya günceller.
+    m01_market_products tablosuna ürünü ekler veya günceller.
     Döndürür: market_product_id
     """
     row = await conn.fetchrow(
         """
-        INSERT INTO market_products (market, market_sku, market_name, brand, volume)
+        INSERT INTO m01_market_products (market, market_sku, market_name, brand, volume)
         VALUES ($1, $2, $3, $4, $5)
         ON CONFLICT (market, market_sku)
         DO UPDATE SET
@@ -128,8 +128,8 @@ async def batch_upsert_products_and_snapshots(
     records: list[PriceRecord],
 ) -> int:
     """
-    Her unique (market, sku) için market_products'ı upsert eder,
-    ardından price_snapshots'a günlük snapshot ekler.
+    Her unique (market, sku) için m01_market_products'ı upsert eder,
+    ardından m01_price_snapshots'a günlük snapshot ekler.
     Döndürür: eklenen snapshot sayısı
     """
     if not records:
@@ -153,7 +153,7 @@ async def batch_upsert_products_and_snapshots(
             continue
         result = await conn.execute(
             """
-            INSERT INTO price_snapshots
+            INSERT INTO m01_price_snapshots
                 (market_product_id, snapshot_date, price, discounted_price, is_available, location)
             VALUES ($1, $2::date, $3::numeric, $4::numeric, $5::boolean, $6::varchar)
             ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
@@ -176,7 +176,7 @@ async def insert_price_snapshots(
     records: list[PriceRecord],
 ) -> int:
     """
-    Mevcut market_products kayıtlarına dayalı snapshot ekler.
+    Mevcut m01_market_products kayıtlarına dayalı snapshot ekler.
     (marketfiyati modu için geriye uyumluluk)
     """
     return await batch_upsert_products_and_snapshots(conn, records)
@@ -188,7 +188,7 @@ async def upsert_scrape_run(conn, run: ScrapeRun) -> None:
     """Scrape run kaydını ekler (çakışmada sessizce geçer)."""
     await conn.execute(
         """
-        INSERT INTO scrape_runs
+        INSERT INTO shared_scrape_runs
             (market, run_date, started_at, finished_at, status,
              products_scraped, errors_count, error_details)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -224,7 +224,7 @@ async def export_and_cleanup(
     # Cutoff'tan önce snapshot'u olan tüm tarihleri çek, Python'da ay grupla
     # asyncpg → date nesnesi; _SqliteConn → str kabul eder (her ikisi de çalışır)
     rows = await conn.fetch(
-        "SELECT DISTINCT snapshot_date FROM price_snapshots WHERE snapshot_date < $1::date ORDER BY snapshot_date",
+        "SELECT DISTINCT snapshot_date FROM m01_price_snapshots WHERE snapshot_date < $1::date ORDER BY snapshot_date",
         cutoff,
     )
 
@@ -254,8 +254,8 @@ async def export_and_cleanup(
                     ps.id, ps.snapshot_date, ps.price, ps.discounted_price,
                     ps.is_available, ps.location, ps.scraped_at,
                     mp.market, mp.market_sku, mp.market_name, mp.brand, mp.volume
-                FROM price_snapshots ps
-                JOIN market_products mp ON mp.id = ps.market_product_id
+                FROM m01_price_snapshots ps
+                JOIN m01_market_products mp ON mp.id = ps.market_product_id
                 WHERE snapshot_date >= $1::date
                   AND snapshot_date <  $2::date
                 ORDER BY ps.snapshot_date, mp.market
@@ -279,7 +279,7 @@ async def export_and_cleanup(
 
         # DB'den sil (dosya var olsun ya da olmasın — cutoff geçmiş ay)
         result = await conn.execute(
-            "DELETE FROM price_snapshots WHERE snapshot_date >= $1::date AND snapshot_date < $2::date",
+            "DELETE FROM m01_price_snapshots WHERE snapshot_date >= $1::date AND snapshot_date < $2::date",
             month_start, month_end,
         )
         try:
@@ -297,13 +297,13 @@ async def export_and_cleanup(
 
 async def upsert_fuel_price(conn, record: FuelPriceRecord) -> bool:
     """
-    fuel_prices tablosuna yakıt fiyatı ekler.
+    m07_fuel_prices tablosuna yakıt fiyatı ekler.
     Aynı (provider, city, fuel_type, date) varsa sessizce geçer (idempotent).
     Döndürür: True → yeni satır eklendi, False → zaten vardı.
     """
     result = await conn.execute(
         """
-        INSERT INTO fuel_prices (provider, city, district, fuel_type, price, date)
+        INSERT INTO m07_fuel_prices (provider, city, district, fuel_type, price, date)
         VALUES ($1, $2, $3, $4, $5::numeric, $6::date)
         ON CONFLICT (provider, city, fuel_type, date) DO NOTHING
         """,
@@ -326,42 +326,89 @@ async def batch_upsert_fuel_prices(conn, records: list[FuelPriceRecord]) -> int:
     return inserted
 
 
-# ── Modül 05 Aşama 2 — Beyaz eşya fiyatları ─────────────────────────────────
+# ── Modül 05 — Beyaz eşya fiyatları (Dimensional Model) ─────────────────────
 
 async def upsert_appliance_price(conn, record: AppliancePriceRecord) -> bool:
-    """
-    appliance_prices tablosuna beyaz eşya fiyatı ekler.
-    Aynı (source, sku, date) varsa sessizce geçer (idempotent).
-    Döndürür: True → yeni satır eklendi, False → zaten vardı.
-    """
-    result = await conn.execute(
-        """
-        INSERT INTO appliance_prices
-            (coicop_code, source, sku, brand, model, category,
-             price, discounted_price, date)
-        VALUES ($1, $2, $3, $4, $5, $6, $7::numeric, $8::numeric, $9::date)
-        ON CONFLICT (source, sku, date) DO NOTHING
-        """,
-        record.coicop_code,
-        record.source,
-        record.sku,
-        record.brand,
-        record.model,
-        record.category,
-        float(record.price),
-        float(record.discounted_price) if record.discounted_price else None,
-        record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date)),
-    )
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        await conn.execute(
+            "INSERT OR IGNORE INTO m05_dim_appliance (source, sku, model, category) VALUES (?, ?, ?, ?)",
+            record.source, record.sku, record.model, record.category,
+        )
+        row = await conn.fetchrow(
+            "SELECT appliance_key FROM m05_dim_appliance WHERE source=? AND sku=?",
+            record.source, record.sku,
+        )
+        appliance_key = row[0]
+        result = await conn.execute(
+            "INSERT OR IGNORE INTO m05_fact_appliance_price (appliance_key, price, date) VALUES (?, ?, ?)",
+            appliance_key, float(record.price), str(rec_date),
+        )
+    else:
+        row = await conn.fetchrow(
+            """
+            INSERT INTO m05_dim_appliance (source, sku, model, category)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (source, sku) DO UPDATE SET model = EXCLUDED.model
+            RETURNING appliance_key
+            """,
+            record.source, record.sku, record.model, record.category,
+        )
+        appliance_key = row[0]
+        result = await conn.execute(
+            """
+            INSERT INTO m05_fact_appliance_price (appliance_key, price, date)
+            VALUES ($1, $2::numeric, $3::date)
+            ON CONFLICT (appliance_key, date) DO NOTHING
+            """,
+            appliance_key, float(record.price), rec_date,
+        )
     return result == "INSERT 0 1"
 
 
-async def batch_upsert_appliance_prices(
-    conn, records: list[AppliancePriceRecord]
-) -> int:
-    """Toplu beyaz eşya fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+async def batch_upsert_appliance_prices(conn, records: list[AppliancePriceRecord]) -> int:
     inserted = 0
     for r in records:
         if await upsert_appliance_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+# ── Modül 07 — Sıfır araç fiyatları ─────────────────────────────────────────
+
+async def upsert_car_price(conn, record: CarPriceRecord) -> bool:
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT OR IGNORE INTO m07_car_prices
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            record.yakit_tipi, float(record.price), record.currency, str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_car_prices
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7, $8::date)
+            ON CONFLICT (brand, model, variant, date) DO NOTHING
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            record.yakit_tipi, float(record.price), record.currency, rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_car_prices(conn, records: list[CarPriceRecord]) -> int:
+    """Toplu araç fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_car_price(conn, r):
             inserted += 1
     return inserted
 
@@ -377,8 +424,8 @@ async def get_last_prices(
     rows = await conn.fetch(
         """
         SELECT mp.market_sku, ps.price
-        FROM price_snapshots ps
-        JOIN market_products mp ON mp.id = ps.market_product_id
+        FROM m01_price_snapshots ps
+        JOIN m01_market_products mp ON mp.id = ps.market_product_id
         WHERE mp.market = $1 AND ps.snapshot_date = $2
         """,
         market,

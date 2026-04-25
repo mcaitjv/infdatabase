@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS products (
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS market_products (
+CREATE TABLE IF NOT EXISTS m01_market_products (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id  INTEGER REFERENCES products(id) ON DELETE CASCADE,
     market      TEXT NOT NULL,
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS market_products (
     UNIQUE(market, market_sku)
 );
 
-CREATE TABLE IF NOT EXISTS price_snapshots (
+CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
-    market_product_id INTEGER NOT NULL REFERENCES market_products(id) ON DELETE CASCADE,
+    market_product_id INTEGER NOT NULL REFERENCES m01_market_products(id) ON DELETE CASCADE,
     snapshot_date     TEXT NOT NULL,
     price             REAL NOT NULL,
     discounted_price  REAL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS price_snapshots (
     UNIQUE(market_product_id, snapshot_date, location)
 );
 
-CREATE TABLE IF NOT EXISTS scrape_runs (
+CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     market           TEXT NOT NULL,
     run_date         TEXT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS scrape_runs (
 );
 
 -- Yakıt fiyatları (Modül 07 — Ulaştırma)
-CREATE TABLE IF NOT EXISTS fuel_prices (
+CREATE TABLE IF NOT EXISTS m07_fuel_prices (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     provider    TEXT    NOT NULL,
     city        TEXT    NOT NULL,
@@ -64,30 +64,52 @@ CREATE TABLE IF NOT EXISTS fuel_prices (
     UNIQUE(provider, city, fuel_type, date)
 );
 
-CREATE INDEX IF NOT EXISTS idx_fp_date         ON fuel_prices(date);
-CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON fuel_prices(provider, city);
+CREATE INDEX IF NOT EXISTS idx_fp_date         ON m07_fuel_prices(date);
+CREATE INDEX IF NOT EXISTS idx_fp_provider_city ON m07_fuel_prices(provider, city);
 
--- Beyaz eşya & küçük ev aletleri fiyatları (Modül 05 Aşama 2 — Trendyol)
-CREATE TABLE IF NOT EXISTS appliance_prices (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    coicop_code      TEXT    NOT NULL,
-    source           TEXT    NOT NULL DEFAULT 'trendyol',
-    sku              TEXT    NOT NULL,
-    brand            TEXT    NOT NULL,
-    model            TEXT    NOT NULL,
-    category         TEXT,
-    price            REAL    NOT NULL,
-    discounted_price REAL,
-    date             TEXT    NOT NULL,
-    scraped_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(source, sku, date)
+
+-- Beyaz eşya & küçük ev aletleri — Modül 05 (Dimensional Model)
+CREATE TABLE IF NOT EXISTS m05_dim_appliance (
+    appliance_key INTEGER PRIMARY KEY AUTOINCREMENT,
+    source        TEXT    NOT NULL,
+    sku           TEXT    NOT NULL,
+    model         TEXT    NOT NULL,
+    category      TEXT    NOT NULL,
+    UNIQUE(source, sku)
 );
 
-CREATE INDEX IF NOT EXISTS idx_ap_date         ON appliance_prices(date);
-CREATE INDEX IF NOT EXISTS idx_ap_coicop_date  ON appliance_prices(coicop_code, date);
-CREATE INDEX IF NOT EXISTS idx_ap_sku          ON appliance_prices(sku);
+CREATE TABLE IF NOT EXISTS m05_fact_appliance_price (
+    price_key     INTEGER PRIMARY KEY AUTOINCREMENT,
+    appliance_key INTEGER NOT NULL REFERENCES m05_dim_appliance(appliance_key),
+    price         REAL    NOT NULL,
+    date          TEXT    NOT NULL,
+    UNIQUE(appliance_key, date)
+);
 
-CREATE INDEX IF NOT EXISTS idx_ps_date         ON price_snapshots(snapshot_date);
-CREATE INDEX IF NOT EXISTS idx_ps_product_date ON price_snapshots(market_product_id, snapshot_date);
-CREATE INDEX IF NOT EXISTS idx_ps_location     ON price_snapshots(location);
-CREATE INDEX IF NOT EXISTS idx_mp_market       ON market_products(market);
+CREATE INDEX IF NOT EXISTS idx_fap_date     ON m05_fact_appliance_price(date);
+CREATE INDEX IF NOT EXISTS idx_fap_key_date ON m05_fact_appliance_price(appliance_key, date);
+CREATE INDEX IF NOT EXISTS idx_dim_category ON m05_dim_appliance(category);
+CREATE INDEX IF NOT EXISTS idx_dim_source   ON m05_dim_appliance(source);
+
+-- Sıfır araç fiyatları (Modül 07 — COICOP 07.1)
+CREATE TABLE IF NOT EXISTS m07_car_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    brand       TEXT    NOT NULL,
+    model       TEXT    NOT NULL,
+    variant     TEXT    NOT NULL,
+    segment     TEXT    NOT NULL,
+    yakit_tipi  TEXT    NOT NULL DEFAULT 'benzin',
+    price       REAL    NOT NULL,
+    currency    TEXT    DEFAULT 'TRY',
+    date        TEXT    NOT NULL,
+    UNIQUE (brand, model, variant, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_date     ON m07_car_prices(date);
+CREATE INDEX IF NOT EXISTS idx_cp_brand    ON m07_car_prices(brand);
+CREATE INDEX IF NOT EXISTS idx_cp_segment  ON m07_car_prices(segment);
+
+CREATE INDEX IF NOT EXISTS idx_ps_date         ON m01_price_snapshots(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_ps_product_date ON m01_price_snapshots(market_product_id, snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_ps_location     ON m01_price_snapshots(location);
+CREATE INDEX IF NOT EXISTS idx_mp_market       ON m01_market_products(market);

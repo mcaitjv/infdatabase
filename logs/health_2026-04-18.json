@@ -1,0 +1,200 @@
+{
+  "date": "2026-04-18",
+  "overall_status": "error",
+  "modules": [
+    {
+      "module_code": "01+05p1",
+      "module_name": "Market Fiyatları (M01 + M05 Aşama 1)",
+      "status": "error",
+      "records_today": 3870,
+      "records_yesterday": 3788,
+      "expected": 0,
+      "missing_count": 4,
+      "missing": [
+        "m05:samsung:elektrikli_supurge",
+        "m05:samsung:klima",
+        "m05:samsung:camasir_makinesi",
+        "m05:samsung:buzdolabi"
+      ],
+      "anomaly_count": 20,
+      "anomalies": [
+        {
+          "identifier": "migros / Komili Riviera Yemeklik Zeytinyağı 2 Lt",
+          "yesterday": 494.75,
+          "today": 749.9500122070312,
+          "change_pct": 51.6
+        },
+        {
+          "identifier": "carrefour / Selpak Organik Bambu Zeytinyağlı Islak M",
+          "yesterday": 60.5,
+          "today": 30.25,
+          "change_pct": -50.0
+        },
+        {
+          "identifier": "bim / Duru Duş Katı Sabun 600 Gr",
+          "yesterday": 174.0,
+          "today": 99.0,
+          "change_pct": -43.1
+        },
+        {
+          "identifier": "bim / Elidor Şampuan Çeşitleri 400 Ml",
+          "yesterday": 199.0,
+          "today": 119.0,
+          "change_pct": -40.2
+        },
+        {
+          "identifier": "carrefour / Oral-B Çocuk Diş Macunu 75 Ml",
+          "yesterday": 161.4499969482422,
+          "today": 226.02999877929688,
+          "change_pct": 40.0
+        },
+        {
+          "identifier": "migros / Milka Fındıklı Çikolata 80 Gr",
+          "yesterday": 129.9499969482422,
+          "today": 79.9000015258789,
+          "change_pct": -38.5
+        },
+        {
+          "identifier": "migros / Milka Rüyası Çikolata 100 Gr",
+          "yesterday": 129.9499969482422,
+          "today": 79.9000015258789,
+          "change_pct": -38.5
+        },
+        {
+          "identifier": "bim / Clear Şampuan 350 Ml",
+          "yesterday": 229.0,
+          "today": 149.0,
+          "change_pct": -34.9
+        },
+        {
+          "identifier": "a101 / Pantene Kesintisiz Nem Şampuan 400 Ml",
+          "yesterday": 134.0,
+          "today": 179.5,
+          "change_pct": 34.0
+        },
+        {
+          "identifier": "bim / Colgate Diş Macunu 50 Ml",
+          "yesterday": 63.5,
+          "today": 85.0,
+          "change_pct": 33.9
+        },
+        {
+          "identifier": "migros / Mlife Bio Organik M Boy Yumurta 10 Adet",
+          "yesterday": 109.94999694824219,
+          "today": 144.9499969482422,
+          "change_pct": 31.8
+        },
+        {
+          "identifier": "migros / Mlife Organik M Boy Yumurta 10 Adet",
+          "yesterday": 109.94999694824219,
+          "today": 144.9499969482422,
+          "change_pct": 31.8
+        },
+        {
+          "identifier": "carrefour / Bisalt Çankırı Kaya Tuzu 250 Gr",
+          "yesterday": 63.0,
+          "today": 82.9000015258789,
+          "change_pct": 31.6
+        },
+        {
+          "identifier": "carrefour / Bisalt Himalaya Kaya İyotlu Tuz 400 Gr",
+          "yesterday": 99.9000015258789,
+          "today": 130.0,
+          "change_pct": 30.1
+        },
+        {
+          "identifier": "carrefour / Bisalt Kristal Kaya İyotlu Tuz 400 Gr",
+          "yesterday": 99.9000015258789,
+          "today": 130.0,
+          "change_pct": 30.1
+        },
+        {
+          "identifier": "carrefour / Activex Hassas Sıvı Sabun 1.5 Lt",
+          "yesterday": 313.8999938964844,
+          "today": 219.72999572753906,
+          "change_pct": -30.0
+        },
+        {
+          "identifier": "carrefour / Duru Sıvı Sabun Kiraz Çiçeği 500 Ml",
+          "yesterday": 108.0,
+          "today": 75.5999984741211,
+          "change_pct": -30.0
+        },
+        {
+          "identifier": "carrefour / Activex Hassas Sıvı Sabun 500 Ml",
+          "yesterday": 156.5,
+          "today": 109.55000305175781,
+          "change_pct": -30.0
+        },
+        {
+          "identifier": "migros / La Vache Qui Rit Krem Peynir 270 Gr",
+          "yesterday": 135.0,
+          "today": 99.9000015258789,
+          "change_pct": -26.0
+        },
+        {
+          "identifier": "bim / Head&Shoulders Şampuan 330 Ml",
+          "yesterday": 199.0,
+          "today": 149.0,
+          "change_pct": -25.1
+        }
+      ],
+      "warnings": [
+        "Fiyat değişimi: carrefour / Selpak Organik Bambu Zeytinyağlı Islak M -50.0%",
+        "Fiyat değişimi: bim / Duru Duş Katı Sabun 600 Gr -43.1%",
+        "Fiyat değişimi: bim / Elidor Şampuan Çeşitleri 400 Ml -40.2%",
+        "Fiyat değişimi: carrefour / Oral-B Çocuk Diş Macunu 75 Ml +40.0%",
+        "Fiyat değişimi: migros / Milka Fındıklı Çikolata 80 Gr -38.5%",
+        "Fiyat değişimi: migros / Milka Rüyası Çikolata 100 Gr -38.5%",
+        "Fiyat değişimi: bim / Clear Şampuan 350 Ml -34.9%",
+        "Fiyat değişimi: a101 / Pantene Kesintisiz Nem Şampuan 400 Ml +34.0%",
+        "Fiyat değişimi: bim / Colgate Diş Macunu 50 Ml +33.9%",
+        "Fiyat değişimi: migros / Mlife Bio Organik M Boy Yumurta 10 Adet +31.8%",
+        "Fiyat değişimi: migros / Mlife Organik M Boy Yumurta 10 Adet +31.8%",
+        "Fiyat değişimi: carrefour / Bisalt Çankırı Kaya Tuzu 250 Gr +31.6%",
+        "Fiyat değişimi: carrefour / Bisalt Himalaya Kaya İyotlu Tuz 400 Gr +30.1%",
+        "Fiyat değişimi: carrefour / Bisalt Kristal Kaya İyotlu Tuz 400 Gr +30.1%",
+        "Fiyat değişimi: carrefour / Activex Hassas Sıvı Sabun 1.5 Lt -30.0%",
+        "Fiyat değişimi: carrefour / Duru Sıvı Sabun Kiraz Çiçeği 500 Ml -30.0%",
+        "Fiyat değişimi: carrefour / Activex Hassas Sıvı Sabun 500 Ml -30.0%",
+        "Fiyat değişimi: migros / La Vache Qui Rit Krem Peynir 270 Gr -26.0%",
+        "Fiyat değişimi: bim / Head&Shoulders Şampuan 330 Ml -25.1%"
+      ],
+      "errors": [
+        "Başarısız run: m05:samsung:elektrikli_supurge",
+        "Başarısız run: m05:samsung:klima",
+        "Başarısız run: m05:samsung:camasir_makinesi",
+        "Başarısız run: m05:samsung:buzdolabi",
+        "Kritik fiyat değişimi: migros / Komili Riviera Yemeklik Zeytinyağı 2 Lt +51.6%"
+      ]
+    },
+    {
+      "module_code": "05p2+3",
+      "module_name": "Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
+      "status": "ok",
+      "records_today": 493,
+      "records_yesterday": 0,
+      "expected": 0,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "module_code": "07",
+      "module_name": "Akaryakıt (M07)",
+      "status": "ok",
+      "records_today": 27,
+      "records_yesterday": 27,
+      "expected": 27,
+      "missing_count": 0,
+      "missing": [],
+      "anomaly_count": 0,
+      "anomalies": [],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}

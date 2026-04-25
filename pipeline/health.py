@@ -78,24 +78,23 @@ class PipelineHealthReport:
     date: date
     overall_status: str = "ok"
     modules: list[ModuleHealthReport] = field(default_factory=list)
+    new_category_alerts: list[str] = field(default_factory=list)
 
 
 # ── Yardımcı fonksiyonlar ─────────────────────────────────────────────────────
 
 
-def _load_appliances_yaml() -> list[dict]:
-    """appliances.yaml + furniture.yaml'ı birleştirerek döner."""
-    result = []
-    for filename, key in [
-        ("appliances.yaml", "appliances"),
-        ("furniture.yaml",  "furniture"),
-    ]:
-        path = Path("modules") / "m05_household" / "config" / filename
-        if not path.exists():
-            continue
-        with open(path, encoding="utf-8") as f:
-            result.extend(yaml.safe_load(f).get(key, []))
-    return result
+def _load_m05_parts() -> list[tuple[str, str, dict]]:
+    """config/*.yaml dosyalarından (label, code_suffix, categories_dict) tuples döner."""
+    config_dir = Path("modules") / "m05_household" / "config"
+    parts = []
+    for path in sorted(config_dir.glob("*.yaml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        label = data.get("label", path.stem.replace("_", " ").title())
+        cats = data.get("categories", {})
+        if cats:
+            parts.append((label, path.stem, cats))
+    return parts
 
 
 def _load_fuel_locations() -> list[dict]:
@@ -116,7 +115,7 @@ def _pct_label(pct: float) -> str:
 
 async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
     """
-    M01 + M05 Phase 1: price_snapshots bütünlük ve anomali kontrolü.
+    M01 + M05 Phase 1: m01_price_snapshots bütünlük ve anomali kontrolü.
     Her iki modül de aynı tabloyu kullandığı için birlikte kontrol edilir.
     """
     yesterday = target_date - timedelta(days=1)
@@ -128,11 +127,11 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Bugün ve dün yazılan toplam snapshot sayısı
     row_today = await conn.fetchrow(
-        "SELECT COUNT(*) as cnt FROM price_snapshots WHERE snapshot_date = $1",
+        "SELECT COUNT(*) as cnt FROM m01_price_snapshots WHERE snapshot_date = $1",
         target_date,
     )
     row_yest = await conn.fetchrow(
-        "SELECT COUNT(*) as cnt FROM price_snapshots WHERE snapshot_date = $1",
+        "SELECT COUNT(*) as cnt FROM m01_price_snapshots WHERE snapshot_date = $1",
         yesterday,
     )
     report.records_today     = int(row_today[0]) if row_today else 0
@@ -140,7 +139,7 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Dün hiç veri yoksa (ilk gün) anomali karşılaştırması atlanır
     if report.records_today == 0:
-        report.add_error("Bugün price_snapshots tablosuna hiç kayıt yazılmamış")
+        report.add_error("Bugün m01_price_snapshots tablosuna hiç kayıt yazılmamış")
         return report
 
     # Dünkü veriye kıyasla ±%20'den fazla değişim → uyarı
@@ -152,12 +151,12 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
                 f"({report.records_yesterday} → {report.records_today})"
             )
 
-    # Başarısız scrape_runs: MarketFiyati run'ları (Trendyol hariç)
+    # Başarısız shared_scrape_runs: MarketFiyati run'ları (Trendyol hariç)
     # Aynı market için birden fazla run varsa (scheduler + manuel), en az biri success ise OK
     failed_runs = await conn.fetch(
         """
         SELECT market
-        FROM scrape_runs
+        FROM shared_scrape_runs
         WHERE run_date = $1
           AND (market LIKE 'm01:%' OR (market LIKE 'm05:%' AND market NOT LIKE 'm05:trendyol%'))
         GROUP BY market
@@ -177,10 +176,10 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
         SELECT mp.market, mp.market_sku, mp.market_name,
                MAX(CAST(t.price AS REAL))  AS today_price,
                MAX(CAST(y.price AS REAL))  AS yesterday_price
-        FROM price_snapshots t
-        JOIN price_snapshots y
+        FROM m01_price_snapshots t
+        JOIN m01_price_snapshots y
             ON t.market_product_id = y.market_product_id
-        JOIN market_products mp ON mp.id = t.market_product_id
+        JOIN m01_market_products mp ON mp.id = t.market_product_id
         WHERE t.snapshot_date = $1
           AND y.snapshot_date = $2
           AND y.price > 0
@@ -210,96 +209,108 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
     return report
 
 
-async def check_appliance_health(conn, target_date: date) -> ModuleHealthReport:
-    """M05 Aşama 2+3: appliance_prices bütünlük ve anomali kontrolü."""
+async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthReport]:
+    """M05: her config dosyası için ayrı ModuleHealthReport döner."""
     yesterday = target_date - timedelta(days=1)
-    report = ModuleHealthReport(
-        module_code="05p2+3",
-        module_name="Beyaz Eşya, Mobilya & Tekstil (M05 Aşama 2+3)",
-        date=target_date,
-    )
-
-    # YAML'daki beklenen tüm SKU'lar — (source, sku) → {brand, model, keyword}
-    # appliances.yaml'da source alanı yok → "trendyol" varsayılan
-    all_entries = _load_appliances_yaml()
-    expected_skus: dict[tuple[str, str], dict] = {}
-    for entry in all_entries:
-        source = entry.get("source", "trendyol")
-        for s in entry.get("tracked_skus", []):
-            key = (source, str(s["sku"]))
-            expected_skus[key] = {
-                "brand":   s.get("brand", "?"),
-                "model":   s.get("model", "?")[:40],
-                "keyword": entry["keyword"],
-                "source":  source,
-            }
-    report.expected = len(expected_skus)
-
-    # Bugün DB'de olan (source, sku) çiftleri
-    rows_today = await conn.fetch(
-        "SELECT source, sku FROM appliance_prices WHERE date = $1",
-        target_date,
-    )
-    found_skus = {(str(row[0]), str(row[1])) for row in rows_today}
-    report.records_today = len(found_skus)
-
-    # Dün
-    rows_yest = await conn.fetch(
-        "SELECT COUNT(*) as cnt FROM appliance_prices WHERE date = $1",
-        yesterday,
-    )
-    report.records_yesterday = int(rows_yest[0][0]) if rows_yest else 0
-
-    # Eksik SKU'lar
-    missing_skus = set(expected_skus.keys()) - found_skus
-    for source, sku in sorted(missing_skus):
-        info = expected_skus[(source, sku)]
-        label = f"[{info['source']}:{info['keyword']}] {info['brand']} {info['model']} (SKU {sku})"
-        report.missing.append(label)
-        report.add_warning(f"Eksik SKU: {label}")
-
-    if report.records_today == 0 and report.expected > 0:
-        report.add_error("Bugün appliance_prices tablosuna hiç kayıt yazılmamış")
-        return report
-
-    # Fiyat anomalisi
     thr = _THRESHOLDS["appliance"]
-    anomalies = await conn.fetch(
+
+    # DB'deki tüm bugünkü (source, sku) → category eşlemesi
+    rows_today = await conn.fetch(
         """
-        SELECT a.sku, a.brand, a.model,
-               a.price AS today_price, y.price AS yesterday_price
-        FROM appliance_prices a
-        JOIN appliance_prices y ON a.sku = y.sku AND a.source = y.source
-        WHERE a.date = $1
-          AND y.date = $2
-          AND y.price > 0
-          AND ABS(CAST(a.price AS REAL) - CAST(y.price AS REAL))
-              / CAST(y.price AS REAL) > $3
-        ORDER BY
-            ABS(CAST(a.price AS REAL) - CAST(y.price AS REAL))
-            / CAST(y.price AS REAL) DESC
-        LIMIT 20
+        SELECT d.source, d.sku, d.category
+        FROM m05_fact_appliance_price f
+        JOIN m05_dim_appliance d ON f.appliance_key = d.appliance_key
+        WHERE f.date = $1
         """,
         target_date,
-        yesterday,
-        thr["warning"],
     )
-    for row in anomalies:
-        today_p = float(row[3])
-        yest_p  = float(row[4])
-        pct     = (today_p - yest_p) / yest_p * 100
-        label   = f"{row[1]} {str(row[2])[:35]}"
-        report.anomalies.append(PriceAnomaly(label, yest_p, today_p, round(pct, 1)))
-        if abs(pct) / 100 > thr["error"]:
-            report.add_error(f"Kritik fiyat değişimi: {label} {_pct_label(pct)}")
-        else:
-            report.add_warning(f"Fiyat değişimi: {label} {_pct_label(pct)}")
+    found_skus: set[tuple[str, str]] = {(str(r[0]), str(r[1])) for r in rows_today}
 
-    return report
+    rows_yest = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m05_fact_appliance_price WHERE date = $1", yesterday
+    )
+    total_yesterday = int(rows_yest[0]) if rows_yest else 0
+
+    # Fiyat anomalileri (tüm M05 için tek sorgu)
+    anomaly_rows = await conn.fetch(
+        """
+        SELECT d.source, d.sku, d.model,
+               f.price AS today_price, fy.price AS yesterday_price
+        FROM m05_fact_appliance_price f
+        JOIN m05_dim_appliance d ON f.appliance_key = d.appliance_key
+        JOIN m05_fact_appliance_price fy ON fy.appliance_key = f.appliance_key
+        WHERE f.date  = $1
+          AND fy.date = $2
+          AND fy.price > 0
+          AND ABS(CAST(f.price AS REAL) - CAST(fy.price AS REAL))
+              / CAST(fy.price AS REAL) > $3
+        ORDER BY ABS(CAST(f.price AS REAL) - CAST(fy.price AS REAL))
+                 / CAST(fy.price AS REAL) DESC
+        LIMIT 20
+        """,
+        target_date, yesterday, thr["warning"],
+    )
+
+    reports: list[ModuleHealthReport] = []
+    parts = _load_m05_parts()
+
+    if not parts:
+        # Config dosyası yok — tek generic rapor
+        r = ModuleHealthReport(
+            module_code="05", module_name="M05 Household", date=target_date
+        )
+        r.records_today = len(found_skus)
+        reports.append(r)
+        return reports
+
+    for part_label, part_stem, categories in parts:
+        part_idx = len(reports) + 1
+        code = f"05-{part_stem}"
+        report = ModuleHealthReport(
+            module_code=code,
+            module_name=f"{part_label} (M05)",
+            date=target_date,
+        )
+
+        # Bu part'a ait beklenen (source, sku) çiftleri
+        expected: dict[tuple[str, str], str] = {}
+        for cat_key, cat_data in categories.items():
+            for s in (cat_data.get("tracked_skus") or []):
+                src = s.get("source", "?")
+                expected[(src, str(s["sku"]))] = f"{src}/{cat_key} {s.get('model','')[:35]}"
+
+        report.expected = len(expected)
+        report.records_today = sum(1 for k in expected if k in found_skus)
+        report.records_yesterday = total_yesterday if part_idx == 1 else 0  # ilk part'a yaz
+
+        # Eksik SKU'lar
+        for key, lbl in sorted((k, v) for k, v in expected.items() if k not in found_skus):
+            report.missing.append(lbl)
+            report.add_warning(f"Eksik SKU: {lbl}")
+
+        if report.records_today == 0 and report.expected > 0:
+            report.add_error(f"Bugün {part_label} için hiç kayıt yazılmamış")
+
+        # Anomaliler sadece ilk part'a ekle (tekrar etmesin)
+        if part_idx == 1:
+            for row in anomaly_rows:
+                today_p = float(row[3])
+                yest_p  = float(row[4])
+                pct     = (today_p - yest_p) / yest_p * 100
+                lbl     = f"{row[0]} {str(row[2])[:45]}"
+                report.anomalies.append(PriceAnomaly(lbl, yest_p, today_p, round(pct, 1)))
+                if abs(pct) / 100 > thr["error"]:
+                    report.add_error(f"Kritik fiyat değişimi: {lbl} {_pct_label(pct)}")
+                else:
+                    report.add_warning(f"Fiyat değişimi: {lbl} {_pct_label(pct)}")
+
+        reports.append(report)
+
+    return reports
 
 
 async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
-    """M07: fuel_prices bütünlük ve anomali kontrolü."""
+    """M07: m07_fuel_prices bütünlük ve anomali kontrolü."""
     yesterday = target_date - timedelta(days=1)
     report = ModuleHealthReport(
         module_code="07",
@@ -319,7 +330,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Bugün DB'de olanlar
     rows_today = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM fuel_prices WHERE date = $1",
+        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
         target_date,
     )
     report.records_today = len(rows_today)
@@ -332,7 +343,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
 
     # Dün
     rows_yest = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM fuel_prices WHERE date = $1",
+        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
         yesterday,
     )
     yest_prices: dict[tuple[str, str, str], float] = {}
@@ -342,7 +353,7 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
     report.records_yesterday = len(rows_yest)
 
     if report.records_today == 0 and report.expected > 0:
-        report.add_error("Bugün fuel_prices tablosuna hiç kayıt yazılmamış")
+        report.add_error("Bugün m07_fuel_prices tablosuna hiç kayıt yazılmamış")
         return report
 
     # Eksik kombinasyonlar
@@ -375,6 +386,65 @@ async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
     return report
 
 
+# ── Haftalık yeni kategori taraması ──────────────────────────────────────────
+
+# Marka + kategori → candidate path (şu an takip edilmiyor, haftalık kontrol edilir)
+_CANDIDATE_PATHS: dict[tuple[str, str], str] = {
+    ("siemens", "blender"):        "/tr/tr/category/mutfak-aletleri/blenderlar",
+    ("siemens", "cay_makinesi"):   "/tr/tr/category/mutfak-aletleri/cay-makineleri",
+    ("siemens", "kucuk_ev_aleti"): "/tr/tr/category/mutfak-aletleri",
+    ("siemens", "utu"):            "/tr/tr/category/yikama-ve-utuleme-grubu/utuler",
+    ("bosch",   "utu"):            "/tr/category/yikama-ve-utuleme-grubu/utuler",
+    ("samsung", "firin_ocak"):     "/tr/cooking-appliances/all-ovens/",
+    ("samsung", "blender"):        "/tr/kitchen-appliances/all-blenders/",
+    ("samsung", "utu"):            "/tr/ironing/all-irons/",
+}
+
+
+async def check_new_categories(target_date: date) -> list[str]:
+    """Pazar günleri: takip edilmeyen marka+kategori combolarını tarayıp yeni ürün çıktıysa bildirir."""
+    if target_date.weekday() != 6:  # Sadece Pazar
+        return []
+
+    yaml_path = Path("modules/m05_household/config/tracked.yaml")
+    if not yaml_path.exists():
+        return []
+
+    data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    tracked: set[tuple[str, str]] = set()
+    for cat_key, cat in data.get("categories", {}).items():
+        for src in (cat.get("sources") or {}):
+            tracked.add((src, cat_key))
+
+    alerts: list[str] = []
+    for (brand, cat), path in _CANDIDATE_PATHS.items():
+        if (brand, cat) in tracked:
+            continue
+        try:
+            from modules.m05_household.scrapers.bsh import BshScraper
+            from modules.m05_household.scrapers.samsung import SamsungScraper
+
+            if brand in ("bosch", "siemens"):
+                async with BshScraper(brand=brand) as s:
+                    prods = await s.discover_category(path, cat)
+            elif brand == "samsung":
+                async with SamsungScraper() as s:
+                    prods = await s.discover_category(path, cat)
+            else:
+                continue
+
+            if prods:
+                alerts.append(
+                    f"{brand} / {cat}: {len(prods)} ürün bulundu "
+                    f"— tracked.yaml'a eklenebilir"
+                )
+                logger.info("[health] Yeni kategori keşfi: %s/%s → %d ürün", brand, cat, len(prods))
+        except Exception as exc:
+            logger.debug("[health] Yeni kategori kontrolü atlandı %s/%s: %s", brand, cat, exc)
+
+    return alerts
+
+
 # ── Ana entry point ───────────────────────────────────────────────────────────
 
 
@@ -393,10 +463,18 @@ async def run_health_check(
 
     for check_fn in [check_market_health, check_appliance_health, check_fuel_health]:
         try:
-            mod_report = await check_fn(conn, target_date)
-            pipeline.modules.append(mod_report)
+            result = await check_fn(conn, target_date)
+            if isinstance(result, list):
+                pipeline.modules.extend(result)
+            else:
+                pipeline.modules.append(result)
         except Exception as exc:
             logger.error("[health] %s kontrolü sırasında hata: %s", check_fn.__name__, exc, exc_info=True)
+
+    try:
+        pipeline.new_category_alerts = await check_new_categories(target_date)
+    except Exception as exc:
+        logger.warning("[health] Yeni kategori taraması başarısız: %s", exc)
 
     # Genel durum: en kötü modül durumunu al
     statuses = {r.status for r in pipeline.modules}

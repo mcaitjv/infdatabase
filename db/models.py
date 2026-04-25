@@ -73,16 +73,13 @@ class FuelPriceRecord(BaseModel):
 
 
 class AppliancePriceRecord(BaseModel):
-    """Modül 05 Aşama 2 — Beyaz eşya & küçük ev aleti fiyat kaydı (Trendyol)."""
-    coicop_code:      str
-    source:           str = "trendyol"
-    sku:              str
-    brand:            str
-    model:            str
-    category:         str | None = None
-    price:            Decimal
-    discounted_price: Decimal | None = None
-    date:             date
+    """Modül 05 — Beyaz eşya & küçük ev aleti fiyat kaydı."""
+    source:   str       # "vestel" | "samsung" | "beko" | "bosch" | "siemens"
+    sku:      str
+    model:    str
+    category: str       # "buzdolabi" | "camasir_makinesi" | "utu" | ...
+    price:    Decimal
+    date:     date
 
     @field_validator("price")
     @classmethod
@@ -91,11 +88,23 @@ class AppliancePriceRecord(BaseModel):
             raise ValueError(f"Fiyat sıfır veya negatif olamaz: {v}")
         return v
 
-    @field_validator("discounted_price")
+
+class CarPriceRecord(BaseModel):
+    """Modül 07 — Sıfır araç fiyat kaydı (marka sitelerinden)."""
+    brand:      str        # "toyota" | "renault" | "volkswagen" | ...
+    model:      str        # "Corolla" | "Clio" | ...
+    variant:    str        # "1.5 VVT-i Dream CVT" | ...
+    segment:    str        # "binek" | "suv"
+    yakit_tipi: str = "benzin"  # "benzin" | "dizel" | "elektrik" | "hibrit"
+    price:      Decimal
+    currency:   str = "TRY"
+    date:       date
+
+    @field_validator("price")
     @classmethod
-    def discounted_must_be_less(cls, v: Decimal | None, info) -> Decimal | None:
-        if v is not None and "price" in info.data and v >= info.data["price"]:
-            raise ValueError("İndirimli fiyat normal fiyattan büyük veya eşit olamaz")
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Araç fiyatı sıfır veya negatif olamaz: {v}")
         return v
 
 

@@ -5,23 +5,26 @@ otomatik toplayarak enflasyon hesaplamasına temel oluşturan veri mühendisliğ
 
 ---
 
+## Token Ekonomisi — Claude ile Çalışma Kuralları
+
+- **Büyük log dosyaları için `/status` kullan.** `logs/*.log` 2000+ satır; tam okuma yapma.
+- **DB sorgusu için `/db-sor` preset'lerini kullan.** Aynı sorguları tekrar yazma.
+- **Scraper hatası için `scraper-doctor` subagent'ına delege et.**
+- **Yeni modül eklerken `/modul-ekle` kullan.**
+- **Health raporu:** `logs/health_YYYY-MM-DD.json` — Türkçe + JSON.
+
+---
+
 ## Hızlı Başlangıç
 
 ```bash
-# 1. Bağımlılıkları yükle
 pip install -r requirements.txt
-playwright install chromium   # Modül 07 (yakıt) için
+playwright install chromium       # Modül 07 için
 
-# 2. .env dosyası oluştur
-cp .env.example .env          # DATABASE_URL satırını Neon connection string ile doldur
+cp .env.example .env              # DATABASE_URL = Neon connection string
 
-# 3. Schema oluştur (ilk kurulumda bir kez)
 python -m pipeline.runner --setup-schema
-
-# 4. Tüm modülleri çalıştır
 python -m pipeline.runner
-
-# 5. Dry-run (DB'ye yazmadan test)
 python -m pipeline.runner --dry-run
 ```
 
@@ -29,21 +32,7 @@ python -m pipeline.runner --dry-run
 
 ## Veritabanı
 
-**Varsayılan (DATABASE_URL yok):** `data/prices.db` — yerel SQLite dosyası, sıfır kurulum.
-
-**Production:** Neon PostgreSQL (neon.tech free tier, 512 MB, pause yok).
-
-Veriye DuckDB ile bak:
-```python
-import duckdb
-con = duckdb.connect("data/prices.db")
-
-# Modül 01 — Gıda
-con.sql("SELECT market, COUNT(*) FROM market_products GROUP BY 1 ORDER BY 2 DESC").show()
-
-# Modül 07 — Yakıt
-con.sql("SELECT provider, city, fuel_type, price, date FROM fuel_prices ORDER BY date DESC LIMIT 20").show()
-```
+**Production:** Neon PostgreSQL (neon.tech free tier, 512 MB).
 
 ---
 
@@ -51,61 +40,42 @@ con.sql("SELECT provider, city, fuel_type, price, date FROM fuel_prices ORDER BY
 
 ```
 infdatabase/
-├── modules/                        # COICOP modülleri (her modül kendi scrapers + config)
-│   ├── base.py                     # BaseModule ABC
+├── modules/
+│   ├── base.py
 │   ├── m01_food/
-│   │   ├── __init__.py             # FoodModule (COICOP 01, %24.44)
-│   │   ├── config/
-│   │   │   └── categories.yaml     # ~55 gıda keyword'ü
+│   │   ├── __init__.py
+│   │   ├── config/categories.yaml
 │   │   └── scrapers/
-│   │       ├── marketfiyati.py     # TÜBİTAK API client (Migros, A101, BİM, Şok …)
+│   │       ├── marketfiyati.py
 │   │       ├── migros.py
 │   │       ├── a101.py
 │   │       ├── bim.py
 │   │       └── sok.py
-│   ├── m05_household/
-│   │   ├── __init__.py             # HouseholdModule (COICOP 05, %6.38) — 3 Aşama
-│   │   ├── config/
-│   │   │   ├── appliances.yaml     # Aşama 2: beyaz eşya keyword + tracked_skus
-│   │   │   └── furniture.yaml      # Aşama 3: mobilya/tekstil (IKEA + Trendyol)
-│   │   └── scrapers/
-│   │       ├── trendyol.py         # Trendyol mobil API (beyaz eşya + mobilya/tekstil)
-│   │       └── ikea.py             # IKEA TR JSON API (search + price/v2 batch)
 │   └── m07_fuel/
-│       ├── __init__.py             # FuelModule (COICOP 07, %16.62)
-│       ├── config/
-│       │   └── locations.yaml      # Şehir + ilçe + provider slug eşlemesi
+│       ├── __init__.py
+│       ├── config/locations.yaml
 │       └── scrapers/
-│           ├── petrolofisi.py      # Petrol Ofisi (gasoline_95, diesel, lpg)
-│           └── opet.py             # Opet (gasoline_95, diesel — ilçe bazında)
-├── scrapers/
-│   └── base.py                     # BaseScraper ABC (tüm modüller paylaşır)
+│           ├── petrolofisi.py
+│           └── opet.py
+├── scrapers/base.py
 ├── db/
-│   ├── models.py                   # PriceRecord, FuelPriceRecord, ScrapeRun (Pydantic)
-│   ├── repository.py               # DB işlemleri (PostgreSQL + SQLite adapter)
-│   ├── schema.sql                  # PostgreSQL şeması
-│   └── schema_sqlite.sql           # SQLite şeması (lokal)
+│   ├── models.py
+│   ├── repository.py
+│   ├── schema.sql
+│   └── schema_sqlite.sql
 ├── pipeline/
-│   ├── runner.py                   # Ana orkestratör (~80 satır)
-│   └── validator.py                # Fiyat doğrulama + anomali tespiti
+│   ├── runner.py
+│   └── validator.py
 ├── config/
-│   ├── locations.yaml              # Şehir koordinatları (Modül 01 için)
-│   ├── branches.yaml               # Sabit şube ID'leri (--discover-branches ile oluşur)
-│   └── products.yaml               # Manuel takip listesi (opsiyonel)
+│   ├── locations.yaml
+│   ├── branches.yaml
+│   └── products.yaml
 ├── tests/
-│   ├── test_models.py
-│   ├── test_scrapers.py
-│   └── test_marketfiyati.py
 ├── data/
-│   ├── prices.db                   # SQLite (DATABASE_URL yoksa kullanılır, git'e eklenmez)
-│   └── exports/                    # 60 günden eski verinin CSV arşivi
-├── logs/                           # Günlük log dosyaları (git'e eklenmez)
-├── deploy/
-│   ├── setup.sh                    # VPS kurulum scripti
-│   ├── price-scraper.service       # systemd service
-│   └── price-scraper.timer         # systemd timer (günlük 08:00 TR)
-└── docs/
-    └── inflation-database-methodology.md
+│   ├── prices.db
+│   └── exports/
+├── logs/
+└── deploy/
 ```
 
 ---
@@ -114,15 +84,12 @@ infdatabase/
 
 | Komut | Açıklama |
 |-------|----------|
-| `python -m pipeline.runner` | Tüm kayıtlı modülleri çalıştır |
-| `--module 01` | Sadece belirtilen modül(ler) — virgülle: `--module 01,05,07` |
+| `python -m pipeline.runner` | Tüm modülleri çalıştır |
+| `--module 01` | Tek modül; virgülle çoğalt: `--module 01,07` |
 | `--dry-run` | DB'ye yazmadan önizleme |
-| `--setup-schema` | Tüm modüllerin DB tablolarını oluştur |
-| `--discover-branches` | M01: şube keşfi, `config/branches.yaml` oluşturur |
-| `--discover-appliances` | M05: beyaz eşya SKU keşfi, `appliances.yaml` tracked_skus doldurur |
-| `--discover-furniture` | M05: mobilya/tekstil SKU keşfi, `furniture.yaml` tracked_skus doldurur |
-| `--health-check` | Sağlık raporu — DB bütünlük + anomali kontrolü + e-posta bildirimi |
-| `--health-check --date YYYY-MM-DD` | Belirli tarih için rapor |
+| `--setup-schema` | DB tablolarını oluştur |
+| `--discover-branches` | M01 şube keşfi → `config/branches.yaml` |
+| `--health-check [--date YYYY-MM-DD]` | DB bütünlük + anomali + e-posta |
 
 ---
 
@@ -131,69 +98,19 @@ infdatabase/
 | Kod | Ad | Ağırlık | Veri Kaynağı |
 |-----|----|---------|--------------|
 | 01 | Gıda ve Alkolsüz İçecekler | %24.44 | marketfiyati.org.tr (TÜBİTAK API) |
-| 05 | Ev Eşyası (Aşama 1+2+3) | %6.38 | Trendyol (mobil API) + IKEA TR JSON API |
 | 07 | Ulaştırma — Akaryakıt | %16.62 | Petrol Ofisi + Opet (Playwright) |
 
 ---
 
 ## Veritabanı Şeması
 
-**Modül 01** — `market_products` + `price_snapshots`:
-```
-market_products          price_snapshots
-───────────────          ───────────────
-id (PK)           1──N   market_product_id (FK)
-market                   snapshot_date
-market_sku               price
-market_name              discounted_price
-brand                    is_available
-volume                   location
-                         scraped_at
-UNIQUE(market, market_sku)   UNIQUE(market_product_id, snapshot_date, location)
-```
+Tam şema: `db/schema_sqlite.sql` ve `db/schema.sql`
 
-**Modül 05** — `appliance_prices` (Aşama 2 + 3 birlikte):
-```
-appliance_prices
-────────────────
-id (PK)
-source          -- 'trendyol' | 'ikea'
-sku             -- provider ürün ID
-brand
-model
-category        -- 'beyaz_esya' | 'mobilya' | 'tekstil'
-coicop_code     -- '0513' | '0511' | '0521'
-price
-discounted_price
-is_available
-date
-UNIQUE(source, sku, date)
-```
+**Modül 01** — `market_products` (id, market, market_sku, market_name, brand, volume) + `price_snapshots` (market_product_id FK, snapshot_date, price, discounted_price, is_available, location)  
+UNIQUE: `(market, market_sku)` · `(market_product_id, snapshot_date, location)`
 
-Tracked SKU listeleri `modules/m05_household/config/appliances.yaml` ve `furniture.yaml` içinde tutulur. Her keyword için discovery fazında top-N SKU seçilir, sonraki günler sabit sepet olarak fiyatlanır.
-
-**Modül 07** — `fuel_prices`:
-```
-fuel_prices
-───────────
-id (PK)
-provider        -- 'petrolofisi' | 'opet'
-city            -- 'istanbul' | 'ankara' | 'izmir'
-district        -- 'kadikoy' | 'cankaya' | 'merkez'
-fuel_type       -- 'gasoline_95' | 'diesel' | 'lpg'
-price
-date
-UNIQUE(provider, city, fuel_type, date)
-```
-
----
-
-## Güvenlik Mekanizmaları
-
-- **PID lock** — `logs/pipeline.pid`. Pipeline başlarken PID yazar, bitince siler. Eş zamanlı ikinci instance başlatılırsa (Task Scheduler çift tetikleme, manuel çalıştırma) "Zaten çalışıyor" mesajıyla çıkar. Stale lock: `psutil.pid_exists()` ile eski PID ölmüşse temizlenir.
-- **Task Scheduler Queue policy** — `deploy/task_scheduler.xml` içinde `MultipleInstancesPolicy=Queue`. `IgnoreNew` race condition'ına karşı.
-- **`branches.yaml` boş uyarısı** — Dosya boşsa (yalnızca yorum, YAML `None`) runner uyarı loglar. Otomatik düzeltme yapmaz; `--discover-branches` manuel çağrılmalı.
-- **`StartWhenAvailable=true`** — Kaçırılan günleri telafi eder (bilgisayar kapalıysa, açılınca çalışır).
+**Modül 07** — `fuel_prices` (id, provider, city, district, fuel_type, price, date)  
+UNIQUE: `(provider, city, fuel_type, date)`
 
 ---
 
@@ -201,80 +118,69 @@ UNIQUE(provider, city, fuel_type, date)
 
 | Komut | Açıklama |
 |-------|----------|
-| `/status [TARİH]` | Pipeline durum özeti (health JSON + log grep, tam log okumaz) |
-| `/db-sor <preset>` | Hazır DuckDB sorguları (counts, latest, coverage, anomalies, gaps) |
-| `/discover <kind>` | Branch/appliance/furniture keşfi, pre-flight check ile |
-| `/modul-ekle` | Yeni COICOP modülü için scaffold oluşturur |
-| `/scraper-test` | Tek-keyword izole scraper testi (pipeline kullanmadan) |
+| `/status [TARİH]` | Health JSON + log grep özeti |
+| `/db-sor <preset>` | Presetler: `counts` `latest` `coverage` `anomalies` `gaps` |
+| `/discover <kind>` | Branch/appliance/furniture keşfi, pre-flight ile |
+| `/modul-ekle` | Yeni COICOP modülü scaffold — interaktif, `docs/MODULE_CONVENTIONS.md` okur |
+| `/scraper-test` | İzole scraper testi |
 | `/dokumante [KOD]` | Metodoloji dokümanını güncelle |
 
 ---
 
-## Token Ekonomisi — Claude ile Çalışma İpuçları
+## Güvenlik
 
-- **Büyük log dosyaları için `/status` kullan.** `logs/*.log` 2000+ satır; tam `Read` yapma. Health JSON + hedefli Grep yeterli.
-- **DB sorgusu için `/db-sor` preset'lerini kullan.** Aynı sorguları tekrar yazma.
-- **Scraper hatası için `scraper-doctor` subagent'ına delege et.** Log analizi ana context'i kirletmeden yapılsın.
-- **Yeni modül eklerken `/modul-ekle` kullan.** Boilerplate kopyalama zorluğu elimine olur.
-- **Health raporu Türkçe + JSON formatında** `logs/health_YYYY-MM-DD.json`'da tutuluyor — insan okuyacaksa e-posta bildirimine bak.
+- **PID lock** — `logs/pipeline.pid`. Stale lock psutil ile temizlenir.
+- **Task Scheduler** — `MultipleInstancesPolicy=Queue`, `StartWhenAvailable=true`.
+- **`branches.yaml` boşsa** runner uyarı loglar; `--discover-branches` ile düzelt.
 
 ---
 
 ## Modül Üzerinde Çalışma — Session Akışı
 
-Her modül `feature/module-XX-<slug>` dalında geliştirilir. Yeni bir Claude session'ı açtığında:
+Her modül `feature/module-XX-<slug>` dalında geliştirilir. Session başında:
 
-1. `main` dalında `/modul-ekle` komutunu çalıştır — komut interaktif olarak sorar:
-   - **(a) Yeni modül ekle** → COICOP kodu/ad/tip sorar, dal oluşturur, scaffold kurar.
-   - **(b) Mevcut modülde çalış** → modülü seçtirir, ilgili dala geçer, durumu özetler.
-2. Her durumda komut önce **`docs/MODULE_CONVENTIONS.md`**'yi okur — tüm modül kuralları orada.
-3. Context'i dar tutmak için yalnızca seçilen modülün klasörünü yükler; diğer modüllere dokunmaz.
+1. `main` dalında `/modul-ekle` çalıştır:
+   - **(a) Yeni modül** → COICOP kodu/ad/tip sorar, dal + scaffold kurar.
+   - **(b) Mevcut modül** → modülü seçtirir, dala geçer, durumu özetler.
+2. Komut önce `docs/MODULE_CONVENTIONS.md`'yi okur — tüm modül kuralları orada.
+3. Yalnızca seçilen modülün klasörünü yükle; diğer modüllere dokunma.
 
-**Önemli:** Tüm modül kuralları (BaseModule pattern, discovery+tracked, Türkçe relevance filter,
-marka çeşitliliği, YAML şeması, commit scope) tek yerde: [docs/MODULE_CONVENTIONS.md](docs/MODULE_CONVENTIONS.md).
-Yeni bir modül yazmadan önce oradaki referans modül (M01/M05/M07) tipini seç.
+**Tüm modül kuralları:** [docs/MODULE_CONVENTIONS.md](docs/MODULE_CONVENTIONS.md)  
+(BaseModule pattern, discovery+tracked, Türkçe relevance filter, marka çeşitliliği, YAML şeması, commit scope)
 
 ---
 
 ## Geliştirme
 
 ```bash
-# Testleri çalıştır
 pytest tests/ -v
 
-# Tek modül dry-run
 python -m pipeline.runner --module 01 --dry-run
 python -m pipeline.runner --module 07 --dry-run
 
-# Hızlı API testi
 python -c "
 import asyncio
 from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
-
 async def test():
     async with MarketFiyatiScraper() as s:
         records = await s.scrape_keyword('sut', 41.0082, 28.9784, 'Istanbul', 10)
-        print(f'{len(records)} kayit bulundu')
-        for r in records[:5]:
-            print(f'  [{r.market}] {r.market_name} | {r.price} TL')
+        print(f'{len(records)} kayit')
+        for r in records[:5]: print(f'  [{r.market}] {r.market_name} | {r.price} TL')
 asyncio.run(test())
 "
 ```
-
 ---
 
 ## Otomasyon
 
-**Windows (mevcut):** Task Scheduler — her sabah 09:00, `StartWhenAvailable` ile kaçırılan çalışmaları telafi eder.
-
-**VPS (tatilde):** `deploy/` klasöründeki systemd timer dosyaları — Turhost/Natro VPS TR 2 ($9.99/ay) önerilir.
+**Windows:** Task Scheduler — 09:00, `StartWhenAvailable` ile kaçırılan günleri telafi eder.  
+**VPS:** `deploy/` klasöründeki systemd timer dosyaları — Turhost/Natro VPS TR 2 ($9.99/ay).
 
 ---
 
 ## Önemli Notlar
 
-- `data/prices.db` ve `.env` git'e eklenmez (`.gitignore`'da)
-- `data/` klasörü: SQLite fallback DB + CSV arşiv (60 günden eski veriler otomatik export edilir)
-- Shell TR (`shell.com.tr`) headless Chromium'u tamamen bloklar — Petrol Ofisi kullanılır
-- Opet İstanbul için ayrı slug gerekir: `istanbul-anadolu` (Kadıköy Anadolu yakasında)
-- `config/branches.yaml` yoksa proximity search'e fallback olur (Modül 01)
+- `data/prices.db` ve `.env` git'e eklenmez
+- CSV arşiv: 60 günden eski veriler otomatik export edilir → `data/exports/`
+- Opet İstanbul slug: `istanbul-anadolu`
+- `config/branches.yaml` yoksa proximity search'e fallback (Modül 01)

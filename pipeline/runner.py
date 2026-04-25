@@ -8,8 +8,6 @@ Kullanım:
   python -m pipeline.runner --dry-run                # DB'ye yazmadan test
   python -m pipeline.runner --setup-schema           # DB tablolarını oluştur (ilk kurulumda)
   python -m pipeline.runner --discover-branches      # Gıda modülü şube keşfi
-  python -m pipeline.runner --discover-appliances    # Modül 05 beyaz eşya SKU keşfi
-  python -m pipeline.runner --discover-furniture     # Modül 05 mobilya/tekstil SKU keşfi
   python -m pipeline.runner --health-check           # Sağlık raporu (bugün)
   python -m pipeline.runner --health-check --date 2026-04-09  # Belirli tarih
 """
@@ -89,8 +87,7 @@ async def main(
     dry_run: bool,
     setup_schema: bool,
     do_discover: bool,
-    do_discover_appliances: bool,
-    do_discover_furniture: bool,
+    do_discover_m05: bool,
     do_health_check: bool,
     health_date: date | None,
 ) -> None:
@@ -98,12 +95,8 @@ async def main(
         await FoodModule().discover_branches()
         return
 
-    if do_discover_appliances:
-        await HouseholdModule().discover_appliances()
-        return
-
-    if do_discover_furniture:
-        await HouseholdModule().discover_furniture()
+    if do_discover_m05:
+        await HouseholdModule().discover()
         return
 
     if do_health_check:
@@ -195,14 +188,9 @@ if __name__ == "__main__":
         help="Gıda modülü için şube keşfi (config/branches.yaml oluşturur)",
     )
     parser.add_argument(
-        "--discover-appliances",
+        "--discover-m05",
         action="store_true",
-        help="Modül 05 beyaz eşya SKU keşfi (appliances.yaml tracked_skus doldurur)",
-    )
-    parser.add_argument(
-        "--discover-furniture",
-        action="store_true",
-        help="Modül 05 mobilya/tekstil SKU keşfi (furniture.yaml tracked_skus doldurur)",
+        help="Modül 05 SKU keşfi (tracked.yaml tracked_skus doldurur)",
     )
     parser.add_argument(
         "--health-check",
@@ -220,12 +208,11 @@ if __name__ == "__main__":
     hdate = date.fromisoformat(args.date) if args.date else None
 
     asyncio.run(main(
-        module_codes           = codes,
-        dry_run                = args.dry_run,
-        setup_schema           = args.setup_schema,
-        do_discover            = args.discover_branches,
-        do_discover_appliances = args.discover_appliances,
-        do_discover_furniture  = args.discover_furniture,
-        do_health_check        = args.health_check,
-        health_date            = hdate,
+        module_codes     = codes,
+        dry_run          = args.dry_run,
+        setup_schema     = args.setup_schema,
+        do_discover      = args.discover_branches,
+        do_discover_m05  = args.discover_m05,
+        do_health_check  = args.health_check,
+        health_date      = hdate,
     ))

@@ -297,11 +297,20 @@ diş macunu, şampuan, bebek bezi, bebek maması, mama
 
 ---
 
-# MODÜL 07 — Ulaştırma: Akaryakıt Fiyatları
+# MODÜL 07 — Ulaştırma: Akaryakıt ve Araç Fiyatları
 
 **COICOP Kodu:** 07
 **Ağırlık:** %16.62
 **Durum:** ✅ Tamamlandı — Günlük çalışıyor
+
+---
+
+## Alt Bileşenler
+
+| Bileşen | Sıklık | Kapsam |
+|---------|--------|--------|
+| Akaryakıt fiyatları | Günlük (09:00) | 4 sağlayıcı × 3 şehir × 3 yakıt tipi → 27 kayıt/gün |
+| Sıfır araç fiyatları | Ayın 1'i ve 15'i | ~23 marka × binek + SUV segmentleri |
 
 ---
 
@@ -313,6 +322,7 @@ diş macunu, şampuan, bebek bezi, bebek maması, mama
 | Opet | `opet.com.tr/akaryakit-fiyatlari/{şehir}` | Playwright (JS render) | Şehir bazlı URL, ilçe düzeyinde |
 | Aygaz | `aygaz.com.tr/fiyatlar/otogaz/{şehir}` | Playwright (Next.js) | LPG — şehir bazlı |
 | Shell | `turkiyeshell.com/pompatest` | Playwright + DevExpress callback | İl/ilçe dropdown, tek sayfa |
+| Marka siteleri | Her marka resmi URL'i | httpx + BeautifulSoup / Playwright | Sıfır araç listesi fiyatları |
 
 > **Not:** `shell.com.tr` headless Chromium'u tamamen bloklar (AEM CMS bot detection). Fiyat verisi `turkiyeshell.com/pompatest` adresinde.
 
@@ -332,20 +342,22 @@ diş macunu, şampuan, bebek bezi, bebek maması, mama
 
 ## Kapsanan Şehirler
 
-| Şehir | İlçe | Opet Slug | Shell İl Kodu | Aygaz Slug |
-|-------|------|-----------|--------------|------------|
-| İstanbul | Kadıköy | `istanbul-anadolu` | `034` (ilçe: KADIKOY) | `istanbul` |
-| Ankara | Çankaya | `ankara` | `006` (ilçe: CANKAYA) | `ankara` |
-| İzmir | Merkez | `izmir` | `035` (ilçe: MERKEZ) | `izmir` |
+| Şehir | İlçe | Opet Slug | Shell İl Kodu | Aygaz Slug | PO Şehir Adı |
+|-------|------|-----------|--------------|------------|--------------|
+| İstanbul | Kadıköy | `istanbul-anadolu` | `034` (ilçe: KADIKOY) | `istanbul` | `ISTANBUL (ANADOLU)` |
+| Ankara | Çankaya | `ankara` | `006` (ilçe: CANKAYA) | `ankara` | `ANKARA` |
+| İzmir | Merkez | `izmir` | `035` (ilçe: MERKEZ) | `izmir` | `IZMIR` |
 
 ---
 
 ## Veritabanı Şeması
 
+### Akaryakıt (m07_fuel_prices)
+
 ```
-fuel_prices
-───────────
-id          SERIAL / INTEGER PK
+m07_fuel_prices
+───────────────
+id          SERIAL PRIMARY KEY
 provider    VARCHAR(50)   — 'petrolofisi' | 'opet' | 'shell'
 city        VARCHAR(50)   — 'istanbul' | 'ankara' | 'izmir'
 district    VARCHAR(100)  — 'kadikoy' | 'cankaya' | 'merkez'
@@ -355,6 +367,25 @@ date        DATE
 
 UNIQUE(provider, city, fuel_type, date)
 → Günlük çalıştırma idempotent (tekrar yazma yok)
+```
+
+### Sıfır Araç (m07_car_prices)
+
+```
+m07_car_prices
+──────────────
+id          SERIAL PRIMARY KEY
+brand       VARCHAR(100)   — 'renault' | 'volkswagen' | 'tesla' | ...
+model       VARCHAR(255)   — 'Clio' | 'Golf' | 'Model Y' | ...
+variant     VARCHAR(255)   — 'Joy 1.0 TCe 90 MT' | 'Life RWD' | ...
+segment     VARCHAR(50)    — 'binek' | 'suv'
+yakit_tipi  VARCHAR(20)    — 'benzin' | 'dizel' | 'elektrik' | 'hibrit'
+price       NUMERIC(12,2)
+currency    VARCHAR(10)    DEFAULT 'TRY'
+date        DATE
+
+UNIQUE(brand, model, variant, date)
+→ Ayda 2× çalıştırma idempotent
 ```
 
 ---
@@ -387,9 +418,31 @@ UNIQUE(provider, city, fuel_type, date)
 - İl satırı sadece LPG içerir; ilçe satırları benzin+motorin içerir
 - Tek Playwright oturumunda tüm iller sırayla çekilir (3 sayfa yerine 1)
 
+### Sıfır Araç (car_brands.py)
+
+`sifir_arac.yaml`'dan iki segment okunur: `binek` ve `suv`. Her segment altında marka→path eşlemesi bulunur. Scraper ayın 1'i ve 15'inde tetiklenir (`_is_car_scrape_day()`).
+
+**Marka ve segment listesi:**
+
+| Segment | Markalar |
+|---------|----------|
+| Binek (Sedan/Hatchback) | Renault, Fiat, Volkswagen, Ford, Toyota, Peugeot, Opel, Citroën, Hyundai, Skoda, Kia, Dacia, Honda, Nissan, Mercedes, BMW, Audi |
+| SUV/Crossover | Toyota, Volkswagen, Ford, Hyundai, BYD, Fiat, Mercedes, TOGG, BMW, Tesla, Chery, KG Mobility, Audi, Renault, Nissan, Kia, Peugeot, Citroën, Skoda, Opel, Honda |
+
+**Çekme stratejisi:**
+
+| Yöntem | Markalar |
+|--------|----------|
+| httpx + BeautifulSoup | Renault, Skoda, Nissan, BYD, Chery, Honda, Audi, Peugeot, Dacia, TOGG, KG Mobility, Fiat, Mercedes, Citroën, Hyundai, Volkswagen, Ford |
+| Playwright (headless) | Toyota, Opel, BMW (Borusa iframe), Kia |
+| arabam.com (3. taraf) | Tesla (resmi site Akamai korumalı) |
+| Engellenmiş | Volvo (HTTP 403) |
+
 ---
 
 ## Günlük Çıktı İstatistikleri
+
+### Akaryakıt (günlük)
 
 | Sağlayıcı | Kayıt/Gün | Yakıt Tipleri |
 |-----------|-----------|---------------|
@@ -398,18 +451,28 @@ UNIQUE(provider, city, fuel_type, date)
 | Shell | 9 | gasoline_95, diesel, lpg |
 | **Toplam** | **27** | |
 
+### Sıfır Araç (ayda 2×)
+
+| Segment | Aktif Marka Sayısı | Tahmini Kayıt/Çalışma |
+|---------|--------------------|-----------------------|
+| Binek | 17 | ~150–250 |
+| SUV/Crossover | 20 (Volvo hariç) | ~200–350 |
+| **Toplam** | | **~350–600** |
+
 ---
 
 ## Kod Dosyaları
 
 | Dosya | Açıklama |
 |-------|----------|
-| `modules/m07_fuel/__init__.py` | FuelModule — orkestratör |
-| `modules/m07_fuel/scrapers/petrolofisi.py` | Petrol Ofisi scraper |
-| `modules/m07_fuel/scrapers/opet.py` | Opet scraper (ilçe bazlı) |
-| `modules/m07_fuel/scrapers/aygaz.py` | Aygaz LPG scraper |
-| `modules/m07_fuel/scrapers/shell.py` | Shell scraper (DevExpress) |
-| `modules/m07_fuel/config/locations.yaml` | Şehir + provider slug eşlemesi |
+| `modules/m07_fuel/__init__.py` | FuelModule — orkestratör, araba+yakıt pipeline'ı |
+| `modules/m07_fuel/scrapers/petrolofisi.py` | Petrol Ofisi scraper (tek sayfa, tab-parse) |
+| `modules/m07_fuel/scrapers/opet.py` | Opet scraper (ilçe bazlı, Türkçe normalize) |
+| `modules/m07_fuel/scrapers/aygaz.py` | Aygaz LPG scraper (Next.js, provider="opet") |
+| `modules/m07_fuel/scrapers/shell.py` | Shell scraper (DevExpress callback, ASP.NET) |
+| `modules/m07_fuel/scrapers/car_brands.py` | Sıfır araç fiyat scraper (23 marka) |
+| `modules/m07_fuel/config/locations.yaml` | Şehir + provider slug eşlemesi (3 şehir) |
+| `modules/m07_fuel/config/sifir_arac.yaml` | Binek/SUV marka + URL path listesi |
 
 ---
 
