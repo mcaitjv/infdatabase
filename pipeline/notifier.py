@@ -157,10 +157,11 @@ def send_health_email(report: PipelineHealthReport) -> bool:
     Sağlık raporunu HTML e-posta olarak gönderir.
     Döndürür: True → gönderildi, False → config eksik veya hata.
     """
-    api_key  = os.environ.get("RESEND_API_KEY", "").strip()
-    to_email = os.environ.get("ALERT_EMAIL_TO", "").strip()
+    api_key   = os.environ.get("RESEND_API_KEY", "").strip()
+    to_raw    = os.environ.get("ALERT_EMAIL_TO", "").strip()
+    to_emails = [e.strip() for e in to_raw.split(",") if e.strip()]
 
-    if not api_key or not to_email:
+    if not api_key or not to_emails:
         logger.debug("[notifier] RESEND_API_KEY veya ALERT_EMAIL_TO eksik — mail atlanıyor")
         return False
 
@@ -173,7 +174,7 @@ def send_health_email(report: PipelineHealthReport) -> bool:
 
         payload: dict = {
             "from":    "infdatabase <onboarding@resend.dev>",
-            "to":      [to_email],
+            "to":      to_emails,
             "subject": subject,
             "html":    _build_html(report),
         }
@@ -188,7 +189,7 @@ def send_health_email(report: PipelineHealthReport) -> bool:
 
         _resend.Emails.send(payload)
 
-        logger.info("[notifier] Sağlık raporu gönderildi → %s", to_email)
+        logger.info("[notifier] Sağlık raporu gönderildi → %s", ", ".join(to_emails))
         return True
 
     except Exception as exc:
