@@ -15,9 +15,12 @@ from pathlib import Path
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import batch_upsert_car_prices, batch_upsert_fuel_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_car_prices, batch_upsert_fuel_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
+from modules.m07_fuel.scrapers.ego import EgoScraper
+from modules.m07_fuel.scrapers.iett import IettScraper
+from modules.m07_fuel.scrapers.izmirimkart import IzmirimkartScraper
 from modules.m07_fuel.scrapers.opet import OpetScraper
 from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
 from modules.m07_fuel.scrapers.shell import ShellScraper
@@ -32,6 +35,13 @@ def _load_locations() -> list[dict]:
     path = _CONFIG_DIR / "locations.yaml"
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f).get("locations", [])
+
+
+def _load_transport_config() -> dict:
+    """yolcu_tasima.yaml'daki kategorileri yükler."""
+    path = _CONFIG_DIR / "yolcu_tasima.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("categories", {})
 
 
 def _load_car_config() -> tuple[dict, dict]:
@@ -175,7 +185,78 @@ class FuelModule(BaseModule):
         else:
             logger.debug("[m07] Sıfır araç scraping atlandı (bugün %s. gün)", date.today().day)
 
+        # Yolcu taşıma hizmetleri — her gün
+        runs += await self._run_transport_services(dry_run=dry_run)
+
         return runs
+
+    async def _run_transport_services(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Toplu taşıma fiyatlarını yolcu_tasima.yaml'daki kaynaklardan çeker."""
+        categories = _load_transport_config()
+        _SCRAPER_MAP = {
+            "iett":        IettScraper,
+            "ego":         EgoScraper,
+            "izmirimkart": IzmirimkartScraper,
+        }
+
+        run = ScrapeRun(
+            market     = "m07:yolcu_tasima",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            records = []
+            for cat_key, cat_data in categories.items():
+                sources = cat_data.get("sources", {})
+                for provider, src_cfg in sources.items():
+                    ScraperClass = _SCRAPER_MAP.get(provider)
+                    if ScraperClass is None:
+                        logger.warning("[m07] Bilinmeyen taşıma kaynağı: %s — atlanıyor", provider)
+                        continue
+                    async with ScraperClass() as scraper:
+                        src_records = await scraper.scrape(
+                            city=src_cfg.get("city", provider),
+                            url=src_cfg.get("url", ""),
+                        )
+                        records.extend(src_records)
+
+            run.products_scraped = len(records)
+
+            if dry_run:
+                logger.info("[m07] Dry-run yolcu_tasima: %d kayıt (DB'ye yazılmadı)", len(records))
+                for r in records[:5]:
+                    print(
+                        f"  [{r.provider}] {r.city} / {r.service_type} / {r.ticket_type}: "
+                        f"{r.price} TL ({r.date})"
+                    )
+                if len(records) > 5:
+                    print(f"  ... ve {len(records) - 5} kayıt daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_transport_prices(conn, records)
+                    logger.info(
+                        "[m07] yolcu_tasima: %d kayıt işlendi, %d yeni eklendi",
+                        len(records), inserted,
+                    )
+
+            run.status = "success" if records else "partial"
+
+        except NotImplementedError:
+            logger.warning("[m07] yolcu_tasima: scraper henüz implemente edilmedi — atlanıyor")
+            run.status = "partial"
+        except Exception as exc:
+            logger.error("[m07] yolcu_tasima kritik hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+
+        duration = (run.finished_at - run.started_at).total_seconds()
+        logger.info("[m07] yolcu_tasima tamamlandı — %s, %.1fs", run.status, duration)
+        return [run]
 
     async def _run_car_prices(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Sıfır araç fiyat listelerini marka sitelerinden çeker."""

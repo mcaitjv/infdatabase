@@ -137,3 +137,17 @@ CREATE INDEX IF NOT EXISTS idx_mp_market
 -- Barkod aramaları
 CREATE INDEX IF NOT EXISTS idx_products_barcode
     ON products(barcode) WHERE barcode IS NOT NULL;
+
+-- Toplu taşıma fiyatları (Modül 07 — COICOP 0732/0734)
+CREATE TABLE IF NOT EXISTS m07_transport_prices (
+    id          SERIAL        PRIMARY KEY,
+    provider    VARCHAR(50)   NOT NULL,    -- 'iett' | 'ego' | 'izmirimkart'
+    city        VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara' | 'izmir'
+    ticket_type VARCHAR(50)   NOT NULL,    -- 'tam' | 'ogrenci' | 'indirimli' | 'genc'
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    UNIQUE(provider, city, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);

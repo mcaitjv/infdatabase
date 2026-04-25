@@ -113,3 +113,17 @@ CREATE INDEX IF NOT EXISTS idx_ps_date         ON m01_price_snapshots(snapshot_d
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON m01_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON m01_price_snapshots(location);
 CREATE INDEX IF NOT EXISTS idx_mp_market       ON m01_market_products(market);
+
+-- Toplu taşıma fiyatları (Modül 07 — COICOP 0732/0734)
+CREATE TABLE IF NOT EXISTS m07_transport_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider    TEXT    NOT NULL,
+    city        TEXT    NOT NULL,
+    ticket_type TEXT    NOT NULL,
+    price       REAL    NOT NULL,
+    date        TEXT    NOT NULL,
+    UNIQUE(provider, city, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);
