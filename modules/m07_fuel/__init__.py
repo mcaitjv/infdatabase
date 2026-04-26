@@ -70,8 +70,8 @@ def _load_car_config() -> tuple[dict, dict]:
     return categories, part_map
 
 
-def _is_car_scrape_day() -> bool:
-    """Araç fiyat listesi ayda 2 kez çekilir: ayın 1'i ve 15'i."""
+def _is_m07_run_day() -> bool:
+    """M07 tüm part'ları ayda 2 kez çalışır: ayın 1'i ve 15'i."""
     return date.today().day in (1, 15)
 
 
@@ -140,15 +140,25 @@ class FuelModule(BaseModule):
         M07 part'larını çalıştırır.
 
         Geçerli part slug'ları:
-          akaryakit          — Petrol Ofisi, Opet, Shell (her gün)
-          sifir_arac         — Sıfır araç fiyatları (ayın 1'i ve 15'i)
-          yolcu_tasima       — IETT, EGO, İzmirimkart (her gün)
-          sehirlerarasi_otobus — Obilet, Biletall (her gün)
+          akaryakit            — Petrol Ofisi, Opet, Shell
+          sifir_arac           — Sıfır araç fiyatları
+          yolcu_tasima         — IETT, EGO, İzmirimkart
+          sehirlerarasi_otobus — Obilet, Biletall
 
-        parts=None → tüm part'lar çalışır (varsayılan davranış).
+        Zamanlama: tüm part'lar ayın 1'i ve 15'inde çalışır.
+        parts=None (scheduler)  → gün kontrolü uygulanır.
+        parts=[...] (--part flag) → gün kontrolü bypass edilir (test/manuel run).
         """
         def _active(slug: str) -> bool:
             return parts is None or slug in parts
+
+        # Scheduler çalıştırmasında gün kontrolü
+        if parts is None and not _is_m07_run_day():
+            logger.info(
+                "[m07] Bugün %s. gün — çalışma günü değil (ayın 1'i ve 15'i). Atlanıyor.",
+                date.today().day,
+            )
+            return []
 
         locations = _load_locations()
         runs: list[ScrapeRun] = []
@@ -211,10 +221,7 @@ class FuelModule(BaseModule):
 
         # ── Sıfır araç fiyatları ─────────────────────────────────────────────
         if _active("sifir_arac"):
-            if _is_car_scrape_day():
-                runs += await self._run_car_prices(dry_run=dry_run)
-            else:
-                logger.debug("[m07] Sıfır araç scraping atlandı (bugün %s. gün)", date.today().day)
+            runs += await self._run_car_prices(dry_run=dry_run)
         else:
             logger.debug("[m07] sifir_arac part'ı atlandı")
 
