@@ -61,7 +61,7 @@ class FoodModule(BaseModule):
         """Gıda modülü mevcut ortak şemayı kullanır (m01_market_products + m01_price_snapshots)."""
         await apply_schema(conn)
 
-    async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
+    async def run(self, dry_run: bool = False, parts: list[str] | None = None) -> list[ScrapeRun]:
         """
         Tüm kategori keyword'lerini tarayarak her marketteki tüm gıda ürünlerini çeker.
         """

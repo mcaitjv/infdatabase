@@ -131,79 +131,104 @@ class FuelModule(BaseModule):
 
         logger.info("[m07] m07_fuel_prices + m07_car_prices şeması uygulandı.")
 
-    async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
-        """Akaryakıt fiyatlarını çeker; ayın 1'i ve 15'inde sıfır araç fiyatlarını da çeker."""
+    async def run(
+        self,
+        dry_run: bool = False,
+        parts: list[str] | None = None,
+    ) -> list[ScrapeRun]:
+        """
+        M07 part'larını çalıştırır.
+
+        Geçerli part slug'ları:
+          akaryakit          — Petrol Ofisi, Opet, Shell (her gün)
+          sifir_arac         — Sıfır araç fiyatları (ayın 1'i ve 15'i)
+          yolcu_tasima       — IETT, EGO, İzmirimkart (her gün)
+          sehirlerarasi_otobus — Obilet, Biletall (her gün)
+
+        parts=None → tüm part'lar çalışır (varsayılan davranış).
+        """
+        def _active(slug: str) -> bool:
+            return parts is None or slug in parts
+
         locations = _load_locations()
         runs: list[ScrapeRun] = []
 
-        # Petrol Ofisi: gasoline_95, diesel, lpg
-        # Opet: gasoline_95, diesel  +  Aygaz LPG (provider="opet")
-        provider_scrapers = [
-            ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
-            ("opet",        lambda: _run_opet_with_aygaz(locations)),
-            ("shell",       lambda: _run_single("shell", ShellScraper, locations)),
-        ]
+        # ── Akaryakıt (Petrol Ofisi / Opet / Shell) ──────────────────────────
+        if _active("akaryakit"):
+            provider_scrapers = [
+                ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
+                ("opet",        lambda: _run_opet_with_aygaz(locations)),
+                ("shell",       lambda: _run_single("shell", ShellScraper, locations)),
+            ]
 
-        for provider, scrape_fn in provider_scrapers:
-            run = ScrapeRun(
-                market     = f"m07:{provider}",
-                run_date   = date.today(),
-                started_at = datetime.now(),
-            )
-            try:
-                records = await scrape_fn()
-                run.products_scraped = len(records)
+            for provider, scrape_fn in provider_scrapers:
+                run = ScrapeRun(
+                    market     = f"m07:{provider}",
+                    run_date   = date.today(),
+                    started_at = datetime.now(),
+                )
+                try:
+                    records = await scrape_fn()
+                    run.products_scraped = len(records)
 
-                if dry_run:
-                    logger.info(
-                        "[m07] Dry-run %s: %d kayıt (DB'ye yazılmadı)",
-                        provider, len(records),
-                    )
-                    for r in records[:5]:
-                        print(
-                            f"  [{r.provider}] {r.city} / {r.fuel_type}: "
-                            f"{r.price} TL ({r.date})"
-                        )
-                    if len(records) > 5:
-                        print(f"  ... ve {len(records) - 5} kayıt daha")
-                else:
-                    async with get_connection() as conn:
-                        inserted = await batch_upsert_fuel_prices(conn, records)
+                    if dry_run:
                         logger.info(
-                            "[m07] %s: %d kayıt işlendi, %d yeni eklendi",
-                            provider, len(records), inserted,
+                            "[m07] Dry-run %s: %d kayıt (DB'ye yazılmadı)",
+                            provider, len(records),
                         )
+                        for r in records[:5]:
+                            print(
+                                f"  [{r.provider}] {r.city} / {r.fuel_type}: "
+                                f"{r.price} TL ({r.date})"
+                            )
+                        if len(records) > 5:
+                            print(f"  ... ve {len(records) - 5} kayıt daha")
+                    else:
+                        async with get_connection() as conn:
+                            inserted = await batch_upsert_fuel_prices(conn, records)
+                            logger.info(
+                                "[m07] %s: %d kayıt işlendi, %d yeni eklendi",
+                                provider, len(records), inserted,
+                            )
 
-                run.status = "success" if records else "partial"
+                    run.status = "success" if records else "partial"
 
-            except Exception as exc:
-                logger.error("[m07] %s kritik hata: %s", provider, exc, exc_info=True)
-                run.status        = "failed"
-                run.error_details = str(exc)
+                except Exception as exc:
+                    logger.error("[m07] %s kritik hata: %s", provider, exc, exc_info=True)
+                    run.status        = "failed"
+                    run.error_details = str(exc)
 
-            run.finished_at = datetime.now()
-            if not dry_run:
-                async with get_connection() as conn:
-                    await upsert_scrape_run(conn, run)
+                run.finished_at = datetime.now()
+                if not dry_run:
+                    async with get_connection() as conn:
+                        await upsert_scrape_run(conn, run)
 
-            duration = (run.finished_at - run.started_at).total_seconds()
-            logger.info(
-                "[m07] %s tamamlandı — %s, %.1fs",
-                provider, run.status, duration,
-            )
-            runs.append(run)
-
-        # Sıfır araç fiyatları — sadece ayın 1'i ve 15'inde
-        if _is_car_scrape_day():
-            runs += await self._run_car_prices(dry_run=dry_run)
+                duration = (run.finished_at - run.started_at).total_seconds()
+                logger.info("[m07] %s tamamlandı — %s, %.1fs", provider, run.status, duration)
+                runs.append(run)
         else:
-            logger.debug("[m07] Sıfır araç scraping atlandı (bugün %s. gün)", date.today().day)
+            logger.debug("[m07] akaryakit part'ı atlandı")
 
-        # Yolcu taşıma hizmetleri — her gün
-        runs += await self._run_transport_services(dry_run=dry_run)
+        # ── Sıfır araç fiyatları ─────────────────────────────────────────────
+        if _active("sifir_arac"):
+            if _is_car_scrape_day():
+                runs += await self._run_car_prices(dry_run=dry_run)
+            else:
+                logger.debug("[m07] Sıfır araç scraping atlandı (bugün %s. gün)", date.today().day)
+        else:
+            logger.debug("[m07] sifir_arac part'ı atlandı")
 
-        # Şehirlerarası otobüs fiyatları — her gün
-        runs += await self._run_sehirlerarasi(dry_run=dry_run)
+        # ── Şehir içi toplu taşıma ────────────────────────────────────────────
+        if _active("yolcu_tasima"):
+            runs += await self._run_transport_services(dry_run=dry_run)
+        else:
+            logger.debug("[m07] yolcu_tasima part'ı atlandı")
+
+        # ── Şehirlerarası otobüs ─────────────────────────────────────────────
+        if _active("sehirlerarasi_otobus"):
+            runs += await self._run_sehirlerarasi(dry_run=dry_run)
+        else:
+            logger.debug("[m07] sehirlerarasi_otobus part'ı atlandı")
 
         return runs
 

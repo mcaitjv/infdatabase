@@ -229,7 +229,7 @@ class HouseholdModule(BaseModule):
 
     # ── Ana run ───────────────────────────────────────────────────────────────
 
-    async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
+    async def run(self, dry_run: bool = False, parts: list[str] | None = None) -> list[ScrapeRun]:
         from modules.m05_household.scrapers.vestel import VestelScraper
         from modules.m05_household.scrapers.samsung import SamsungScraper
         from modules.m05_household.scrapers.beko import BekoScraper
