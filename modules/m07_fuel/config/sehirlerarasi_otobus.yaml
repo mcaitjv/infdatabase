@@ -8,7 +8,8 @@ tracked_operators:
   - pamukkale_turizm
 
 # Her kategori bir güzergah (origin → destination).
-# Her gün, takip edilen her operatör için economy sınıfı fiyatı çekilir.
+# Her gün, takip edilen her operatör için economy sınıfı minimum fiyatı çekilir.
+# Tarihi scraper yönetir (yarın); url alanındaki date parametresi override edilir.
 
 categories:
   istanbul_ankara:
@@ -19,7 +20,7 @@ categories:
       obilet:
         origin_city: istanbul
         dest_city: ankara
-        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-ankara"
+        url: "https://obilet.com/otobus-bileti/istanbul-ankara"
       biletall:
         origin_city: istanbul
         dest_city: ankara
@@ -33,7 +34,7 @@ categories:
       obilet:
         origin_city: istanbul
         dest_city: izmir
-        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-izmir"
+        url: "https://obilet.com/otobus-bileti/istanbul-izmir"
       biletall:
         origin_city: istanbul
         dest_city: izmir
@@ -47,7 +48,7 @@ categories:
       obilet:
         origin_city: istanbul
         dest_city: antalya
-        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-antalya"
+        url: "https://obilet.com/otobus-bileti/istanbul-antalya"
       biletall:
         origin_city: istanbul
         dest_city: antalya
@@ -61,7 +62,7 @@ categories:
       obilet:
         origin_city: ankara
         dest_city: izmir
-        url: "https://obilet.com/tr/otobus-bileti/ankara-to-izmir"
+        url: "https://obilet.com/otobus-bileti/ankara-izmir"
       biletall:
         origin_city: ankara
         dest_city: izmir
@@ -75,7 +76,7 @@ categories:
       obilet:
         origin_city: ankara
         dest_city: antalya
-        url: "https://obilet.com/tr/otobus-bileti/ankara-to-antalya"
+        url: "https://obilet.com/otobus-bileti/ankara-antalya"
       biletall:
         origin_city: ankara
         dest_city: antalya
