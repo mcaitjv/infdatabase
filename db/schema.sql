@@ -151,3 +151,18 @@ CREATE TABLE IF NOT EXISTS m07_transport_prices (
 
 CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
 CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_intercity_bus_prices (
+    id          SERIAL        PRIMARY KEY,
+    provider    VARCHAR(50)   NOT NULL,    -- 'obilet' | 'biletall'
+    origin_city VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara'
+    dest_city   VARCHAR(50)   NOT NULL,    -- 'ankara' | 'izmir' | 'antalya'
+    operator    VARCHAR(100)  NOT NULL,    -- 'Metro Turizm' | 'Kamil Koç' | ...
+    ticket_type VARCHAR(50)   NOT NULL DEFAULT 'economy',
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, operator, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ibp_route    ON m07_intercity_bus_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_ibp_provider ON m07_intercity_bus_prices(provider);

@@ -15,12 +15,14 @@ from pathlib import Path
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import batch_upsert_car_prices, batch_upsert_fuel_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_car_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
+from modules.m07_fuel.scrapers.biletall import BiletallScraper
 from modules.m07_fuel.scrapers.ego import EgoScraper
 from modules.m07_fuel.scrapers.iett import IettScraper
 from modules.m07_fuel.scrapers.izmirimkart import IzmirimkartScraper
+from modules.m07_fuel.scrapers.obilet import ObiletScraper
 from modules.m07_fuel.scrapers.opet import OpetScraper
 from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
 from modules.m07_fuel.scrapers.shell import ShellScraper
@@ -44,12 +46,22 @@ def _load_transport_config() -> dict:
     return data.get("categories", {})
 
 
+def _load_sehirlerarasi_config() -> dict:
+    """sehirlerarasi_otobus.yaml'daki güzergah kategorilerini yükler."""
+    path = _CONFIG_DIR / "sehirlerarasi_otobus.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("categories", {})
+
+
+_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml"}
+
+
 def _load_car_config() -> tuple[dict, dict]:
-    """config/ altındaki sifir_arac gibi YAML'ları glob'lar; locations.yaml hariç tutulur."""
+    """config/ altındaki araç YAML'larını glob'lar; transport ve lokasyon YAML'ları hariç tutulur."""
     categories: dict = {}
     part_map: dict = {}
     for path in sorted(_CONFIG_DIR.glob("*.yaml")):
-        if path.name == "locations.yaml":
+        if path.name in _TRANSPORT_YAMLS:
             continue
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         for cat_key, cat_data in data.get("categories", {}).items():
@@ -95,8 +107,10 @@ class FuelModule(BaseModule):
             sql = f.read()
 
         for table_pattern, idx_prefix in [
-            (r"m07_fuel_prices", "idx_fp_"),
-            (r"m07_car_prices",  "idx_cp_"),
+            (r"m07_fuel_prices",         "idx_fp_"),
+            (r"m07_car_prices",          "idx_cp_"),
+            (r"m07_transport_prices",    "idx_tp_"),
+            (r"m07_intercity_bus_prices","idx_ibp_"),
         ]:
             match = re.search(
                 rf"(CREATE TABLE IF NOT EXISTS {table_pattern}.*?;)",
@@ -188,6 +202,9 @@ class FuelModule(BaseModule):
         # Yolcu taşıma hizmetleri — her gün
         runs += await self._run_transport_services(dry_run=dry_run)
 
+        # Şehirlerarası otobüs fiyatları — her gün
+        runs += await self._run_sehirlerarasi(dry_run=dry_run)
+
         return runs
 
     async def _run_transport_services(self, dry_run: bool = False) -> list[ScrapeRun]:
@@ -256,6 +273,74 @@ class FuelModule(BaseModule):
 
         duration = (run.finished_at - run.started_at).total_seconds()
         logger.info("[m07] yolcu_tasima tamamlandı — %s, %.1fs", run.status, duration)
+        return [run]
+
+    async def _run_sehirlerarasi(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Şehirlerarası otobüs fiyatlarını sehirlerarasi_otobus.yaml'daki kaynaklardan çeker."""
+        categories = _load_sehirlerarasi_config()
+        _SCRAPER_MAP = {
+            "obilet":   ObiletScraper,
+            "biletall": BiletallScraper,
+        }
+
+        run = ScrapeRun(
+            market     = "m07:sehirlerarasi_otobus",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            records = []
+            for cat_key, cat_data in categories.items():
+                sources = cat_data.get("sources", {})
+                for provider, src_cfg in sources.items():
+                    ScraperClass = _SCRAPER_MAP.get(provider)
+                    if ScraperClass is None:
+                        logger.warning("[m07] Bilinmeyen şehirlerarası kaynak: %s — atlanıyor", provider)
+                        continue
+                    async with ScraperClass() as scraper:
+                        src_records = await scraper.scrape(
+                            origin_city=src_cfg.get("origin_city", ""),
+                            dest_city=src_cfg.get("dest_city", ""),
+                            url=src_cfg.get("url", ""),
+                        )
+                        records.extend(src_records)
+
+            run.products_scraped = len(records)
+
+            if dry_run:
+                logger.info("[m07] Dry-run sehirlerarasi_otobus: %d kayıt (DB'ye yazılmadı)", len(records))
+                for r in records[:5]:
+                    print(
+                        f"  [{r.provider}] {r.origin_city} → {r.dest_city} / "
+                        f"{r.operator} / {r.ticket_type}: {r.price} TL ({r.date})"
+                    )
+                if len(records) > 5:
+                    print(f"  ... ve {len(records) - 5} kayıt daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_intercity_bus_prices(conn, records)
+                    logger.info(
+                        "[m07] sehirlerarasi_otobus: %d kayıt işlendi, %d yeni eklendi",
+                        len(records), inserted,
+                    )
+
+            run.status = "success" if records else "partial"
+
+        except NotImplementedError:
+            logger.warning("[m07] sehirlerarasi_otobus: scraper henüz implemente edilmedi — atlanıyor")
+            run.status = "partial"
+        except Exception as exc:
+            logger.error("[m07] sehirlerarasi_otobus kritik hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+
+        duration = (run.finished_at - run.started_at).total_seconds()
+        logger.info("[m07] sehirlerarasi_otobus tamamlandı — %s, %.1fs", run.status, duration)
         return [run]
 
     async def _run_car_prices(self, dry_run: bool = False) -> list[ScrapeRun]:

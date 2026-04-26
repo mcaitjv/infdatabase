@@ -1,0 +1,82 @@
+label: "Şehirlerarası Otobüs"
+
+# Takip edilen operatörler — bu listeden başka firma eklenmez.
+tracked_operators:
+  - ali_osman_ulusoy
+  - metro_turizm
+  - kamil_koc
+  - pamukkale_turizm
+
+# Her kategori bir güzergah (origin → destination).
+# Her gün, takip edilen her operatör için economy sınıfı fiyatı çekilir.
+
+categories:
+  istanbul_ankara:
+    label: İstanbul — Ankara
+    tuik_codes:
+      - "073221"   # Şehirlerarası otobüs bileti ücreti
+    sources:
+      obilet:
+        origin_city: istanbul
+        dest_city: ankara
+        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-ankara"
+      biletall:
+        origin_city: istanbul
+        dest_city: ankara
+        url: "https://biletall.com/seferler/istanbul/ankara"
+
+  istanbul_izmir:
+    label: İstanbul — İzmir
+    tuik_codes:
+      - "073221"
+    sources:
+      obilet:
+        origin_city: istanbul
+        dest_city: izmir
+        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-izmir"
+      biletall:
+        origin_city: istanbul
+        dest_city: izmir
+        url: "https://biletall.com/seferler/istanbul/izmir"
+
+  istanbul_antalya:
+    label: İstanbul — Antalya
+    tuik_codes:
+      - "073221"
+    sources:
+      obilet:
+        origin_city: istanbul
+        dest_city: antalya
+        url: "https://obilet.com/tr/otobus-bileti/istanbul-to-antalya"
+      biletall:
+        origin_city: istanbul
+        dest_city: antalya
+        url: "https://biletall.com/seferler/istanbul/antalya"
+
+  ankara_izmir:
+    label: Ankara — İzmir
+    tuik_codes:
+      - "073221"
+    sources:
+      obilet:
+        origin_city: ankara
+        dest_city: izmir
+        url: "https://obilet.com/tr/otobus-bileti/ankara-to-izmir"
+      biletall:
+        origin_city: ankara
+        dest_city: izmir
+        url: "https://biletall.com/seferler/ankara/izmir"
+
+  ankara_antalya:
+    label: Ankara — Antalya
+    tuik_codes:
+      - "073221"
+    sources:
+      obilet:
+        origin_city: ankara
+        dest_city: antalya
+        url: "https://obilet.com/tr/otobus-bileti/ankara-to-antalya"
+      biletall:
+        origin_city: ankara
+        dest_city: antalya
+        url: "https://biletall.com/seferler/ankara/antalya"

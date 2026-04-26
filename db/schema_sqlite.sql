@@ -127,3 +127,18 @@ CREATE TABLE IF NOT EXISTS m07_transport_prices (
 
 CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
 CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_intercity_bus_prices (
+    id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+    provider    TEXT     NOT NULL,
+    origin_city TEXT     NOT NULL,
+    dest_city   TEXT     NOT NULL,
+    operator    TEXT     NOT NULL,
+    ticket_type TEXT     NOT NULL DEFAULT 'economy',
+    price       REAL     NOT NULL,
+    date        TEXT     NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, operator, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ibp_route    ON m07_intercity_bus_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_ibp_provider ON m07_intercity_bus_prices(provider);
