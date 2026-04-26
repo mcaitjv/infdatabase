@@ -129,7 +129,7 @@ class FuelModule(BaseModule):
                 except Exception:
                     pass
 
-        logger.info("[m07] m07_fuel_prices + m07_car_prices şeması uygulandı.")
+        logger.info("[m07] m07_fuel_prices + m07_car_prices + m07_transport_prices + m07_intercity_bus_prices şeması uygulandı.")
 
     async def run(
         self,
