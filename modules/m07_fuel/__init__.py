@@ -243,7 +243,7 @@ class FuelModule(BaseModule):
                 logger.info("[m07] Dry-run yolcu_tasima: %d kayıt (DB'ye yazılmadı)", len(records))
                 for r in records[:5]:
                     print(
-                        f"  [{r.provider}] {r.city} / {r.service_type} / {r.ticket_type}: "
+                        f"  [{r.provider}] {r.city} / {r.ticket_type}: "
                         f"{r.price} TL ({r.date})"
                     )
                 if len(records) > 5:
@@ -311,7 +311,7 @@ class FuelModule(BaseModule):
                 logger.info("[m07] Dry-run sehirlerarasi_otobus: %d kayıt (DB'ye yazılmadı)", len(records))
                 for r in records[:5]:
                     print(
-                        f"  [{r.provider}] {r.origin_city} → {r.dest_city} / "
+                        f"  [{r.provider}] {r.origin_city} -> {r.dest_city} / "
                         f"{r.operator} / {r.ticket_type}: {r.price} TL ({r.date})"
                     )
                 if len(records) > 5:
