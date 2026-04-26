@@ -108,6 +108,40 @@ class CarPriceRecord(BaseModel):
         return v
 
 
+class TransportPriceRecord(BaseModel):
+    """Modül 07 — Toplu taşıma fiyatları (şehir başına tek kayıt)."""
+    provider:    str      # 'iett' | 'ego' | 'izmirimkart'
+    city:        str      # 'istanbul' | 'ankara' | 'izmir'
+    ticket_type: str      # 'tam' | 'ogrenci' | 'indirimli' | 'genc'
+    price:       Decimal
+    date:        date
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Taşıma fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
+class IntercityBusRecord(BaseModel):
+    """Modül 07 — Şehirlerarası otobüs fiyatları (güzergah başına en düşük fiyat)."""
+    provider:    str      # 'obilet' | 'biletall'
+    origin_city: str      # 'istanbul' | 'ankara'
+    dest_city:   str      # 'ankara' | 'izmir' | 'antalya'
+    operator:    str      # 'Metro Turizm' | 'Kamil Koç' | ...
+    ticket_type: str = "economy"   # 'economy' | 'business'
+    price:       Decimal
+    date:        date
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Otobüs bilet fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str

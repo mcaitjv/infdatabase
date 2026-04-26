@@ -1,0 +1,20 @@
+label: "Yolcu Taşıma Hizmetleri"
+
+categories:
+  sehir_ici_toplu_tasima:
+    label: Şehir İçi Toplu Taşıma
+    tuik_codes:
+      - "0732101"   # Belediye otobüs bileti ücreti
+      - "07312"     # Metro ve tramvay bileti ücreti
+      - "0732106"   # Dolmuş ücreti
+      - "0734001"   # Vapur bileti ücreti
+    sources:
+      iett:
+        city: istanbul
+        url: "https://iett.istanbul/icerik/IETT-Toplu-Ulasim-ucret-Tarifesi"
+      ego:
+        city: ankara
+        url: "https://www.ego.gov.tr/sayfa/2098/tasima-ucretleri"
+      izmirimkart:
+        city: izmir
+        url: "https://www.izmirimkart.com.tr/tarife-ve-ucretlendirme"
