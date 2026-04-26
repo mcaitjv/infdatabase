@@ -24,7 +24,7 @@ categories:
       biletall:
         origin_city: istanbul
         dest_city: ankara
-        url: "https://biletall.com/seferler/istanbul/ankara"
+        url: "https://www.biletall.com/otobus-bileti/istanbul-ankara"
 
   istanbul_izmir:
     label: İstanbul — İzmir
@@ -38,7 +38,7 @@ categories:
       biletall:
         origin_city: istanbul
         dest_city: izmir
-        url: "https://biletall.com/seferler/istanbul/izmir"
+        url: "https://www.biletall.com/otobus-bileti/istanbul-izmir"
 
   istanbul_antalya:
     label: İstanbul — Antalya
@@ -52,7 +52,7 @@ categories:
       biletall:
         origin_city: istanbul
         dest_city: antalya
-        url: "https://biletall.com/seferler/istanbul/antalya"
+        url: "https://www.biletall.com/otobus-bileti/istanbul-antalya"
 
   ankara_izmir:
     label: Ankara — İzmir
@@ -66,7 +66,7 @@ categories:
       biletall:
         origin_city: ankara
         dest_city: izmir
-        url: "https://biletall.com/seferler/ankara/izmir"
+        url: "https://www.biletall.com/otobus-bileti/ankara-izmir"
 
   ankara_antalya:
     label: Ankara — Antalya
@@ -80,4 +80,4 @@ categories:
       biletall:
         origin_city: ankara
         dest_city: antalya
-        url: "https://biletall.com/seferler/ankara/antalya"
+        url: "https://www.biletall.com/otobus-bileti/ankara-antalya"
