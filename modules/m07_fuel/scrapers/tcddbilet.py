@@ -45,27 +45,26 @@ _BASE_URL = "https://ebilet.tcddtasimacilik.gov.tr"
 _API_URL   = "https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability"
 
 
-def _min_price(response: dict) -> tuple[Decimal | None, str]:
+def _prices_by_type(response: dict) -> dict[str, Decimal]:
     """
-    API yanıtından minimum fiyat ve tren tipini çıkarır.
-    Döndürür: (fiyat, tren_tipi) — fiyat yoksa (None, "")
+    API yanıtından tren tipi başına minimum fiyat sözlüğü döndürür.
+    Örn: {"yht": Decimal("930"), "ah": Decimal("755")}
     """
     legs = response.get("trainLegs") or []
     if not legs:
-        return None, ""
+        return {}
     avails = legs[0].get("trainAvailabilities") or []
-    best_price = None
-    best_type = ""
+    by_type: dict[str, Decimal] = {}
     for av in avails:
         mp = av.get("minPrice") or 0
         if mp <= 0:
             continue
+        trains = av.get("trains") or []
+        ttype = ((trains[0].get("type") or "YHT") if trains else "YHT").lower()
         price = Decimal(str(mp))
-        if best_price is None or price < best_price:
-            best_price = price
-            trains = av.get("trains") or []
-            best_type = (trains[0].get("type") or "YHT") if trains else "YHT"
-    return best_price, best_type
+        if ttype not in by_type or price < by_type[ttype]:
+            by_type[ttype] = price
+    return by_type
 
 
 class TcddbiletScraper:
@@ -221,25 +220,30 @@ class TcddbiletScraper:
             )
             return []
 
-        price, train_type = _min_price(response)
-        if price is None:
+        prices = _prices_by_type(response)
+        if not prices:
             logger.warning(
                 "[tcddbilet] %s → %s: Sefer bulunamadı veya fiyat sıfır",
                 origin_city, dest_city,
             )
             return []
 
-        record = TrainRecord(
-            provider     = "tcddbilet",
-            origin_city  = origin_city,
-            dest_city    = dest_city,
-            train_type   = train_type.lower() if train_type else "yht",
-            ticket_class = "economy",
-            price        = price,
-            date         = date.today(),
-        )
-        logger.info(
-            "[tcddbilet] %s → %s / %s: %s TL",
-            origin_city, dest_city, record.train_type, price,
-        )
-        return [record]
+        today = date.today()
+        records = []
+        for train_type, price in prices.items():
+            record = TrainRecord(
+                provider     = "tcddbilet",
+                origin_city  = origin_city,
+                dest_city    = dest_city,
+                train_type   = train_type,
+                ticket_class = "economy",
+                price        = price,
+                date         = today,
+            )
+            logger.info(
+                "[tcddbilet] %s → %s / %s: %s TL",
+                origin_city, dest_city, train_type, price,
+            )
+            records.append(record)
+
+        return records

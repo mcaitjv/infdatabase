@@ -19,6 +19,16 @@ categories:
         dest_city: ankara
         url: "https://ebilet.tcddtasimacilik.gov.tr"
 
+  ankara_istanbul:
+    label: Ankara — İstanbul (Pendik)
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: istanbul
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
   istanbul_konya:
     label: İstanbul — Konya
     tuik_codes:
