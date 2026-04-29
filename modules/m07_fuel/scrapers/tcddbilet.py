@@ -44,10 +44,32 @@ _STATION_TERMS: dict[str, str] = {
 _BASE_URL = "https://ebilet.tcddtasimacilik.gov.tr"
 _API_URL   = "https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability"
 
+# Şehir adı → tren adında aranacak anahtar kelimeler (büyük harf)
+_DEST_KEYWORDS: dict[str, list[str]] = {
+    "istanbul":  ["ISTANBUL", "İSTANBUL", "PENDIK", "PENDİK", "HALKALI", "HALKALII"],
+    "ankara":    ["ANKARA"],
+    "izmir":     ["IZMIR", "İZMİR"],
+    "konya":     ["KONYA"],
+    "eskisehir": ["ESKISEHIR", "ESKİŞEHİR"],
+}
 
-def _prices_by_type(response: dict) -> dict[str, Decimal]:
+
+def _train_reaches_dest(train_name: str, dest_city: str) -> bool:
+    """
+    Tren adının hedef şehri içerip içermediğini kontrol eder.
+    API zaman zaman yanlış güzergah trenlerini (bağlantı seçeneği olarak) karıştırır.
+    """
+    keywords = _DEST_KEYWORDS.get(dest_city.lower())
+    if not keywords:
+        return True  # bilinmeyen şehir — filtreleme
+    name_upper = train_name.upper()
+    return any(kw in name_upper for kw in keywords)
+
+
+def _prices_by_type(response: dict, dest_city: str = "") -> dict[str, Decimal]:
     """
     API yanıtından tren tipi başına minimum fiyat sözlüğü döndürür.
+    Hedef şehre gitmeyen trenler (bağlantı seçeneği karışıklığı) filtrelenir.
     Örn: {"yht": Decimal("930"), "ah": Decimal("755")}
     """
     legs = response.get("trainLegs") or []
@@ -60,7 +82,13 @@ def _prices_by_type(response: dict) -> dict[str, Decimal]:
         if mp <= 0:
             continue
         trains = av.get("trains") or []
-        ttype = ((trains[0].get("type") or "YHT") if trains else "YHT").lower()
+        if not trains:
+            continue
+        train = trains[0]
+        train_name = train.get("name") or ""
+        if dest_city and not _train_reaches_dest(train_name, dest_city):
+            continue
+        ttype = (train.get("type") or "YHT").lower()
         price = Decimal(str(mp))
         if ttype not in by_type or price < by_type[ttype]:
             by_type[ttype] = price
@@ -220,7 +248,7 @@ class TcddbiletScraper:
             )
             return []
 
-        prices = _prices_by_type(response)
+        prices = _prices_by_type(response, dest_city=dest_city)
         if not prices:
             logger.warning(
                 "[tcddbilet] %s → %s: Sefer bulunamadı veya fiyat sıfır",
