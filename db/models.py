@@ -142,6 +142,24 @@ class IntercityBusRecord(BaseModel):
         return v
 
 
+class TrainRecord(BaseModel):
+    """Modül 07 — Şehirlerarası tren bileti fiyatları (güzergah + tren tipi başına minimum fiyat)."""
+    provider:     str      # 'tcddbilet'
+    origin_city:  str      # 'istanbul' | 'ankara'
+    dest_city:    str      # 'ankara' | 'izmir' | 'konya'
+    train_type:   str      # 'yht' | 'intercity'
+    ticket_class: str = "economy"
+    price:        Decimal
+    date:         date
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Tren bileti fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str
