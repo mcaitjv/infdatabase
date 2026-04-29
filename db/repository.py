@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, CarPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TransportPriceRecord
+from db.models import AppliancePriceRecord, CarPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TrainRecord, TransportPriceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -499,6 +499,52 @@ async def batch_upsert_intercity_bus_prices(conn, records: list[IntercityBusReco
     inserted = 0
     for r in records:
         if await upsert_intercity_bus_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_train_price(conn, record: TrainRecord) -> bool:
+    """
+    m07_train_prices tablosuna tren bileti fiyatı ekler.
+    Aynı (provider, origin_city, dest_city, train_type, ticket_class, date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_train_prices
+                (provider, origin_city, dest_city, train_type, ticket_class, price, date)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (provider, origin_city, dest_city, train_type, ticket_class, date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.train_type, record.ticket_class,
+            float(record.price), str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_train_prices
+                (provider, origin_city, dest_city, train_type, ticket_class, price, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7::date)
+            ON CONFLICT (provider, origin_city, dest_city, train_type, ticket_class, date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.train_type, record.ticket_class,
+            float(record.price), rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_train_prices(conn, records: list[TrainRecord]) -> int:
+    """Tren bileti fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_train_price(conn, r):
             inserted += 1
     return inserted
 

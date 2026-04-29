@@ -1,0 +1,67 @@
+label: "Tren"
+
+# Her kategori bir güzergah (origin → destination).
+# Kaynak: tcddbilet.gov.tr
+# Tarih: scraper yönetir (yarın); url alanındaki date parametresi override edilir.
+# NOT: tcddbilet URL formatı ve station ID'leri scraper implementasyonunda belirlenmeli.
+
+categories:
+  istanbul_ankara:
+    label: İstanbul — Ankara
+    tuik_codes:
+      - "073301"   # Şehirlerarası tren bileti ücreti
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: ankara
+        url: "https://ebilet.tcddtasimacilik.gov.tr"   # TODO: probe yapılarak arama URL'i belirlenmeli
+
+  istanbul_izmir:
+    label: İstanbul — İzmir
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: izmir
+        url: "https://tcddbilet.gov.tr"
+
+  istanbul_konya:
+    label: İstanbul — Konya
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: konya
+        url: "https://tcddbilet.gov.tr"
+
+  istanbul_eskisehir:
+    label: İstanbul — Eskişehir
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: eskisehir
+        url: "https://tcddbilet.gov.tr"
+
+  ankara_izmir:
+    label: Ankara — İzmir
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: izmir
+        url: "https://tcddbilet.gov.tr"
+
+  ankara_konya:
+    label: Ankara — Konya
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: konya
+        url: "https://tcddbilet.gov.tr"

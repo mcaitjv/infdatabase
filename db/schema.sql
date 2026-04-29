@@ -166,3 +166,18 @@ CREATE TABLE IF NOT EXISTS m07_intercity_bus_prices (
 
 CREATE INDEX IF NOT EXISTS idx_ibp_route    ON m07_intercity_bus_prices(origin_city, dest_city, date);
 CREATE INDEX IF NOT EXISTS idx_ibp_provider ON m07_intercity_bus_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_train_prices (
+    id           SERIAL        PRIMARY KEY,
+    provider     VARCHAR(50)   NOT NULL,    -- 'tcddbilet'
+    origin_city  VARCHAR(50)   NOT NULL,
+    dest_city    VARCHAR(50)   NOT NULL,
+    train_type   VARCHAR(50)   NOT NULL,    -- 'yht' | 'intercity'
+    ticket_class VARCHAR(50)   NOT NULL DEFAULT 'economy',
+    price        NUMERIC(10,4) NOT NULL,
+    date         DATE          NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, train_type, ticket_class, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp2_route    ON m07_train_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_tp2_provider ON m07_train_prices(provider);
