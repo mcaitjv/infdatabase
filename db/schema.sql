@@ -181,3 +181,20 @@ CREATE TABLE IF NOT EXISTS m07_train_prices (
 
 CREATE INDEX IF NOT EXISTS idx_tp2_route    ON m07_train_prices(origin_city, dest_city, date);
 CREATE INDEX IF NOT EXISTS idx_tp2_provider ON m07_train_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_flight_prices (
+    id             SERIAL        PRIMARY KEY,
+    provider       VARCHAR(50)   NOT NULL,    -- 'amadeus'
+    origin_iata    VARCHAR(3)    NOT NULL,    -- 'IST'
+    dest_iata      VARCHAR(3)    NOT NULL,    -- 'AYT' | 'FRA' | ...
+    airline        VARCHAR(100)  NOT NULL,    -- Havayolu adı: 'THY' | 'Pegasus' | 'Lufthansa'
+    cabin          VARCHAR(20)   NOT NULL DEFAULT 'ECONOMY',
+    price          NUMERIC(10,4) NOT NULL,
+    currency       VARCHAR(3)    NOT NULL DEFAULT 'TRY',
+    departure_date DATE          NOT NULL,    -- bugün + 7 gün
+    scraped_date   DATE          NOT NULL,
+    UNIQUE(provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fp2_route    ON m07_flight_prices(origin_iata, dest_iata, scraped_date);
+CREATE INDEX IF NOT EXISTS idx_fp2_airline  ON m07_flight_prices(airline);

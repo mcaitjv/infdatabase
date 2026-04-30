@@ -160,6 +160,26 @@ class TrainRecord(BaseModel):
         return v
 
 
+class FlightPriceRecord(BaseModel):
+    """Modül 07 — Uçak bileti fiyatları (güzergah + havayolu başına en düşük fiyat)."""
+    provider:       str      # 'amadeus'
+    origin_iata:    str      # 'IST'
+    dest_iata:      str      # 'AYT' | 'FRA' | ...
+    airline:        str      # IATA havayolu kodu: 'TK' | 'PC' | ...
+    cabin:          str = "ECONOMY"
+    price:          Decimal
+    currency:       str = "TRY"
+    departure_date: date     # bugün + 7 gün
+    scraped_date:   date
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Uçak bileti fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str

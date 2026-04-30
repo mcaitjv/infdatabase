@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, CarPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TrainRecord, TransportPriceRecord
+from db.models import AppliancePriceRecord, CarPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TrainRecord, TransportPriceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -545,6 +545,55 @@ async def batch_upsert_train_prices(conn, records: list[TrainRecord]) -> int:
     inserted = 0
     for r in records:
         if await upsert_train_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_flight_price(conn, record: FlightPriceRecord) -> bool:
+    """
+    m07_flight_prices tablosuna uçak bileti fiyatı ekler.
+    Aynı (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    dep_date = record.departure_date if isinstance(record.departure_date, date) else date.fromisoformat(str(record.departure_date))
+    scr_date = record.scraped_date if isinstance(record.scraped_date, date) else date.fromisoformat(str(record.scraped_date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_flight_prices
+                (provider, origin_iata, dest_iata, airline, cabin, price, currency, departure_date, scraped_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.origin_iata, record.dest_iata,
+            record.airline, record.cabin,
+            float(record.price), record.currency,
+            str(dep_date), str(scr_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_flight_prices
+                (provider, origin_iata, dest_iata, airline, cabin, price, currency, departure_date, scraped_date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7, $8::date, $9::date)
+            ON CONFLICT (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.origin_iata, record.dest_iata,
+            record.airline, record.cabin,
+            float(record.price), record.currency,
+            dep_date, scr_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_flight_prices(conn, records: list[FlightPriceRecord]) -> int:
+    """Uçak bileti fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_flight_price(conn, r):
             inserted += 1
     return inserted
 
