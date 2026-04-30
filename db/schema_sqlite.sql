@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS m07_flight_prices (
     provider       TEXT     NOT NULL,
     origin_iata    TEXT     NOT NULL,
     dest_iata      TEXT     NOT NULL,
-    airline        TEXT     NOT NULL,
+    airline        TEXT     NOT NULL,    -- Havayolu adı: 'THY' | 'Pegasus' | 'Lufthansa'
     cabin          TEXT     NOT NULL DEFAULT 'ECONOMY',
     price          REAL     NOT NULL,
     currency       TEXT     NOT NULL DEFAULT 'TRY',

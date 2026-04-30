@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS m07_flight_prices (
     provider       VARCHAR(50)   NOT NULL,    -- 'amadeus'
     origin_iata    VARCHAR(3)    NOT NULL,    -- 'IST'
     dest_iata      VARCHAR(3)    NOT NULL,    -- 'AYT' | 'FRA' | ...
-    airline        VARCHAR(10)   NOT NULL,    -- IATA havayolu kodu: 'TK' | 'PC'
+    airline        VARCHAR(100)  NOT NULL,    -- Havayolu adı: 'THY' | 'Pegasus' | 'Lufthansa'
     cabin          VARCHAR(20)   NOT NULL DEFAULT 'ECONOMY',
     price          NUMERIC(10,4) NOT NULL,
     currency       VARCHAR(3)    NOT NULL DEFAULT 'TRY',
