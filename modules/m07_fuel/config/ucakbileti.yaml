@@ -1,13 +1,11 @@
 label: "Uçak Bileti"
 
-# Kaynak: Amadeus Flight Offers Search API
-# Kayıt: developer.amadeus.com → Self-Service (ücretsiz test ortamı)
-# SDK: pip install amadeus
-# .env: AMADEUS_CLIENT_ID, AMADEUS_CLIENT_SECRET, AMADEUS_HOSTNAME (test|production)
+# Kaynak: obilet.com — window.ob.page.model.bottomTable.data (aynı yapı, bus ile özdeş)
+# URL: https://www.obilet.com/ucak-bileti/{origin_slug}-{dest_slug}?date=DD.MM.YYYY
+# Tarih: bugün + 7 gün (dinamik hesaplanır)
+# Kayıt: rota başına TÜM firmalar (Pegasus, AJet, THY, Lufthansa, KLM...)
 #
-# Her run: departure_date = bugün + 7 gün, kabin ECONOMY, 1 yetişkin
-# Döviz: TRY (Amadeus currencyCode parametresi)
-# Kayıt politikası: güzergah başına en düşük fiyatlı teklif
+# NOT: JFK (New York) obilet'te mevcut değil → Dubai (DXB) ile ikame edildi.
 
 categories:
 
@@ -17,30 +15,33 @@ categories:
     tuik_codes:
       - "073201"   # Hava yolu bileti (yurt içi)
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: AYT
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: antalya
 
   istanbul_ankara:
     label: İstanbul — Ankara
     tuik_codes:
       - "073201"
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: ESB
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: ankara
 
   istanbul_izmir:
     label: İstanbul — İzmir
     tuik_codes:
       - "073201"
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: ADB
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: izmir
 
   # ── Yurt dışı ─────────────────────────────────────────────────────────────
   istanbul_frankfurt:
@@ -48,37 +49,41 @@ categories:
     tuik_codes:
       - "073202"   # Hava yolu bileti (yurt dışı)
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: FRA
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: frankfurt
 
   istanbul_amsterdam:
     label: İstanbul — Amsterdam
     tuik_codes:
       - "073202"
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: AMS
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: amsterdam
 
   istanbul_londra:
     label: İstanbul — Londra
     tuik_codes:
       - "073202"
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
         dest_iata: LHR
-        cabin: ECONOMY
+        origin_slug: istanbul
+        dest_slug: londra
 
-  istanbul_newyork:
-    label: İstanbul — New York
+  istanbul_dubai:
+    label: İstanbul — Dubai
     tuik_codes:
       - "073202"
     sources:
-      amadeus:
+      obilet:
         origin_iata: IST
-        dest_iata: JFK
-        cabin: ECONOMY
+        dest_iata: DXB
+        origin_slug: istanbul
+        dest_slug: dubai

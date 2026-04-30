@@ -19,6 +19,7 @@ from db.repository import batch_upsert_car_prices, batch_upsert_flight_prices, b
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.amadeus import AmadeusScraper
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
+from modules.m07_fuel.scrapers.obilet_flight import ObiletFlightScraper
 from modules.m07_fuel.scrapers.biletall import BiletallScraper
 from modules.m07_fuel.scrapers.ego import EgoScraper
 from modules.m07_fuel.scrapers.iett import IettScraper
@@ -163,7 +164,7 @@ class FuelModule(BaseModule):
           yolcu_tasima         — IETT, EGO, İzmirimkart
           sehirlerarasi_otobus — Obilet, Biletall
           tren                 — TCDD ebilet (tcddbilet.gov.tr)
-          ucakbileti           — Amadeus API (yurt içi + yurt dışı)
+          ucakbileti           — obilet.com (yurt içi + yurt dışı, firma başına)
 
         Zamanlama: tüm part'lar ayın 1'i ve 15'inde çalışır.
         parts=None (scheduler)  → gün kontrolü uygulanır.
@@ -475,8 +476,13 @@ class FuelModule(BaseModule):
         return [run]
 
     async def _run_ucakbileti(self, dry_run: bool = False) -> list[ScrapeRun]:
-        """Uçak bileti fiyatlarını ucakbileti.yaml'daki güzergahlardan çeker (Amadeus API)."""
+        """Uçak bileti fiyatlarını ucakbileti.yaml'daki güzergahlardan çeker."""
         categories = _load_ucakbileti_config()
+
+        _SCRAPER_MAP = {
+            "obilet":  ObiletFlightScraper,
+            "amadeus": AmadeusScraper,
+        }
 
         run = ScrapeRun(
             market     = "m07:ucakbileti",
@@ -485,19 +491,48 @@ class FuelModule(BaseModule):
         )
         try:
             records = []
-            async with AmadeusScraper() as scraper:
+            # Provider başına tek context aç
+            active_providers: set[str] = set()
+            for cat_data in categories.values():
+                active_providers.update(cat_data.get("sources", {}).keys())
+
+            scrapers: dict[str, object] = {}
+            for provider in active_providers:
+                ScraperClass = _SCRAPER_MAP.get(provider)
+                if ScraperClass is None:
+                    logger.warning("[m07] ucakbileti: bilinmeyen kaynak %s — atlanıyor", provider)
+                    continue
+                scrapers[provider] = await ScraperClass().__aenter__()
+
+            try:
                 for cat_key, cat_data in categories.items():
                     sources = cat_data.get("sources", {})
                     for provider, src_cfg in sources.items():
-                        if provider != "amadeus":
-                            logger.warning("[m07] ucakbileti: bilinmeyen kaynak %s — atlanıyor", provider)
+                        scraper = scrapers.get(provider)
+                        if scraper is None:
                             continue
-                        src_records = await scraper.scrape(
-                            origin_iata=src_cfg.get("origin_iata", ""),
-                            dest_iata=src_cfg.get("dest_iata", ""),
-                            cabin=src_cfg.get("cabin", "ECONOMY"),
-                        )
+                        if provider == "obilet":
+                            src_records = await scraper.scrape(
+                                origin_iata=src_cfg.get("origin_iata", ""),
+                                dest_iata=src_cfg.get("dest_iata", ""),
+                                origin_slug=src_cfg.get("origin_slug", ""),
+                                dest_slug=src_cfg.get("dest_slug", ""),
+                            )
+                        elif provider == "amadeus":
+                            src_records = await scraper.scrape(
+                                origin_iata=src_cfg.get("origin_iata", ""),
+                                dest_iata=src_cfg.get("dest_iata", ""),
+                                cabin=src_cfg.get("cabin", "ECONOMY"),
+                            )
+                        else:
+                            src_records = []
                         records.extend(src_records)
+            finally:
+                for provider, scraper in scrapers.items():
+                    try:
+                        await scraper.__aexit__(None, None, None)
+                    except Exception:
+                        pass
 
             run.products_scraped = len(records)
 
@@ -505,8 +540,8 @@ class FuelModule(BaseModule):
                 logger.info("[m07] Dry-run ucakbileti: %d kayıt (DB'ye yazılmadı)", len(records))
                 for r in records[:10]:
                     print(
-                        f"  [amadeus] {r.origin_iata}→{r.dest_iata} / "
-                        f"{r.airline} / {r.cabin}: {r.price} {r.currency} ({r.departure_date})"
+                        f"  [{r.provider}] {r.origin_iata}->{r.dest_iata} / "
+                        f"{r.airline}: {r.price} {r.currency} ({r.departure_date})"
                     )
                 if len(records) > 10:
                     print(f"  ... ve {len(records) - 10} kayıt daha")
