@@ -1,0 +1,84 @@
+label: "Uçak Bileti"
+
+# Kaynak: Amadeus Flight Offers Search API
+# Kayıt: developer.amadeus.com → Self-Service (ücretsiz test ortamı)
+# SDK: pip install amadeus
+# .env: AMADEUS_CLIENT_ID, AMADEUS_CLIENT_SECRET, AMADEUS_HOSTNAME (test|production)
+#
+# Her run: departure_date = bugün + 7 gün, kabin ECONOMY, 1 yetişkin
+# Döviz: TRY (Amadeus currencyCode parametresi)
+# Kayıt politikası: güzergah başına en düşük fiyatlı teklif
+
+categories:
+
+  # ── Yurt içi ──────────────────────────────────────────────────────────────
+  istanbul_antalya:
+    label: İstanbul — Antalya
+    tuik_codes:
+      - "073201"   # Hava yolu bileti (yurt içi)
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: AYT
+        cabin: ECONOMY
+
+  istanbul_ankara:
+    label: İstanbul — Ankara
+    tuik_codes:
+      - "073201"
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: ESB
+        cabin: ECONOMY
+
+  istanbul_izmir:
+    label: İstanbul — İzmir
+    tuik_codes:
+      - "073201"
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: ADB
+        cabin: ECONOMY
+
+  # ── Yurt dışı ─────────────────────────────────────────────────────────────
+  istanbul_frankfurt:
+    label: İstanbul — Frankfurt
+    tuik_codes:
+      - "073202"   # Hava yolu bileti (yurt dışı)
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: FRA
+        cabin: ECONOMY
+
+  istanbul_amsterdam:
+    label: İstanbul — Amsterdam
+    tuik_codes:
+      - "073202"
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: AMS
+        cabin: ECONOMY
+
+  istanbul_londra:
+    label: İstanbul — Londra
+    tuik_codes:
+      - "073202"
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: LHR
+        cabin: ECONOMY
+
+  istanbul_dubai:
+    label: İstanbul — Dubai
+    tuik_codes:
+      - "073202"
+    sources:
+      amadeus:
+        origin_iata: IST
+        dest_iata: DXB
+        cabin: ECONOMY
