@@ -3,9 +3,12 @@ label: "Uçak Bileti"
 # Kaynak: obilet.com — window.ob.page.model.bottomTable.data (aynı yapı, bus ile özdeş)
 # URL: https://www.obilet.com/ucak-bileti/{origin_slug}-{dest_slug}?date=DD.MM.YYYY
 # Tarih: bugün + 7 gün (dinamik hesaplanır)
-# Kayıt: rota başına TÜM firmalar (Pegasus, AJet, THY, Lufthansa, KLM...)
-#
-# NOT: JFK (New York) obilet'te mevcut değil → Dubai (DXB) ile ikame edildi.
+# Kayıt: yalnızca tracked_airlines listesindeki firmalar
+
+tracked_airlines:
+  - THY
+  - AJet
+  - Pegasus
 
 categories:
 
@@ -77,13 +80,13 @@ categories:
         origin_slug: istanbul
         dest_slug: londra
 
-  istanbul_dubai:
-    label: İstanbul — Dubai
+  istanbul_berlin:
+    label: İstanbul — Berlin
     tuik_codes:
       - "073202"
     sources:
       obilet:
         origin_iata: IST
-        dest_iata: DXB
+        dest_iata: BER
         origin_slug: istanbul
-        dest_slug: dubai
+        dest_slug: berlin

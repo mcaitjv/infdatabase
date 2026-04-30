@@ -491,6 +491,10 @@ class FuelModule(BaseModule):
         )
         try:
             records = []
+            # YAML'dan tracked_airlines oku (opsiyonel)
+            raw_cfg = yaml.safe_load((_CONFIG_DIR / "ucakbileti.yaml").read_text(encoding="utf-8")) or {}
+            tracked_airlines: list[str] | None = raw_cfg.get("tracked_airlines") or None
+
             # Provider başına tek context aç
             active_providers: set[str] = set()
             for cat_data in categories.values():
@@ -517,6 +521,7 @@ class FuelModule(BaseModule):
                                 dest_iata=src_cfg.get("dest_iata", ""),
                                 origin_slug=src_cfg.get("origin_slug", ""),
                                 dest_slug=src_cfg.get("dest_slug", ""),
+                                tracked_airlines=tracked_airlines,
                             )
                         elif provider == "amadeus":
                             src_records = await scraper.scrape(

@@ -58,16 +58,19 @@ class ObiletFlightScraper:
         dest_iata: str,
         origin_slug: str,
         dest_slug: str,
+        tracked_airlines: list[str] | None = None,
     ) -> list[FlightPriceRecord]:
         """
         Belirtilen güzergah için firma başına en ucuz uçuş fiyatını döndürür.
 
         Args:
-            origin_iata: Kalkış IATA kodu (ör. "IST")
-            dest_iata:   Varış IATA kodu (ör. "AYT")
-            origin_slug: obilet URL slug'ı (ör. "istanbul")
-            dest_slug:   obilet URL slug'ı (ör. "antalya")
+            origin_iata:      Kalkış IATA kodu (ör. "IST")
+            dest_iata:        Varış IATA kodu (ör. "AYT")
+            origin_slug:      obilet URL slug'ı (ör. "istanbul")
+            dest_slug:        obilet URL slug'ı (ör. "antalya")
+            tracked_airlines: Yalnızca bu firmalar alınır; None → tümü
         """
+        _tracked = {a.lower() for a in tracked_airlines} if tracked_airlines else None
         departure = date.today() + timedelta(days=_DATE_OFFSET_DAYS)
         date_str = departure.strftime("%d.%m.%Y")
         url = f"{_BASE_URL}/{origin_slug}-{dest_slug}?date={date_str}"
@@ -96,6 +99,8 @@ class ObiletFlightScraper:
                 price_raw = row.get("Price") or row.get("price")
                 currency = (row.get("Currency") or "TRY").strip()
                 if not airline or not price_raw:
+                    continue
+                if _tracked and airline.lower() not in _tracked:
                     continue
                 try:
                     price = Decimal(str(price_raw))
