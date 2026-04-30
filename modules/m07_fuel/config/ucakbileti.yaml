@@ -73,12 +73,12 @@ categories:
         dest_iata: LHR
         cabin: ECONOMY
 
-  istanbul_dubai:
-    label: İstanbul — Dubai
+  istanbul_newyork:
+    label: İstanbul — New York
     tuik_codes:
       - "073202"
     sources:
       amadeus:
         origin_iata: IST
-        dest_iata: DXB
+        dest_iata: JFK
         cabin: ECONOMY
