@@ -3,19 +3,21 @@ label: "Vapur & Deniz Otobüsü"
 # Strateji: hibrit
 #   1. Her route için scrape dene
 #   2. Scrape başarısız (0 kayıt veya hata) → snapshot kullan
-#   3. İzdeniz fiyatları resme gömülü → her zaman snapshot
 
-# Snapshot: operatör doğrulamış değerler (ücretler değişince elle güncelle)
+# Her route DB'de ayrı bir kayıt grubu — temsili rota değişirse bile
+# tarihsel veri (route bazlı) bütünlüğünü korur.
+
+# Snapshot: scraper başarısız olursa fallback (aynı route_key altında)
 snapshot:
-  last_updated: "2026-05-01"   # scraper başarısız olursa fallback
+  last_updated: "2026-05-01"
   routes:
-    sehirhatlari_kent_ici:
+    karakoy_kadikoy:
       tam_bilet:     59.28
       ogrenci:       28.87
-    ido_istanbul_yalova:
+    ido_kent_ici:
       tam_bilet:     49.39
       ogrenci:       24.32
-    budo_bursa_istanbul:
+    mudanya_kabatas:
       tam_bilet:     1250.00
       ogrenci:       900.00
 
@@ -27,35 +29,35 @@ categories:
   ogrenci:
     label: Öğrenci Bileti
     tuik_codes: ["0734001"]
-  aylik_abonman:
-    label: Aylık Abonman
-    tuik_codes: ["0734001"]
 
 # Operatör + rota tanımları
 routes:
-  sehirhatlari_kent_ici:
-    label: "İstanbul Şehir Hatları (Karaköy-Kadıköy temsili)"
+  karakoy_kadikoy:
+    label: "Şehir Hatları — Karaköy / Kadıköy"
     operator: sehirhatlari
     city: istanbul
+    route: karakoy_kadikoy
+    target_hat: "KARAKÖY - KADIKÖY"   # HTML tablosunda aranacak satır
     source:
       url: "https://sehirhatlari.istanbul/tr/ucret-tarifeleri"
       scrape_method: static_html
-    # Aylık abonman bu sayfada yok — sadece tek-yön ücretler tutulur
     categories: [tam_bilet, ogrenci]
 
-  ido_istanbul_yalova:
-    label: "İDO İstanbul-Yalova"
+  ido_kent_ici:
+    label: "İDO — kent içi yolcu tarifesi"
     operator: ido
     city: istanbul
+    route: ido_kent_ici
     source:
       url: "https://www.ido.com.tr/tr/tarife/ucret-tarifesi"
       scrape_method: playwright
     categories: [tam_bilet, ogrenci]
 
-  budo_bursa_istanbul:
-    label: "BUDO Bursa-İstanbul (Mudanya-Eminönü)"
+  mudanya_kabatas:
+    label: "BUDO — Mudanya / Kabataş"
     operator: budo
     city: bursa
+    route: mudanya_kabatas
     source:
       url: "https://budo.burulas.com.tr/tr/Budo/TicketPrice"
       scrape_method: playwright
