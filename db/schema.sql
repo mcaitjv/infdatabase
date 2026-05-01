@@ -198,3 +198,17 @@ CREATE TABLE IF NOT EXISTS m07_flight_prices (
 
 CREATE INDEX IF NOT EXISTS idx_fp2_route    ON m07_flight_prices(origin_iata, dest_iata, scraped_date);
 CREATE INDEX IF NOT EXISTS idx_fp2_airline  ON m07_flight_prices(airline);
+
+CREATE TABLE IF NOT EXISTS m07_taxi_prices (
+    id           SERIAL        PRIMARY KEY,
+    city         VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara' | 'izmir'
+    category     VARCHAR(20)   NOT NULL,    -- 'acilis' | 'km_ucreti' | 'indi_bindi'
+    price        NUMERIC(10,4) NOT NULL,
+    date         DATE          NOT NULL,    -- snapshot.last_updated veya haber tarihi
+    source_url   TEXT          NOT NULL DEFAULT '',
+    source_title TEXT          NOT NULL DEFAULT '',
+    UNIQUE(city, category, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_txp_city_date ON m07_taxi_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_txp_category  ON m07_taxi_prices(category);

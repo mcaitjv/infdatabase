@@ -16,6 +16,7 @@ Playwright yalnızca change detection için değil, aktif fiyat parse denemesi i
 import logging
 import re
 import xml.etree.ElementTree as ET
+from collections import Counter
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from email.utils import parsedate_to_datetime
@@ -27,17 +28,19 @@ from db.models import TaxiPriceRecord
 logger = logging.getLogger(__name__)
 
 _GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={query}&hl=tr&gl=TR&ceid=TR:tr"
-_BING_NEWS_URL   = "https://www.bing.com/news/search?q={query}&setlang=tr&cc=TR&freshness=Month"
+# Bing freshness: snapshot yaşına göre dinamik seçilir (Day/Week/Month/Year)
+_BING_NEWS_URL   = "https://www.bing.com/news/search?q={query}&setlang=tr&cc=TR&freshness={freshness}"
 
 # TL fiyat regex
 _PRICE_RE = re.compile(r"(\d{1,4}[.,]\d{2}|\d{1,4})\s*(?:TL|lira|₺)", re.IGNORECASE)
 
 # Sanity bounds: snapshot değerinin çarpanı olarak (enflasyon-dirençli)
-# Snapshot 65 TL → 32.5-325 TL aralığı kabul. Yıllık %50 enflasyon bile rahat sığar.
 _SANITY_LO_MULT = 0.5
 _SANITY_HI_MULT = 5.0
-# Snapshot yoksa (yeni şehir vs.) son çare olarak çok geniş mutlak alt sınır
-_ABSOLUTE_MIN = 5.0
+_ABSOLUTE_MIN   = 5.0
+
+# Çoğunluk oylaması: bir fiyatın kabul edilmesi için kaç haberden gelmeli
+_MIN_VOTES = 3
 
 
 def _parse_price(raw: str) -> Decimal | None:
@@ -51,18 +54,36 @@ def _parse_price(raw: str) -> Decimal | None:
 
 def _title_has_change_signal(title: str, change_keywords: list[str]) -> bool:
     t = title.lower()
-    # "taksi" başlıkta yoksa diğer haber kategorilerinin false positive'ini önler
     if "taksi" not in t:
         return False
     return any(kw.lower() in t for kw in change_keywords)
 
 
-def _is_recent(pub_date_str: str, lookback_days: int) -> bool:
+def _is_after_snapshot(pub_date_str: str, snapshot_date: date) -> bool:
+    """Sadece snapshot.last_updated tarihinden SONRA yayınlanan haberleri kabul et."""
     try:
-        dt = parsedate_to_datetime(pub_date_str)
-        return dt.date() >= date.today() - timedelta(days=lookback_days)
+        article_date = parsedate_to_datetime(pub_date_str).date()
+        return article_date > snapshot_date
     except Exception:
-        return True
+        return True  # Tarih parse edilemezse şüpheden sayma
+
+
+def _bing_freshness_for(snapshot_date: date) -> str:
+    """Snapshot yaşına göre Bing 'freshness' parametresini seç."""
+    age_days = (date.today() - snapshot_date).days
+    if age_days <= 7:
+        return "Week"
+    if age_days <= 30:
+        return "Month"
+    return "Year"
+
+
+def _snapshot_date_from_cfg(cfg: dict) -> date:
+    raw = cfg.get("snapshot", {}).get("last_updated", "")
+    try:
+        return date.fromisoformat(raw)
+    except (ValueError, TypeError):
+        return date(2020, 1, 1)  # Çok eski sentinel — her şey "snapshot sonrası" sayılır
 
 
 class GoogleNewsScraper:
@@ -104,12 +125,13 @@ class GoogleNewsScraper:
         Google News RSS başlıklarını tarar. Tarife değişikliğine işaret eden
         bir başlık bulunursa True döner.
 
-        Gerçek fiyat parse etmez — sadece "zam var mı?" sorusunu yanıtlar.
+        Tarih filtresi: yalnızca snapshot.last_updated TARİHİNDEN SONRAKİ haberlere bakar.
+        Eski (zaten YAML'a yansımış) zamlar tekrar tekrar tetiklenmez.
         """
         src_cfg         = cfg.get("sources", {}).get("google_news", {})
         query_templates = src_cfg.get("query_templates", [])
         change_keywords = src_cfg.get("change_keywords", [])
-        lookback_days   = int(src_cfg.get("lookback_days", 30))
+        snapshot_date   = _snapshot_date_from_cfg(cfg)
 
         async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
             for tmpl in query_templates:
@@ -123,12 +145,12 @@ class GoogleNewsScraper:
                     for item in items:
                         title   = item.findtext("title") or ""
                         pub_str = item.findtext("pubDate") or ""
-                        if not _is_recent(pub_str, lookback_days):
+                        if not _is_after_snapshot(pub_str, snapshot_date):
                             continue
                         if _title_has_change_signal(title, change_keywords):
                             logger.warning(
-                                "[m07:taksi] %s için değişiklik sinyali: '%s'",
-                                city, title[:80],
+                                "[m07:taksi] %s için değişiklik sinyali (snapshot %s sonrası): '%s'",
+                                city, snapshot_date.isoformat(), title[:80],
                             )
                             return True
                 except Exception as exc:
@@ -192,33 +214,86 @@ class GoogleNewsScraper:
 
     async def _parse_from_news(self, city: str, cfg: dict) -> list[TaxiPriceRecord]:
         """
-        Bing News'ten gerçek makale aç, fiyat parse et.
-        Başarısız olursa boş liste döner (snapshot korunur).
+        Bing News'ten N makale aç, her birinden fiyat parse et,
+        sonra çoğunluk oylamasıyla en az _MIN_VOTES kez tekrar eden fiyatı kabul et.
+
+        Tek makaleden gelen şüpheli değerleri eler. En az 3 makale aynı fiyatı söylemeli.
         """
         src_cfg         = cfg.get("sources", {}).get("google_news", {})
         query_templates = src_cfg.get("query_templates", [])
         max_articles    = int(src_cfg.get("max_articles", 5))
         categories      = cfg.get("categories", {})
+        snapshot_date   = _snapshot_date_from_cfg(cfg)
+        freshness       = _bing_freshness_for(snapshot_date)
 
-        article_urls = await self._search_bing(city, query_templates, max_articles)
-        records: list[TaxiPriceRecord] = []
+        article_urls = await self._search_bing(city, query_templates, max_articles, freshness)
 
+        # Tüm makalelerden tüm parse edilen değerleri topla
+        all_records: list[TaxiPriceRecord] = []
         for url in article_urls:
             text = await self._fetch_text(url)
             if not text:
                 continue
             extracted = self._extract_prices(text, city, url, categories)
-            records.extend(extracted)
+            all_records.extend(extracted)
 
-        return self._deduplicate(records)
+        return self._majority_vote(all_records, city, len(article_urls))
+
+    def _majority_vote(
+        self,
+        all_records: list[TaxiPriceRecord],
+        city: str,
+        article_count: int,
+    ) -> list[TaxiPriceRecord]:
+        """
+        Çoğunluk oylaması: kategori başına en az _MIN_VOTES makale aynı fiyatı söylediyse o fiyatı kabul et.
+
+        Aynı makaleden gelen tekrarlar tek oy sayılır (deduplication: city+category+source_url).
+        """
+        # Önce aynı makaleden tekrar eden kayıtları tek oya indir
+        unique_per_article: set[tuple] = set()
+        votes: dict[str, Counter] = {}  # category → Counter[price_str: vote_count]
+        winners: list[TaxiPriceRecord] = []
+        first_record: dict[tuple, TaxiPriceRecord] = {}
+
+        for r in all_records:
+            key = (r.category, r.source_url)
+            if key in unique_per_article:
+                continue
+            unique_per_article.add(key)
+
+            price_key = f"{float(r.price):.2f}"
+            votes.setdefault(r.category, Counter())[price_key] += 1
+            first_record.setdefault((r.category, price_key), r)
+
+        for category, counter in votes.items():
+            if not counter:
+                continue
+            best_price, best_votes = counter.most_common(1)[0]
+            total = sum(counter.values())
+            if best_votes >= _MIN_VOTES:
+                winner = first_record[(category, best_price)]
+                winners.append(winner)
+                logger.info(
+                    "[m07:taksi] %s/%s: çoğunluk %s TL (%d/%d makale, eşik %d)",
+                    city, category, best_price, best_votes, total, _MIN_VOTES,
+                )
+            else:
+                logger.warning(
+                    "[m07:taksi] %s/%s: yetersiz oy — en yüksek %s TL %d/%d (eşik %d) — snapshot korunuyor",
+                    city, category, best_price, best_votes, total, _MIN_VOTES,
+                )
+
+        return winners
 
     async def _search_bing(
         self,
         city: str,
         query_templates: list[str],
         max_articles: int,
+        freshness: str = "Month",
     ) -> list[str]:
-        """Bing News'ten gerçek makale URL'lerini toplar."""
+        """Bing News'ten gerçek makale URL'lerini toplar (tarih filtresiyle)."""
         if not self._browser:
             return []
         seen: set[str] = set()
@@ -233,7 +308,7 @@ class GoogleNewsScraper:
                 if len(urls) >= max_articles:
                     break
                 query    = tmpl.format(city=city).replace(" ", "+")
-                bing_url = _BING_NEWS_URL.format(query=query)
+                bing_url = _BING_NEWS_URL.format(query=query, freshness=freshness)
                 try:
                     await page.goto(bing_url, wait_until="domcontentloaded", timeout=20000)
                     await page.wait_for_timeout(2000)

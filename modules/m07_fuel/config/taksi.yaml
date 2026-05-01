@@ -3,7 +3,7 @@ label: "Taksi"
 # Güncel resmi tarife (UKOME kararına göre elle güncellenir)
 # Güncelleme zamanı: Bing News change detection WARNING logu geldiğinde
 snapshot:
-  last_updated: "2026-02-12"   # IBB UKOME kararı tarihi
+  last_updated: "2026-05-01"   # operatör doğrulaması
   cities:
     istanbul:
       acilis:     65.40
@@ -12,11 +12,11 @@ snapshot:
     ankara:
       acilis:     65.00
       km_ucreti:  40.00
-      indi_bindi: 130.00
+      indi_bindi: 200.00
     izmir:
-      acilis:     40.00
-      km_ucreti:  54.00
-      indi_bindi: 210.00
+      acilis:     34.50
+      km_ucreti:  49.50
+      indi_bindi: 180.00
 
 tracked_cities:
   - istanbul
@@ -66,5 +66,7 @@ sources:
       - ukome
       - fiyat artışı
       - tarife değişikliği
-    max_articles: 5
-    lookback_days: 30
+    # Çoğunluk oylaması için yeterli makale sayısı (en az 3 makale aynı fiyatı söylemeli)
+    max_articles: 10
+    # Tarih filtresi snapshot.last_updated'dan SONRAKİ haberlere bakar
+    # (lookback_days artık kullanılmıyor — Bing freshness snapshot yaşına göre dinamik seçilir)

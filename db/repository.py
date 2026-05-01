@@ -598,16 +598,54 @@ async def batch_upsert_flight_prices(conn, records: list[FlightPriceRecord]) -> 
     return inserted
 
 
-async def batch_upsert_taxi_prices(conn, records: list[TaxiPriceRecord]) -> int:
-    """Taksi tarife fiyatlarını ekler/günceller.
-
-    TODO: taxi_prices tablosu henüz eklenmedi — db/schema.sql ve db/schema_sqlite.sql
-    güncellendikten sonra bu fonksiyonu implemente et.
+async def upsert_taxi_price(conn, record: TaxiPriceRecord) -> bool:
     """
-    raise NotImplementedError(
-        "taxi_prices tablosu ve upsert_taxi_price fonksiyonu henüz eklenmedi. "
-        "db/schema.sql, db/schema_sqlite.sql ve bu fonksiyon güncellenmeli."
-    )
+    m07_taxi_prices tablosuna taksi tarife fiyatı ekler.
+    Aynı (city, category, date) varsa fiyat ve kaynak bilgisini günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_taxi_prices
+                (city, category, price, date, source_url, source_title)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT (city, category, date)
+            DO UPDATE SET price = excluded.price,
+                          source_url = excluded.source_url,
+                          source_title = excluded.source_title
+            """,
+            record.city, record.category,
+            float(record.price), str(rec_date),
+            record.source_url, record.source_title,
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_taxi_prices
+                (city, category, price, date, source_url, source_title)
+            VALUES ($1, $2, $3::numeric, $4::date, $5, $6)
+            ON CONFLICT (city, category, date)
+            DO UPDATE SET price = EXCLUDED.price,
+                          source_url = EXCLUDED.source_url,
+                          source_title = EXCLUDED.source_title
+            """,
+            record.city, record.category,
+            float(record.price), rec_date,
+            record.source_url, record.source_title,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_taxi_prices(conn, records: list[TaxiPriceRecord]) -> int:
+    """Taksi tarife fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_taxi_price(conn, r):
+            inserted += 1
+    return inserted
 
 
 # ── Sorgular ─────────────────────────────────────────────────────────────────
