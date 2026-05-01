@@ -31,7 +31,6 @@ from modules.m07_fuel.scrapers.shell import ShellScraper
 from modules.m07_fuel.scrapers.budo import BudoScraper
 from modules.m07_fuel.scrapers.google_news import GoogleNewsScraper
 from modules.m07_fuel.scrapers.ido import IdoScraper
-from modules.m07_fuel.scrapers.izdeniz import IzdenizScraper
 from modules.m07_fuel.scrapers.sehirhatlari import SehirHatlariScraper
 from modules.m07_fuel.scrapers.tcddbilet import TcddbiletScraper
 
@@ -686,7 +685,6 @@ class FuelModule(BaseModule):
         scraper_map = {
             "sehirhatlari": SehirHatlariScraper,
             "ido":          IdoScraper,
-            "izdeniz":      IzdenizScraper,
             "budo":         BudoScraper,
         }
 

@@ -1,15 +1,18 @@
 """
 Şehir Hatları Vapur Bilet Fiyat Scraper
 ----------------------------------------
-Kaynak: https://sehirhatlari.istanbul/en/price-list (statik HTML)
+Kaynak: https://sehirhatlari.istanbul/tr/ucret-tarifeleri (statik HTML)
+
+Tablo yapısı (her merkez hattı için):
+    HAT_ADI | Tam | Öğrenci 30 Yaş | Öğrenci | İndirimli
 
 Strateji:
   1. httpx ile sayfayı çek
-  2. BeautifulSoup ile fiyat tablosunu parse et
-  3. tam_bilet / ogrenci / aylik_abonman kategorilerine eşle
+  2. BeautifulSoup ile rota satırını bul (default: KARAKÖY-KADIKÖY temsili)
+  3. 4 sütundan tam_bilet (sütun 1) ve ogrenci (sütun 3) değerlerini al
   4. FerryPriceRecord listesi döndür
 
-Başarısız olursa boş liste döner (orchestrator snapshot'a fallback yapar).
+Aylık abonman: bu sayfada yok — orchestrator atlar (categories: [tam_bilet, ogrenci]).
 """
 
 import logging
@@ -24,25 +27,14 @@ from db.models import FerryPriceRecord
 
 logger = logging.getLogger(__name__)
 
-_OPERATOR = "sehirhatlari"
+_OPERATOR     = "sehirhatlari"
+_DEFAULT_HAT  = "KARAKÖY - KADIKÖY"
 
-# Tablo satırlarında aranacak metin → kategori eşleşmesi
-_LABEL_TO_CATEGORY = {
-    "tam":          "tam_bilet",
-    "full":         "tam_bilet",
-    "ogrenci":      "ogrenci",
-    "öğrenci":      "ogrenci",
-    "student":      "ogrenci",
-    "abonman":      "aylik_abonman",
-    "monthly":      "aylik_abonman",
-    "aylık":        "aylik_abonman",
-}
-
-_PRICE_RE = re.compile(r"(\d{1,4}[.,]\d{2}|\d{1,4})\s*(?:TL|tl|₺)", re.IGNORECASE)
+_PRICE_RE = re.compile(r"^\d{1,4}[.,]\d{2}$")
 
 
 def _parse_price(raw: str) -> Decimal | None:
-    raw = raw.replace(",", ".").strip()
+    raw = raw.replace(".", "").replace(",", ".").strip()
     try:
         v = Decimal(raw)
         return v if v > 0 else None
@@ -50,22 +42,19 @@ def _parse_price(raw: str) -> Decimal | None:
         return None
 
 
-def _category_for_label(label: str) -> str | None:
-    low = label.lower()
-    for needle, cat in _LABEL_TO_CATEGORY.items():
-        if needle in low:
-            return cat
-    return None
+def _normalize(s: str) -> str:
+    """Türkçe karakter normalizasyon — case-insensitive karşılaştırma için."""
+    return s.upper().replace("İ", "I").replace("Ş", "S").replace("Ğ", "G").replace("Ü", "U").replace("Ö", "O").replace("Ç", "C")
 
 
 class SehirHatlariScraper:
-    """Şehir Hatları kent içi vapur tarifesi (statik HTML)."""
+    """Şehir Hatları kent içi vapur tarifesi (statik HTML, temsili rota)."""
 
     async def __aenter__(self) -> "SehirHatlariScraper":
         self._client = httpx.AsyncClient(
             timeout=15,
             follow_redirects=True,
-            headers={"Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8"},
+            headers={"Accept-Language": "tr-TR,tr;q=0.9"},
         )
         return self
 
@@ -76,6 +65,7 @@ class SehirHatlariScraper:
         url   = route_cfg["source"]["url"]
         city  = route_cfg.get("city", "istanbul")
         route = route_cfg.get("route", "kent_ici")
+        target_hat = _normalize(route_cfg.get("target_hat", _DEFAULT_HAT))
 
         try:
             resp = await self._client.get(url)
@@ -86,40 +76,46 @@ class SehirHatlariScraper:
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # Sayfada fiyat satırlarını bul: <tr> veya <li> içindeki "Tam ... 35 TL" gibi yapılar
-        candidates: list[tuple[str, Decimal]] = []
-        for el in soup.find_all(["tr", "li", "div", "p"]):
-            text = el.get_text(" ", strip=True)
-            if not text or len(text) > 200:
-                continue
-            cat = _category_for_label(text)
-            if cat is None:
-                continue
-            m = _PRICE_RE.search(text)
-            if not m:
-                continue
-            price = _parse_price(m.group(1))
-            if price is None:
-                continue
-            candidates.append((cat, price))
+        tam_price: Decimal | None     = None
+        ogrenci_price: Decimal | None = None
 
-        # Aynı kategori birden çok bulunduysa ilk geçerli olanı al
-        seen: dict[str, Decimal] = {}
-        for cat, price in candidates:
-            seen.setdefault(cat, price)
+        for tr in soup.find_all("tr"):
+            cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
+            if not cells:
+                continue
+            row_label = _normalize(cells[0])
+            if target_hat not in row_label:
+                continue
+
+            # Bu satırdaki sayısal hücreleri al (TL fiyatlar)
+            prices = [_parse_price(c) for c in cells[1:]]
+            valid  = [p for p in prices if p is not None]
+            # Beklenen format: [Tam, Ogr30, Ogrenci, Indirimli] = 4 sütun
+            if len(valid) >= 4:
+                tam_price     = valid[0]
+                ogrenci_price = valid[2]
+                logger.info(
+                    "[m07:vapur] sehirhatlari %s: tam=%s ogrenci=%s",
+                    cells[0], tam_price, ogrenci_price,
+                )
+                break
+
+        if tam_price is None:
+            logger.warning("[m07:vapur] sehirhatlari: '%s' satırı bulunamadı", target_hat)
+            return []
 
         today = date.today()
-        records = [
-            FerryPriceRecord(
-                operator=_OPERATOR,
-                city=city,
-                route=route,
-                ticket_type=cat,
-                price=price,
-                date=today,
-                source_url=url,
-            )
-            for cat, price in seen.items()
-        ]
-        logger.info("[m07:vapur] sehirhatlari: %d kayıt", len(records))
+        records: list[FerryPriceRecord] = []
+        if tam_price is not None:
+            records.append(FerryPriceRecord(
+                operator=_OPERATOR, city=city, route=route,
+                ticket_type="tam_bilet", price=tam_price,
+                date=today, source_url=url,
+            ))
+        if ogrenci_price is not None:
+            records.append(FerryPriceRecord(
+                operator=_OPERATOR, city=city, route=route,
+                ticket_type="ogrenci", price=ogrenci_price,
+                date=today, source_url=url,
+            ))
         return records

@@ -7,22 +7,17 @@ label: "Vapur & Deniz Otobüsü"
 
 # Snapshot: operatör doğrulamış değerler (ücretler değişince elle güncelle)
 snapshot:
-  last_updated: "2026-05-01"   # operatör doğrulaması
+  last_updated: "2026-05-01"   # scraper başarısız olursa fallback
   routes:
     sehirhatlari_kent_ici:
-      tam_bilet:     35.00
-      ogrenci:       17.50
-      aylik_abonman: 700.00
+      tam_bilet:     59.28
+      ogrenci:       28.87
     ido_istanbul_yalova:
-      tam_bilet:     250.00
-      ogrenci:       150.00
-    izdeniz_kent_ici:
-      tam_bilet:     27.00
-      ogrenci:       13.50
-      aylik_abonman: 540.00
+      tam_bilet:     49.39
+      ogrenci:       24.32
     budo_bursa_istanbul:
-      tam_bilet:     400.00
-      ogrenci:       250.00
+      tam_bilet:     1250.00
+      ogrenci:       900.00
 
 # Bilet kategorileri (TÜİK COICOP: 0734001 = Vapur bileti ücreti)
 categories:
@@ -39,31 +34,23 @@ categories:
 # Operatör + rota tanımları
 routes:
   sehirhatlari_kent_ici:
-    label: "İstanbul Şehir Hatları (kent içi)"
+    label: "İstanbul Şehir Hatları (Karaköy-Kadıköy temsili)"
     operator: sehirhatlari
     city: istanbul
     source:
-      url: "https://sehirhatlari.istanbul/en/price-list"
+      url: "https://sehirhatlari.istanbul/tr/ucret-tarifeleri"
       scrape_method: static_html
-    categories: [tam_bilet, ogrenci, aylik_abonman]
+    # Aylık abonman bu sayfada yok — sadece tek-yön ücretler tutulur
+    categories: [tam_bilet, ogrenci]
 
   ido_istanbul_yalova:
     label: "İDO İstanbul-Yalova"
     operator: ido
     city: istanbul
     source:
-      url: "https://www.ido.com.tr/tr/onemli-bilgiler/tarife/sefer-tarifesi/"
+      url: "https://www.ido.com.tr/tr/tarife/ucret-tarifesi"
       scrape_method: playwright
     categories: [tam_bilet, ogrenci]
-
-  izdeniz_kent_ici:
-    label: "İzmir Vapur (İzdeniz, kent içi)"
-    operator: izdeniz
-    city: izmir
-    source:
-      url: "https://www.izdeniz.com.tr/tr/ucretlendirme/22/22"
-      scrape_method: snapshot_only   # fiyatlar resme gömülü
-    categories: [tam_bilet, ogrenci, aylik_abonman]
 
   budo_bursa_istanbul:
     label: "BUDO Bursa-İstanbul (Mudanya-Eminönü)"
