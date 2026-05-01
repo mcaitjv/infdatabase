@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import batch_upsert_car_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_car_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.amadeus import AmadeusScraper
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
@@ -28,6 +28,7 @@ from modules.m07_fuel.scrapers.obilet import ObiletScraper
 from modules.m07_fuel.scrapers.opet import OpetScraper
 from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
 from modules.m07_fuel.scrapers.shell import ShellScraper
+from modules.m07_fuel.scrapers.google_news import GoogleNewsScraper
 from modules.m07_fuel.scrapers.tcddbilet import TcddbiletScraper
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,13 @@ def _load_ucakbileti_config() -> dict:
     return data.get("categories", {})
 
 
-_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml"}
+def _load_taksi_config() -> dict:
+    """taksi.yaml'ın tamamını yükler (categories + sources + tracked_cities)."""
+    path = _CONFIG_DIR / "taksi.yaml"
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml", "taksi.yaml"}
 
 
 def _load_car_config() -> tuple[dict, dict]:
@@ -165,6 +172,7 @@ class FuelModule(BaseModule):
           sehirlerarasi_otobus — Obilet, Biletall
           tren                 — TCDD ebilet (tcddbilet.gov.tr)
           ucakbileti           — obilet.com (yurt içi + yurt dışı, firma başına)
+          taksi                — Google News haber araması (istanbul, ankara, izmir)
 
         Zamanlama: tüm part'lar ayın 1'i ve 15'inde çalışır.
         parts=None (scheduler)  → gün kontrolü uygulanır.
@@ -269,6 +277,12 @@ class FuelModule(BaseModule):
             runs += await self._run_ucakbileti(dry_run=dry_run)
         else:
             logger.debug("[m07] ucakbileti part'ı atlandı")
+
+        # ── Taksi ────────────────────────────────────────────────────────────
+        if _active("taksi"):
+            runs += await self._run_taksi(dry_run=dry_run)
+        else:
+            logger.debug("[m07] taksi part'ı atlandı")
 
         return runs
 
@@ -575,6 +589,62 @@ class FuelModule(BaseModule):
 
         duration = (run.finished_at - run.started_at).total_seconds()
         logger.info("[m07] ucakbileti tamamlandı — %s, %.1fs", run.status, duration)
+        return [run]
+
+    async def _run_taksi(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Taksi tarife fiyatlarını snapshot-first + Bing News change detection ile çeker."""
+        cfg = _load_taksi_config()
+        tracked_cities: list[str] = cfg.get("tracked_cities", [])
+
+        run = ScrapeRun(
+            market     = "m07:taksi",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            records = []
+            async with GoogleNewsScraper() as scraper:
+                for city in tracked_cities:
+                    city_records = await scraper.scrape(city=city, cfg=cfg)
+                    logger.info("[m07] taksi %s: %d kayıt", city, len(city_records))
+                    records.extend(city_records)
+
+            run.products_scraped = len(records)
+
+            if dry_run:
+                logger.info("[m07] Dry-run taksi: %d kayıt (DB'ye yazılmadı)", len(records))
+                for r in records[:5]:
+                    print(
+                        f"  [taksi] {r.city} / {r.category}: "
+                        f"{r.price} TL ({r.date}) — {r.source_title[:60]}"
+                    )
+                if len(records) > 5:
+                    print(f"  ... ve {len(records) - 5} kayıt daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_taxi_prices(conn, records)
+                    logger.info(
+                        "[m07] taksi: %d kayıt işlendi, %d yeni eklendi",
+                        len(records), inserted,
+                    )
+
+            run.status = "success" if records else "partial"
+
+        except NotImplementedError:
+            logger.warning("[m07] taksi: DB upsert henüz implemente edilmedi — atlanıyor")
+            run.status = "partial"
+        except Exception as exc:
+            logger.error("[m07] taksi kritik hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+
+        duration = (run.finished_at - run.started_at).total_seconds()
+        logger.info("[m07] taksi tamamlandı — %s, %.1fs", run.status, duration)
         return [run]
 
     async def _run_car_prices(self, dry_run: bool = False) -> list[ScrapeRun]:

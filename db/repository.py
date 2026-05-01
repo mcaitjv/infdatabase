@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, CarPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TrainRecord, TransportPriceRecord
+from db.models import AppliancePriceRecord, CarPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TaxiPriceRecord, TrainRecord, TransportPriceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -596,6 +596,18 @@ async def batch_upsert_flight_prices(conn, records: list[FlightPriceRecord]) -> 
         if await upsert_flight_price(conn, r):
             inserted += 1
     return inserted
+
+
+async def batch_upsert_taxi_prices(conn, records: list[TaxiPriceRecord]) -> int:
+    """Taksi tarife fiyatlarını ekler/günceller.
+
+    TODO: taxi_prices tablosu henüz eklenmedi — db/schema.sql ve db/schema_sqlite.sql
+    güncellendikten sonra bu fonksiyonu implemente et.
+    """
+    raise NotImplementedError(
+        "taxi_prices tablosu ve upsert_taxi_price fonksiyonu henüz eklenmedi. "
+        "db/schema.sql, db/schema_sqlite.sql ve bu fonksiyon güncellenmeli."
+    )
 
 
 # ── Sorgular ─────────────────────────────────────────────────────────────────

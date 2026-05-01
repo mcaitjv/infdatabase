@@ -1,0 +1,70 @@
+label: "Taksi"
+
+# Güncel resmi tarife (UKOME kararına göre elle güncellenir)
+# Güncelleme zamanı: Bing News change detection WARNING logu geldiğinde
+snapshot:
+  last_updated: "2026-02-12"   # IBB UKOME kararı tarihi
+  cities:
+    istanbul:
+      acilis:     65.40
+      km_ucreti:  43.56
+      indi_bindi: 210.00
+    ankara:
+      acilis:     65.00
+      km_ucreti:  40.00
+      indi_bindi: 130.00
+    izmir:
+      acilis:     40.00
+      km_ucreti:  54.00
+      indi_bindi: 210.00
+
+tracked_cities:
+  - istanbul
+  - ankara
+  - izmir
+
+categories:
+  acilis:
+    label: Açılış Ücreti
+    tuik_codes:
+      - "073211"
+    keywords:
+      - açılış ücreti
+      - taksimetre açılış
+      - açılma ücreti
+      - bandırma ücreti
+
+  km_ucreti:
+    label: Kilometre Başı Ücret
+    tuik_codes:
+      - "073211"
+    keywords:
+      - kilometre başına
+      - km başına
+      - km ücreti
+      - yol ücreti
+
+  indi_bindi:
+    label: İndi-Bindi (Kısa Mesafe)
+    tuik_codes:
+      - "073211"
+    keywords:
+      - kısa mesafe ücreti
+      - indi bindi
+      - minimum ücret
+
+sources:
+  google_news:
+    # Rol: change detection — yeni tarife var mı? (fiyat parse DEĞİL)
+    query_templates:
+      - "{city} taksi zam 2026"
+      - "{city} taksi yeni tarife"
+      - "{city} taksi UKOME kararı"
+    change_keywords:
+      - zam
+      - yeni tarife
+      - ukome
+      - fiyat artışı
+      - tarife değişikliği
+    max_articles: 5
+    lookback_days: 30
