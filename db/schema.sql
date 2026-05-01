@@ -212,3 +212,18 @@ CREATE TABLE IF NOT EXISTS m07_taxi_prices (
 
 CREATE INDEX IF NOT EXISTS idx_txp_city_date ON m07_taxi_prices(city, date);
 CREATE INDEX IF NOT EXISTS idx_txp_category  ON m07_taxi_prices(category);
+
+CREATE TABLE IF NOT EXISTS m07_ferry_prices (
+    id          SERIAL        PRIMARY KEY,
+    operator    VARCHAR(50)   NOT NULL,    -- 'sehirhatlari' | 'ido' | 'izdeniz' | 'budo'
+    city        VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'izmir' | 'bursa'
+    route       VARCHAR(100)  NOT NULL,    -- 'kent_ici' | 'istanbul-yalova' | 'bursa-istanbul'
+    ticket_type VARCHAR(50)   NOT NULL,    -- 'tam_bilet' | 'ogrenci' | 'aylik_abonman'
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    source_url  TEXT          NOT NULL DEFAULT '',
+    UNIQUE(operator, city, route, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fr_op_date ON m07_ferry_prices(operator, date);
+CREATE INDEX IF NOT EXISTS idx_fr_route   ON m07_ferry_prices(route);

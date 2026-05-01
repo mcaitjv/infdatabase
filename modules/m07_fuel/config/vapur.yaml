@@ -1,0 +1,75 @@
+label: "Vapur & Deniz Otobüsü"
+
+# Strateji: hibrit
+#   1. Her route için scrape dene
+#   2. Scrape başarısız (0 kayıt veya hata) → snapshot kullan
+#   3. İzdeniz fiyatları resme gömülü → her zaman snapshot
+
+# Snapshot: operatör doğrulamış değerler (ücretler değişince elle güncelle)
+snapshot:
+  last_updated: "2026-05-01"   # operatör doğrulaması
+  routes:
+    sehirhatlari_kent_ici:
+      tam_bilet:     35.00
+      ogrenci:       17.50
+      aylik_abonman: 700.00
+    ido_istanbul_yalova:
+      tam_bilet:     250.00
+      ogrenci:       150.00
+    izdeniz_kent_ici:
+      tam_bilet:     27.00
+      ogrenci:       13.50
+      aylik_abonman: 540.00
+    budo_bursa_istanbul:
+      tam_bilet:     400.00
+      ogrenci:       250.00
+
+# Bilet kategorileri (TÜİK COICOP: 0734001 = Vapur bileti ücreti)
+categories:
+  tam_bilet:
+    label: Tam Bilet
+    tuik_codes: ["0734001"]
+  ogrenci:
+    label: Öğrenci Bileti
+    tuik_codes: ["0734001"]
+  aylik_abonman:
+    label: Aylık Abonman
+    tuik_codes: ["0734001"]
+
+# Operatör + rota tanımları
+routes:
+  sehirhatlari_kent_ici:
+    label: "İstanbul Şehir Hatları (kent içi)"
+    operator: sehirhatlari
+    city: istanbul
+    source:
+      url: "https://sehirhatlari.istanbul/en/price-list"
+      scrape_method: static_html
+    categories: [tam_bilet, ogrenci, aylik_abonman]
+
+  ido_istanbul_yalova:
+    label: "İDO İstanbul-Yalova"
+    operator: ido
+    city: istanbul
+    source:
+      url: "https://www.ido.com.tr/tr/onemli-bilgiler/tarife/sefer-tarifesi/"
+      scrape_method: playwright
+    categories: [tam_bilet, ogrenci]
+
+  izdeniz_kent_ici:
+    label: "İzmir Vapur (İzdeniz, kent içi)"
+    operator: izdeniz
+    city: izmir
+    source:
+      url: "https://www.izdeniz.com.tr/tr/ucretlendirme/22/22"
+      scrape_method: snapshot_only   # fiyatlar resme gömülü
+    categories: [tam_bilet, ogrenci, aylik_abonman]
+
+  budo_bursa_istanbul:
+    label: "BUDO Bursa-İstanbul (Mudanya-Eminönü)"
+    operator: budo
+    city: bursa
+    source:
+      url: "https://budo.burulas.com.tr/tr/Budo/TicketPrice"
+      scrape_method: playwright
+    categories: [tam_bilet, ogrenci]

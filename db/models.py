@@ -180,6 +180,24 @@ class FlightPriceRecord(BaseModel):
         return v
 
 
+class FerryPriceRecord(BaseModel):
+    """Modül 07 — Vapur / Deniz Otobüsü bilet fiyatları (operator + rota + bilet tipi başına)."""
+    operator:    str      # 'sehirhatlari' | 'ido' | 'izdeniz' | 'budo'
+    city:        str      # 'istanbul' | 'izmir' | 'bursa'
+    route:       str      # 'kent_ici' | 'istanbul-yalova' | 'bursa-istanbul' vb.
+    ticket_type: str      # 'tam_bilet' | 'ogrenci' | 'aylik_abonman'
+    price:       Decimal
+    date:        date
+    source_url:  str = ""
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Vapur bileti fiyatı sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class TaxiPriceRecord(BaseModel):
     """Modül 07 — Taksi tarife fiyatları (şehir + kategori başına)."""
     city:         str      # 'istanbul' | 'ankara' | 'izmir'

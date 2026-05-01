@@ -188,3 +188,18 @@ CREATE TABLE IF NOT EXISTS m07_taxi_prices (
 
 CREATE INDEX IF NOT EXISTS idx_txp_city_date ON m07_taxi_prices(city, date);
 CREATE INDEX IF NOT EXISTS idx_txp_category  ON m07_taxi_prices(category);
+
+CREATE TABLE IF NOT EXISTS m07_ferry_prices (
+    id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+    operator    TEXT     NOT NULL,
+    city        TEXT     NOT NULL,
+    route       TEXT     NOT NULL,
+    ticket_type TEXT     NOT NULL,
+    price       REAL     NOT NULL,
+    date        TEXT     NOT NULL,
+    source_url  TEXT     NOT NULL DEFAULT '',
+    UNIQUE(operator, city, route, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fr_op_date ON m07_ferry_prices(operator, date);
+CREATE INDEX IF NOT EXISTS idx_fr_route   ON m07_ferry_prices(route);
