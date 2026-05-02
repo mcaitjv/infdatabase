@@ -57,7 +57,7 @@ sources:
   google_news:
     # Rol: change detection — yeni tarife var mı? (fiyat parse DEĞİL)
     query_templates:
-      - "{city} taksi zam 2026"
+      - "{city} taksi zam {year}"
       - "{city} taksi yeni tarife"
       - "{city} taksi UKOME kararı"
     change_keywords:

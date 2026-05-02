@@ -134,9 +134,10 @@ class GoogleNewsScraper:
         change_keywords = src_cfg.get("change_keywords", [])
         snapshot_date   = _snapshot_date_from_cfg(cfg)
 
+        current_year = date.today().year
         async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
             for tmpl in query_templates:
-                query = tmpl.format(city=city).replace(" ", "+")
+                query = tmpl.format(city=city, year=current_year).replace(" ", "+")
                 url   = _GOOGLE_NEWS_RSS.format(query=query)
                 try:
                     resp = await client.get(url, headers={"Accept-Language": "tr-TR,tr;q=0.9"})
@@ -310,6 +311,7 @@ class GoogleNewsScraper:
             return []
         seen: set[str] = set()
         urls: list[str] = []
+        current_year = date.today().year
         ctx  = await self._browser.new_context(
             locale="tr-TR",
             extra_http_headers={"Accept-Language": "tr-TR,tr;q=0.9"},
@@ -319,7 +321,7 @@ class GoogleNewsScraper:
             for tmpl in query_templates:
                 if len(urls) >= max_articles:
                     break
-                query    = tmpl.format(city=city).replace(" ", "+")
+                query    = tmpl.format(city=city, year=current_year).replace(" ", "+")
                 bing_url = _BING_NEWS_URL.format(query=query, freshness=freshness)
                 try:
                     await page.goto(bing_url, wait_until="domcontentloaded", timeout=20000)
