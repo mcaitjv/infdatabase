@@ -235,6 +235,9 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.beko import BekoScraper
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
+        from modules.m05_household.scrapers.ikea import IkeaScraper
+        from modules.m05_household.scrapers.trendyol import TrendyolScraper
+        from modules.m05_household.scrapers.vivense import VivenseScraper
 
         categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []
@@ -274,6 +277,21 @@ class HouseholdModule(BaseModule):
         # Siemens (Playwright)
         async with BshScraper(brand="siemens") as siemens:
             r, _ = await self._scrape_source("siemens", siemens, categories, dry_run)
+            runs.extend(r)
+
+        # IKEA (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with IkeaScraper() as ikea:
+            r, _ = await self._scrape_source("ikea", ikea, categories, dry_run)
+            runs.extend(r)
+
+        # Trendyol (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with TrendyolScraper() as trendyol:
+            r, _ = await self._scrape_source("trendyol", trendyol, categories, dry_run)
+            runs.extend(r)
+
+        # Vivense (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with VivenseScraper() as vivense:
+            r, _ = await self._scrape_source("vivense", vivense, categories, dry_run)
             runs.extend(r)
 
         return runs
