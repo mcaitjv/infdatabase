@@ -34,10 +34,11 @@ _BING_NEWS_URL   = "https://www.bing.com/news/search?q={query}&setlang=tr&cc=TR&
 # TL fiyat regex
 _PRICE_RE = re.compile(r"(\d{1,4}[.,]\d{2}|\d{1,4})\s*(?:TL|lira|₺)", re.IGNORECASE)
 
-# Sanity bounds: snapshot değerinin çarpanı olarak (enflasyon-dirençli)
-_SANITY_LO_MULT = 0.5
+# Sanity bounds: snapshot operatör doğrulaması — parse YALNIZCA snapshot'tan büyükse kabul.
+# Türkiye'de taksi tarifesi sadece yukarı gider; parse < snapshot ise eski haber sızdırması
+# veya yanlış parse'tır → reddet. Üst sınır enflasyon-dirençli (×5 snapshot).
+_SANITY_LO_MULT = 1.0
 _SANITY_HI_MULT = 5.0
-_ABSOLUTE_MIN   = 5.0
 
 # Çoğunluk oylaması: bir fiyatın kabul edilmesi için kaç haberden gelmeli
 _MIN_VOTES = 3
@@ -160,25 +161,36 @@ class GoogleNewsScraper:
 
     async def scrape(self, city: str, cfg: dict) -> list[TaxiPriceRecord]:
         """
-        Snapshot-first strateji:
-          1. taksi.yaml snapshot → kesin kayıtlar üret (her zaman)
-          2. change_detected ise Bing News'ten güncel fiyat parse dene (bonus)
-          3. Parse başarılı + sanity check geçerse snapshot kaydının üzerine yaz
+        Hibrit strateji (vapur deseniyle aynı): scrape-önce, snapshot fallback.
+
+          1. Bing News çoğunluk oylamasını her run'da dene (3+ makale aynı fiyatı söylemeli)
+          2. Sanity check geçen kategoriler snapshot'ın üzerine yazılır
+          3. Eşik geçilmezse / hata olursa: snapshot değeri korunur
+          4. detect_change True ise WARNING logu basılır (snapshot.last_updated güncellensin)
         """
         snapshot_cities = cfg.get("snapshot", {}).get("cities", {})
         categories      = cfg.get("categories", {})
 
-        # Katman 1: snapshot'tan temel kayıtlar
-        records = self._records_from_snapshot(city, snapshot_cities, categories, cfg)
+        snapshot_records = self._records_from_snapshot(city, snapshot_cities, categories, cfg)
 
-        # Katman 2: değişiklik varsa fiyat parse dene
-        change_detected = await self.detect_change(city, cfg)
-        if change_detected and self._browser:
-            parsed = await self._parse_from_news(city, cfg)
-            if parsed:
-                records = self._merge_with_sanity(records, parsed, categories)
+        parsed: list[TaxiPriceRecord] = []
+        if self._browser:
+            try:
+                parsed = await self._parse_from_news(city, cfg)
+            except Exception as exc:
+                logger.warning("[m07:taksi] %s: parse hata, snapshot fallback: %s", city, exc)
 
-        return records
+        try:
+            if await self.detect_change(city, cfg):
+                logger.warning(
+                    "[m07:taksi] %s: yeni tarife haberi tespit edildi — "
+                    "snapshot.last_updated güncellenmesi gerekebilir",
+                    city,
+                )
+        except Exception as exc:
+            logger.debug("[m07:taksi] %s: detect_change hata (yoksayıldı): %s", city, exc)
+
+        return self._merge_with_sanity(snapshot_records, parsed, categories)
 
     # ── Internal ─────────────────────────────────────────────────────────────
 
@@ -386,8 +398,9 @@ class GoogleNewsScraper:
     ) -> list[TaxiPriceRecord]:
         """
         Parse edilen değerleri snapshot'ın çarpanına göre sanity check'ten geçirir.
-        Geçerli (0.5x - 5x snapshot) ise snapshot değerinin üzerine yazar.
+        Yalnızca snapshot ÜZERİNDE bir parse (zam) kabul edilir; düşüş = eski haber.
 
+        Kabul koşulu: snapshot ≤ parse ≤ snapshot × _SANITY_HI_MULT
         Enflasyon-dirençli: snapshot her güncellendiğinde kabul aralığı da kayar.
         """
         parsed_map = {(r.city, r.category): r for r in parsed}
@@ -398,21 +411,22 @@ class GoogleNewsScraper:
             if candidate:
                 snap_price = float(rec.price)
                 cand_price = float(candidate.price)
-                lo = max(snap_price * _SANITY_LO_MULT, _ABSOLUTE_MIN)
+                lo = snap_price * _SANITY_LO_MULT   # = snap_price
                 hi = snap_price * _SANITY_HI_MULT
                 if lo <= cand_price <= hi:
                     result.append(candidate)
                     logger.info(
                         "[m07:taksi] %s/%s: snapshot %.2f → yeni %.2f TL "
-                        "(sanity OK, aralık %.1f-%.1f)",
+                        "(zam tespiti, aralık %.1f-%.1f)",
                         rec.city, rec.category, snap_price, cand_price, lo, hi,
                     )
                     continue
                 else:
+                    reason = "snapshot altında" if cand_price < lo else "üst sınır aşıldı"
                     logger.warning(
-                        "[m07:taksi] %s/%s: parse %.2f TL sanity dışında "
+                        "[m07:taksi] %s/%s: parse %.2f TL %s "
                         "[%.1f-%.1f, snapshot %.2f] — snapshot korunuyor",
-                        rec.city, rec.category, cand_price, lo, hi, snap_price,
+                        rec.city, rec.category, cand_price, reason, lo, hi, snap_price,
                     )
             result.append(rec)
         return result

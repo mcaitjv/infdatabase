@@ -608,7 +608,11 @@ class FuelModule(BaseModule):
         return [run]
 
     async def _run_taksi(self, dry_run: bool = False) -> list[ScrapeRun]:
-        """Taksi tarife fiyatlarını snapshot-first + Bing News change detection ile çeker."""
+        """Taksi tarife fiyatlarını hibrit strateji ile çeker (vapur deseniyle aynı):
+          1. Bing News çoğunluk oylaması her run'da denenir
+          2. 3+ makale aynı fiyatı söylüyor + sanity OK → snapshot ezilir
+          3. Yetersiz oy / sanity dışı / hata → snapshot fallback
+        """
         cfg = _load_taksi_config()
         tracked_cities: list[str] = cfg.get("tracked_cities", [])
 
@@ -622,7 +626,11 @@ class FuelModule(BaseModule):
             async with GoogleNewsScraper() as scraper:
                 for city in tracked_cities:
                     city_records = await scraper.scrape(city=city, cfg=cfg)
-                    logger.info("[m07] taksi %s: %d kayıt", city, len(city_records))
+                    snapshot_only = bool(city_records) and all(
+                        r.source_url == "taksi.yaml:snapshot" for r in city_records
+                    )
+                    mode = "snapshot fallback" if snapshot_only else "scrape başarılı"
+                    logger.info("[m07] taksi %s: %d kayıt (%s)", city, len(city_records), mode)
                     records.extend(city_records)
 
             run.products_scraped = len(records)
