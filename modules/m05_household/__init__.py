@@ -95,6 +95,7 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.beko import BekoScraper
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
+        from modules.m05_household.scrapers.ikea import IkeaScraper
 
         categories, part_map = _load_tracked()
         total_skus = 0
@@ -134,6 +135,10 @@ class HouseholdModule(BaseModule):
                     elif src_name in ("bosch", "siemens"):
                         async with BshScraper(brand=src_name) as s:
                             prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "ikea":
+                        async with IkeaScraper() as s:
+                            prods = await s.discover_category(src_cfg["keyword"], cat_key)
                             await s._sleep(*sleep_s)
                     else:
                         continue
@@ -180,8 +185,8 @@ class HouseholdModule(BaseModule):
                 source_config = sources[source_name]
                 if source_name == "vestel":
                     records = await scraper.scrape_tracked(tracked_skus, cat_key)
-                elif source_name == "samsung":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
+                elif source_name == "ikea":
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["keyword"])
                 else:
                     records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
 
