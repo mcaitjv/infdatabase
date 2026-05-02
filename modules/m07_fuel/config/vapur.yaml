@@ -1,0 +1,64 @@
+label: "Vapur & Deniz Otobüsü"
+
+# Strateji: hibrit
+#   1. Her route için scrape dene
+#   2. Scrape başarısız (0 kayıt veya hata) → snapshot kullan
+
+# Her route DB'de ayrı bir kayıt grubu — temsili rota değişirse bile
+# tarihsel veri (route bazlı) bütünlüğünü korur.
+
+# Snapshot: scraper başarısız olursa fallback (aynı route_key altında)
+snapshot:
+  last_updated: "2026-05-01"
+  routes:
+    karakoy_kadikoy:
+      tam_bilet:     59.28
+      ogrenci:       28.87
+    ido_kent_ici:
+      tam_bilet:     49.39
+      ogrenci:       24.32
+    mudanya_kabatas:
+      tam_bilet:     1250.00
+      ogrenci:       900.00
+
+# Bilet kategorileri (TÜİK COICOP: 0734001 = Vapur bileti ücreti)
+categories:
+  tam_bilet:
+    label: Tam Bilet
+    tuik_codes: ["0734001"]
+  ogrenci:
+    label: Öğrenci Bileti
+    tuik_codes: ["0734001"]
+
+# Operatör + rota tanımları
+routes:
+  karakoy_kadikoy:
+    label: "Şehir Hatları — Karaköy / Kadıköy"
+    operator: sehirhatlari
+    city: istanbul
+    route: karakoy_kadikoy
+    target_hat: "KARAKÖY - KADIKÖY"   # HTML tablosunda aranacak satır
+    source:
+      url: "https://sehirhatlari.istanbul/tr/ucret-tarifeleri"
+      scrape_method: static_html
+    categories: [tam_bilet, ogrenci]
+
+  ido_kent_ici:
+    label: "İDO — kent içi yolcu tarifesi"
+    operator: ido
+    city: istanbul
+    route: ido_kent_ici
+    source:
+      url: "https://www.ido.com.tr/tr/tarife/ucret-tarifesi"
+      scrape_method: playwright
+    categories: [tam_bilet, ogrenci]
+
+  mudanya_kabatas:
+    label: "BUDO — Mudanya / Kabataş"
+    operator: budo
+    city: bursa
+    route: mudanya_kabatas
+    source:
+      url: "https://budo.burulas.com.tr/tr/Budo/TicketPrice"
+      scrape_method: playwright
+    categories: [tam_bilet, ogrenci]
