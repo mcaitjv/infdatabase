@@ -22,10 +22,16 @@ class BaseModule(ABC):
     weight: float      # 24.44  (TÜFE sepet ağırlık %)
 
     @abstractmethod
-    async def run(self, dry_run: bool = False) -> list[ScrapeRun]:
+    async def run(
+        self,
+        dry_run: bool = False,
+        parts: list[str] | None = None,
+    ) -> list[ScrapeRun]:
         """
         Modülün veri çekme + DB yazma işlemini çalıştırır.
-        dry_run=True → veri çekilir ama DB'ye yazılmaz.
+        dry_run=True  → veri çekilir ama DB'ye yazılmaz.
+        parts=None    → tüm part'lar çalışır.
+        parts=[...]   → sadece belirtilen part slug'ları çalışır.
         Döndürür: tamamlanan ScrapeRun listesi.
         """
 

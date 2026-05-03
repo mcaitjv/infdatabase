@@ -1,0 +1,70 @@
+label: "Tren"
+
+# Her kategori bir güzergah (origin → destination).
+# Kaynak: ebilet.tcddtasimacilik.gov.tr
+# API: POST /tms/train/train-availability (JWT Bearer, Playwright üzerinden)
+# Tarih: scraper "Yarın" butonunu tıklar.
+# İstasyon eşlemeleri: tcddbilet.py içindeki _STATION_TERMS dict'i.
+#
+# İstanbul-İzmir doğrudan YHT hattı yok — bu güzergah kapsam dışı.
+
+categories:
+  istanbul_ankara:
+    label: İstanbul — Ankara
+    tuik_codes:
+      - "073301"   # Şehirlerarası tren bileti ücreti
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: ankara
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
+  ankara_istanbul:
+    label: Ankara — İstanbul (Pendik)
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: istanbul
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
+  istanbul_konya:
+    label: İstanbul — Konya
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: konya
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
+  istanbul_eskisehir:
+    label: İstanbul — Eskişehir
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: istanbul
+        dest_city: eskisehir
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
+  ankara_izmir:
+    label: Ankara — İzmir
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: izmir
+        url: "https://ebilet.tcddtasimacilik.gov.tr"
+
+  ankara_konya:
+    label: Ankara — Konya
+    tuik_codes:
+      - "073301"
+    sources:
+      tcddbilet:
+        origin_city: ankara
+        dest_city: konya
+        url: "https://ebilet.tcddtasimacilik.gov.tr"

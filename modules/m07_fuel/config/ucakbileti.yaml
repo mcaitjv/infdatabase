@@ -1,0 +1,92 @@
+label: "Uçak Bileti"
+
+# Kaynak: obilet.com — window.ob.page.model.bottomTable.data (aynı yapı, bus ile özdeş)
+# URL: https://www.obilet.com/ucak-bileti/{origin_slug}-{dest_slug}?date=DD.MM.YYYY
+# Tarih: bugün + 7 gün (dinamik hesaplanır)
+# Kayıt: yalnızca tracked_airlines listesindeki firmalar
+
+tracked_airlines:
+  - THY
+  - AJet
+  - Pegasus
+
+categories:
+
+  # ── Yurt içi ──────────────────────────────────────────────────────────────
+  istanbul_antalya:
+    label: İstanbul — Antalya
+    tuik_codes:
+      - "073201"   # Hava yolu bileti (yurt içi)
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: AYT
+        origin_slug: istanbul
+        dest_slug: antalya
+
+  istanbul_ankara:
+    label: İstanbul — Ankara
+    tuik_codes:
+      - "073201"
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: ESB
+        origin_slug: istanbul
+        dest_slug: ankara
+
+  istanbul_izmir:
+    label: İstanbul — İzmir
+    tuik_codes:
+      - "073201"
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: ADB
+        origin_slug: istanbul
+        dest_slug: izmir
+
+  # ── Yurt dışı ─────────────────────────────────────────────────────────────
+  istanbul_frankfurt:
+    label: İstanbul — Frankfurt
+    tuik_codes:
+      - "073202"   # Hava yolu bileti (yurt dışı)
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: FRA
+        origin_slug: istanbul
+        dest_slug: frankfurt
+
+  istanbul_amsterdam:
+    label: İstanbul — Amsterdam
+    tuik_codes:
+      - "073202"
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: AMS
+        origin_slug: istanbul
+        dest_slug: amsterdam
+
+  istanbul_londra:
+    label: İstanbul — Londra
+    tuik_codes:
+      - "073202"
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: LHR
+        origin_slug: istanbul
+        dest_slug: londra
+
+  istanbul_berlin:
+    label: İstanbul — Berlin
+    tuik_codes:
+      - "073202"
+    sources:
+      obilet:
+        origin_iata: IST
+        dest_iata: BER
+        origin_slug: istanbul
+        dest_slug: berlin

@@ -1,8 +1,4 @@
-# Modül 05 — Beyaz Eşya & Küçük Ev Aletleri Takip Listesi
-# --discover-m05 ile güncellenir. Eksik SKU'lar self-heal ile yenilenir.
-
-label: "Beyaz Eşya & Küçük Ev Aletleri"
-
+label: Beyaz Eşya & Küçük Ev Aletleri
 categories:
   buzdolabi:
     label: Buzdolabı
@@ -52,10 +48,6 @@ categories:
       brand: Samsung
       model: Bespoke AI Üstten Donduruculu Buzdolabı Twin Cooling™ 530L
       source: samsung
-    - sku: rb3000rm-twin-cooling-580l-silver-rb58ds75esa-tr
-      brand: Samsung
-      model: Alttan Donduruculu Buzdolabı Twin Cooling™ 580L
-      source: samsung
     - sku: rt6300c-top-mount-freezer-bespoke-design-465l-white-rt47cg6636wwtr
       brand: Samsung
       model: Bespoke AI Üstten Donduruculu Buzdolabı Space Max™ 465L
@@ -100,46 +92,6 @@ categories:
       brand: Beko
       model: 678551 EBC AI Fit
       source: beko
-    - sku: '7291620111'
-      brand: ARÇELİK
-      model: 278552 EI AI Fit
-      source: arcelik
-    - sku: '7296520186'
-      brand: ARÇELİK
-      model: 283616 EI
-      source: arcelik
-    - sku: '7295520166'
-      brand: ARÇELİK
-      model: 391572 EB
-      source: arcelik
-    - sku: '7291727736'
-      brand: ARÇELİK
-      model: 574509 MI
-      source: arcelik
-    - sku: '7296520147'
-      brand: ARÇELİK
-      model: 283613 EB
-      source: arcelik
-    - sku: '7296529446'
-      brand: ARÇELİK
-      model: 283616 IEBI
-      source: arcelik
-    - sku: '7285520143'
-      brand: ARÇELİK
-      model: 391641 EI
-      source: arcelik
-    - sku: '7289120164'
-      brand: ARÇELİK
-      model: 583632 EI Fit
-      source: arcelik
-    - sku: '7289120188'
-      brand: ARÇELİK
-      model: 578557 EB Fit
-      source: arcelik
-    - sku: '7289120157'
-      brand: ARÇELİK
-      model: 583632 EB Fit
-      source: arcelik
     - sku: KBN96ADD0
       brand: Bosch
       model: Serie 6 Alttan Donduruculu Ankastre Buzdolabı 193.5 x 70.8 cm softClosing
@@ -262,6 +214,50 @@ categories:
       brand: Vestel
       model: Vestel NFK48011 427 Lt No-Frost Buzdolabı
       source: vestel
+    - sku: '7286520155'
+      brand: ARÇELİK
+      model: 278551 EGC AI Fit
+      source: arcelik
+    - sku: '7291620111'
+      brand: ARÇELİK
+      model: 278552 EI AI Fit
+      source: arcelik
+    - sku: '7296520186'
+      brand: ARÇELİK
+      model: 283616 EI
+      source: arcelik
+    - sku: '7286520182'
+      brand: ARÇELİK
+      model: 278551 EBC AI Fit
+      source: arcelik
+    - sku: '7291620136'
+      brand: ARÇELİK
+      model: 278551 ESC AI Fit
+      source: arcelik
+    - sku: '7282120137'
+      brand: ARÇELİK
+      model: 278551 ESC
+      source: arcelik
+    - sku: '7202920107'
+      brand: ARÇELİK
+      model: 270475 IEGC
+      source: arcelik
+    - sku: '7202920108'
+      brand: ARÇELİK
+      model: 270475 IEBC
+      source: arcelik
+    - sku: '7202920106'
+      brand: ARÇELİK
+      model: 270475 IESC
+      source: arcelik
+    - sku: '7281620118'
+      brand: ARÇELİK
+      model: 274532 EB
+      source: arcelik
+    - sku: rb6000d-458l-white-rb45dg600ewwtr
+      brand: Samsung
+      model: Bespoke AI Alttan Donduruculu Buzdolabı Space Max 458L
+      source: samsung
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
@@ -446,10 +442,6 @@ categories:
       arcelik:
         path: /bulasik-makinesi
     tracked_skus:
-    - sku: dw8700-dw60bb890fapml-8-place-settings-satin-beige-dw60db890faptr
-      brand: Samsung
-      model: Bespoke AI Solo Bulaşık Makinesi Yapay Zeka Yıkama 11 program
-      source: samsung
     - sku: dw5500mm-13-place-settings-silver-dw60dg540fsrtr
       brand: Samsung
       model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 4 program
@@ -916,10 +908,6 @@ categories:
       brand: Samsung
       model: Kurutmalı Çamaşır Makinesi AI Yıkama 11kg + 6kg
       source: samsung
-    - sku: df7000cm-dryer-dual-airwash-dual-jetsteam-bulky-care-silver-df24cb9900crah
-      brand: Samsung
-      model: Giysi Bakım Dolabı (AirDresser) İkili Jet Buharı ve AI Kurutma
-      source: samsung
     - sku: ww7000d-front-loading-smartthings-ai-energy-made-a-20-percent-extra-energy-efficiency-ai-ecobubble-11kg-white-ww11db7b34geah
       brand: Samsung
       model: Bespoke AI Çamaşır Makinesi AI Ecobubble™ 11kg
@@ -1140,6 +1128,10 @@ categories:
       brand: Vestel
       model: Vestel CMI 97422 G WIFI 9 Kg 1200 Devir Çamaşır Makinesi
       source: vestel
+    - sku: ww6000d-front-loading-smartthings-ai-energy-mode-a-10-percent-extra-energy-efficiency-9kg-white-ww90dg6u25leah
+      brand: Samsung
+      model: Çamaşır Makinesi AI EcoBubble 9kg
+      source: samsung
   kurutma_makinesi:
     label: Çamaşır Kurutma Makinesi
     sources:
@@ -1372,18 +1364,6 @@ categories:
       siemens:
         path: /tr/tr/category/klimalar
     tracked_skus:
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h24cacw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 24.000 BTU
-      source: samsung
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h18cacb-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Black Duvar Tipi Split Klima 18.000 BTU
-      source: samsung
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar80h18caaw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Elite PM 1.0 Duvar Tipi Split Klima 18.000 BTU
-      source: samsung
     - sku: ar5000hm-ar40f12c0bm-sk-wind-free-ar5000hm-ar40f24c0bm-sk
       brand: Samsung
       model: Duvar Tipi Split Klima AR40 Dijital Inverter 24.000 BTU
@@ -1397,10 +1377,6 @@ categories:
       model: Bespoke AI WindFree Premium Black Duvar Tipi Split Klima AI WindFree
         9.000 BTU
       source: samsung
-    - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f18c1kw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Duvar Tipi Split Klima 18.000 BTU
-      source: samsung
     - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f09caaw-sk
       brand: Samsung
       model: Bespoke AI WindFree Premium Plus Duvar Tipi Split Klima AI WindFree 9.000
@@ -1410,10 +1386,6 @@ categories:
       brand: Samsung
       model: Bespoke AI WindFree Elite PM 1.0 Duvar Tipi Split Klima AI WindFree 9.000
         BTU
-      source: samsung
-    - sku: cac-packaged-air-conditioner-ac140bnpdkh-tk
-      brand: Samsung
-      model: Salon Tipi Klima (PAC)
       source: samsung
     - sku: '8505561200'
       brand: Beko
@@ -1455,46 +1427,6 @@ categories:
       brand: Beko
       model: '75526'
       source: beko
-    - sku: '8866271100'
-      brand: ARÇELİK
-      model: 18325 EKOLOJİK
-      source: arcelik
-    - sku: '9209361100'
-      brand: ARÇELİK
-      model: 09325 A
-      source: arcelik
-    - sku: '9208011100'
-      brand: ARÇELİK
-      model: '12670'
-      source: arcelik
-    - sku: '8511191100'
-      brand: ARÇELİK
-      model: 12220 P
-      source: arcelik
-    - sku: '8510851100'
-      brand: ARÇELİK
-      model: 34726 Monofaze Inverter Salon Tipi Klima
-      source: arcelik
-    - sku: '9209721100'
-      brand: ARÇELİK
-      model: 15325 S
-      source: arcelik
-    - sku: '9215521100'
-      brand: ARÇELİK
-      model: '26326'
-      source: arcelik
-    - sku: '8868301100'
-      brand: ARÇELİK
-      model: A24D30
-      source: arcelik
-    - sku: '8866251100'
-      brand: ARÇELİK
-      model: 24325 EKOLOJİK
-      source: arcelik
-    - sku: '9205831100'
-      brand: ARÇELİK
-      model: 07325 A
-      source: arcelik
     - sku: ASX18XB32N
       brand: Bosch
       model: Klima, Ev Tipi ,
@@ -1583,6 +1515,66 @@ categories:
       brand: Vestel
       model: Vestel NEFES INVERTER 122 GI Pro 12000 BTU WIFI Klima
       source: vestel
+    - sku: '9209361100'
+      brand: ARÇELİK
+      model: 09325 A
+      source: arcelik
+    - sku: '9208011100'
+      brand: ARÇELİK
+      model: '12670'
+      source: arcelik
+    - sku: '9209721100'
+      brand: ARÇELİK
+      model: 15325 S
+      source: arcelik
+    - sku: '9215521100'
+      brand: ARÇELİK
+      model: '26326'
+      source: arcelik
+    - sku: '8511191100'
+      brand: ARÇELİK
+      model: 12220 P
+      source: arcelik
+    - sku: '8510851100'
+      brand: ARÇELİK
+      model: 34726 Monofaze Inverter Salon Tipi Klima
+      source: arcelik
+    - sku: '9205831100'
+      brand: ARÇELİK
+      model: 07325 A
+      source: arcelik
+    - sku: '8866631100'
+      brand: ARÇELİK
+      model: A18D30
+      source: arcelik
+    - sku: '8866251100'
+      brand: ARÇELİK
+      model: 24325 EKOLOJİK
+      source: arcelik
+    - sku: '8868301100'
+      brand: ARÇELİK
+      model: A24D30
+      source: arcelik
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacw-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 9.000 BTU
+      source: samsung
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacb-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro Black Duvar Tipi Split Klima 9.000 BTU
+      source: samsung
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar80h09caaw-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro Elite PM 1.0 Duvar Tipi Split Klima 9.000 BTU
+      source: samsung
+    - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f24c1kw-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Duvar Tipi Split Klima 24.000 BTU
+      source: samsung
+    - sku: ajf600e-aj050txj2kh-ea-aj050txj2kh-ea
+      brand: Samsung
+      model: WindFree Multi Split Klima 9000 BTU + 12000 BTU
+      source: samsung
   elektrikli_supurge:
     label: Elektrikli Süpürge
     sources:
@@ -1751,10 +1743,6 @@ categories:
       brand: Bosch
       model: Şarjlı Süpürge Unlimited 9 Beyaz
       source: bosch
-    - sku: BCS712XXL
-      brand: Bosch
-      model: Şarjlı Süpürge Unlimited 7 Siyah
-      source: bosch
     - sku: BGS7POW2
       brand: Bosch
       model: Serie 8 Toz torbasız Süpürge ProPower Siyah
@@ -1839,6 +1827,10 @@ categories:
       brand: Vestel
       model: VESTEL H70 T Elektrikli Süpürge
       source: vestel
+    - sku: BGS7SIL1
+      brand: Bosch
+      model: Serie 8 Toz Torbasız Süpürge ProSilence Beyaz
+      source: bosch
   blender:
     label: Blender / Kesici Aletler
     sources:
@@ -1959,14 +1951,6 @@ categories:
       brand: Beko
       model: TKM 8961 K Yeni Keyf Türk Kahve Makinesi
       source: beko
-    - sku: '7489470202'
-      brand: Beko
-      model: TKM 8961 S Yeni Keyf Türk Kahve Makinesi
-      source: beko
-    - sku: '7489470201'
-      brand: Beko
-      model: TKM 8961 A Yeni Keyf Türk Kahve Makinesi
-      source: beko
     - sku: '7489770263'
       brand: Beko
       model: BKK 2300 Mini Keyf Rose Gold
@@ -1975,46 +1959,6 @@ categories:
       brand: Beko
       model: BKK 2221 C Beko Dem® Çay Makinesi
       source: beko
-    - sku: '7466000100'
-      brand: ARÇELİK
-      model: TKM 6448 Telve-X Sütlü
-      source: arcelik
-    - sku: '7465000102'
-      brand: ARÇELİK
-      model: TKM 3341 Telve-X Siyah
-      source: arcelik
-    - sku: '7489770133'
-      brand: ARÇELİK
-      model: K 3300 Mini Telve Beyaz
-      source: arcelik
-    - sku: '7465000101'
-      brand: ARÇELİK
-      model: TKM 3341 Telve-X Beyaz
-      source: arcelik
-    - sku: '7489770136'
-      brand: ARÇELİK
-      model: K 3300 Mini Telve Grion
-      source: arcelik
-    - sku: '7489470107'
-      brand: ARÇELİK
-      model: TKM 9961 G
-      source: arcelik
-    - sku: '7489770141'
-      brand: ARÇELİK
-      model: K 3300 LT
-      source: arcelik
-    - sku: '7489770140'
-      brand: ARÇELİK
-      model: K 3300 LS
-      source: arcelik
-    - sku: '8916021100'
-      brand: ARÇELİK
-      model: FRA 6244 Gurme Fry
-      source: arcelik
-    - sku: '8916981100'
-      brand: ARÇELİK
-      model: FRA 9494 Gurme TrioFry®
-      source: arcelik
     - sku: MMB6654B
       brand: Bosch
       model: Serie 6 High performance Blender VitaPower 1800 W Siyah
@@ -2056,6 +2000,54 @@ categories:
       brand: Bosch
       model: Serie 4 El Blenderı ErgoMaster 1000 W Siyah, Antrasit
       source: bosch
+    - sku: '7489470102'
+      brand: ARÇELİK
+      model: TKM 9961 S Telve
+      source: arcelik
+    - sku: '7489770138'
+      brand: ARÇELİK
+      model: K 3300 CR
+      source: arcelik
+    - sku: '8834231100'
+      brand: ARÇELİK
+      model: S 6255 C Toz Torbası
+      source: arcelik
+    - sku: '8835771100'
+      brand: ARÇELİK
+      model: S 4540 T Toz Torbalı
+      source: arcelik
+    - sku: '8837651100'
+      brand: ARÇELİK
+      model: K 3700 Telve Pro
+      source: arcelik
+    - sku: '8839981100'
+      brand: ARÇELİK
+      model: K 1583 SMS
+      source: arcelik
+    - sku: '8904520100'
+      brand: ARÇELİK
+      model: S 7610 Robotto
+      source: arcelik
+    - sku: '8910401100'
+      brand: ARÇELİK
+      model: Imperium® TSZ 6083
+      source: arcelik
+    - sku: '8910861100'
+      brand: ARÇELİK
+      model: TRB 3174
+      source: arcelik
+    - sku: '8911061100'
+      brand: ARÇELİK
+      model: Aria™ MasterPro BKU 9130
+      source: arcelik
+    - sku: '7489770270'
+      brand: Beko
+      model: BKK 2300 LA
+      source: beko
+    - sku: '8810271200'
+      brand: Beko
+      model: BKK 2145
+      source: beko
   cay_makinesi:
     label: Elektrikli Çay Makinesi
     sources:

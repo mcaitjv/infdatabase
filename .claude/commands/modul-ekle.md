@@ -3,7 +3,7 @@
 Tek bir komut, üç iş yapar:
 - **(a)** Yeni COICOP modülü ekle (scaffold + dal + scraper referansı)
 - **(b)** Mevcut bir modül üzerinde çalışmaya başla (dal + context)
-- **(c)** Mevcut Tip B modüle yeni part ekle (yeni config YAML + scraper iskeleti)
+- **(c)** Mevcut modüle yeni part ekle — Tip B veya Tip C (yeni config YAML + scraper iskeleti)
 
 ## Kullanım
 
@@ -36,6 +36,7 @@ Kullanıcı argüman vermemişse `AskUserQuestion` ile sor:
 - Seçenekler:
   - `a) Yeni modül ekle` — henüz eklenmemiş bir COICOP grubu için iskelet kur
   - `b) Mevcut modülde çalış` — mevcut modülün dalına geç ve context hazırla
+  - `c) Mevcut modüle yeni part ekle` — mevcut modüle yeni config YAML + scraper iskeleti ekle
 
 Tek sayısal argüman verilmişse (`/modul-ekle 05`) ve `modules/m05_*/` varsa **(b)**'ye geç.
 İki argüman verilmişse (`/modul-ekle 05 mobilya`) → **(c)**'ye geç.
@@ -123,10 +124,9 @@ Kullanıcıya sor: **"Hangi kısımdan başlayalım?"**
 - Keyword/lokasyon listesi doldurma
 - DB schema (yeni tablo gerekiyor mu?)
 
-### 3. (c) Mevcut Tip B modüle yeni part ekle
+### 3. (c) Mevcut modüle yeni part ekle (Tip B veya Tip C)
 
-Sadece **Tip B (Discovery + Tracked)** modüller için geçerlidir.
-M05 gibi multi-part config yapısı (`config/*.yaml` glob) olan modüllerde yeni bir ürün grubu ekler.
+Mevcut bir modüle yeni bir ürün/hizmet grubu ekler. Tip B (Discovery + Tracked) ve Tip C (Location-based) modülleri destekler.
 
 #### 3c.1 Parametreleri topla
 
@@ -147,9 +147,19 @@ git checkout -b feature/module-<KOD>-<slug>-<YYYYMMDD>
 
 **Mevcut bir branch'e geçme** — eski branch'ler main'den geride kalabilir.
 
+#### 3c.2b Context yükle — minimal
+
+Part eklerken yalnızca şunları oku:
+- `modules/m<KOD>_<slug>/config/*.yaml` — format referansı (ilk 30 satır yeterli)
+- `modules/m<KOD>_<slug>/__init__.py`'nin `run()` fonksiyonu — dispatcher güncelleme için
+
+**OKUMA:** Tüm scraper dosyaları, `__init__.py`'nin geri kalanı, diğer modüller — ihtiyaç olmadıkça OKUMA.
+
 #### 3c.3 Config dosyası oluştur
 
-`modules/m<KOD>_<slug>/config/<part_slug>.yaml` dosyasını yarat:
+`modules/m<KOD>_<slug>/config/<part_slug>.yaml` dosyasını yarat.
+
+**Tip B (Discovery + Tracked)** şablonu:
 
 ```yaml
 label: "<Part Label>"
@@ -168,6 +178,24 @@ categories:
 Her kategori için kullanıcının belirttiği kaynakları `sources:` altına ekle.
 `tracked_skus: []` boş bırak — discovery komutu dolduracak.
 
+**Tip C (Location-based)** şablonu:
+
+```yaml
+label: "<Part Label>"
+
+categories:
+  <kategori>:
+    label: <Türkçe ad>
+    tuik_codes:
+      - "<TÜİK kodu>"
+    sources:
+      <kaynak_slug>:
+        city: <city>
+        url: "<tam URL>"
+```
+
+`tuik_codes` opsiyonel; varsa kullanıcıdan al. Her kaynak için `city` ve `url` girilir.
+
 #### 3c.4 Scraper iskeleti sor
 
 Her yeni kaynak (site) için scraper yazılması gerekir. Kullanıcıya sor:
@@ -176,16 +204,21 @@ Her yeni kaynak (site) için scraper yazılması gerekir. Kullanıcıya sor:
 > Yoksa mevcut bir scraper'ı mı genişletelim?"
 
 Cevaba göre:
-- **Yeni scraper** → `modules/m<KOD>_<slug>/scrapers/<kaynak>.py` iskelet dosyası oluştur (BaseScraper extend, `discover_category` + `scrape_tracked` boş method stub)
+- **Yeni scraper (Tip B)** → `modules/m<KOD>_<slug>/scrapers/<kaynak>.py` iskelet (BaseScraper extend, `discover_category` + `scrape_tracked` boş method stub)
+- **Yeni scraper (Tip C)** → `modules/m<KOD>_<slug>/scrapers/<kaynak>.py` iskelet (kendi `__aenter__`/`__aexit__`, `scrape(city, url) -> list[<Record>]` boş method stub; Playwright tabanlı)
 - **Mevcut scraper genişletme** → ilgili scraper'a kategori mapping ekle
 
 #### 3c.5 `__init__.py` dispatch güncelle
 
-Yeni kaynak `__init__.py`'nin `_scrape_source` dispatcher'ında tanımlı değilse uyar:
+Yeni kaynak `__init__.py`'nin dispatcher'ında tanımlı değilse uyar:
 
 > "`<kaynak>` scraper'ı henüz `run()` fonksiyonuna eklenmemiş. Ekleyeyim mi?"
 
-Onay alınırsa `run()` içine yeni scraper bloğunu ekle.
+Onay alınırsa:
+- **Tip B** → `_scrape_source()` dispatcher'ına ekle
+- **Tip C** → Yeni `_run_<part_slug>()` fonksiyonu oluştur, `run()` içinden çağır. Ayrıca `_load_<part_slug>_config()` fonksiyonu ekle.
+
+Her iki tipte de: yeni DB modeli ve repository fonksiyonu gerekiyorsa, `db/models.py` ve `db/repository.py` güncellenmesi gerektiğini belirt.
 
 #### 3c.6 Commit
 

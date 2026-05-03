@@ -2,14 +2,16 @@
 Pipeline Runner — Modül tabanlı orkestratör
 --------------------------------------------
 Kullanım:
-  python -m pipeline.runner                          # tüm modülleri çalıştır
-  python -m pipeline.runner --module 01              # sadece Gıda modülü
-  python -m pipeline.runner --module 01,07           # Gıda + Yakıt
-  python -m pipeline.runner --dry-run                # DB'ye yazmadan test
-  python -m pipeline.runner --setup-schema           # DB tablolarını oluştur (ilk kurulumda)
-  python -m pipeline.runner --discover-branches      # Gıda modülü şube keşfi
-  python -m pipeline.runner --health-check           # Sağlık raporu (bugün)
-  python -m pipeline.runner --health-check --date 2026-04-09  # Belirli tarih
+  python -m pipeline.runner                                     # tüm modülleri çalıştır
+  python -m pipeline.runner --module 01                         # sadece Gıda modülü
+  python -m pipeline.runner --module 01,07                      # Gıda + Yakıt
+  python -m pipeline.runner --module 07 --part sehirlerarasi_otobus   # tek part
+  python -m pipeline.runner --module 07 --part yolcu_tasima,sehirlerarasi_otobus
+  python -m pipeline.runner --dry-run                           # DB'ye yazmadan test
+  python -m pipeline.runner --setup-schema                      # DB tablolarını oluştur
+  python -m pipeline.runner --discover-branches                 # Gıda modülü şube keşfi
+  python -m pipeline.runner --health-check                      # Sağlık raporu (bugün)
+  python -m pipeline.runner --health-check --date 2026-04-09   # Belirli tarih
 """
 
 import argparse
@@ -91,6 +93,7 @@ async def main(
     do_discover_m05: bool,
     do_health_check: bool,
     health_date: date | None,
+    parts: list[str] | None = None,
 ) -> None:
     if do_discover:
         await FoodModule().discover_branches()
@@ -115,7 +118,7 @@ async def main(
         return
 
     try:
-        await _run_modules(module_codes, dry_run, setup_schema)
+        await _run_modules(module_codes, dry_run, setup_schema, parts)
     finally:
         _release_lock()
 
@@ -124,6 +127,7 @@ async def _run_modules(
     module_codes: list[str] | None,
     dry_run: bool,
     setup_schema: bool,
+    parts: list[str] | None = None,
 ) -> None:
     # branches.yaml boşsa uyar
     _branches_path = os.path.join("config", "branches.yaml")
@@ -152,7 +156,7 @@ async def _run_modules(
             "[runner] Modül %s başlıyor: %s (ağırlık: %.2f%%)",
             mod.coicop_code, mod.name, mod.weight,
         )
-        runs = await mod.run(dry_run=dry_run)
+        runs = await mod.run(dry_run=dry_run, parts=parts)
         success = sum(1 for r in runs if r.status == "success")
         failed  = sum(1 for r in runs if r.status == "failed")
         logger.info(
@@ -182,6 +186,12 @@ if __name__ == "__main__":
         help="Virgülle ayrılmış COICOP modül kodları (örn: 01,07). Varsayılan: tüm modüller.",
     )
     parser.add_argument("--dry-run", action="store_true", help="DB'ye yazma, sadece ekrana bas")
+    parser.add_argument(
+        "--part",
+        default=None,
+        help="Virgülle ayrılmış part slug'ları (örn: sehirlerarasi_otobus,yolcu_tasima). "
+             "Varsayılan: tüm part'lar. Yalnızca --module ile birlikte kullanılır.",
+    )
     parser.add_argument("--setup-schema", action="store_true", help="DB tablolarını oluştur")
     parser.add_argument(
         "--discover-branches",
@@ -207,6 +217,7 @@ if __name__ == "__main__":
 
     codes = [c.strip() for c in args.module.split(",")] if args.module else None
     hdate = date.fromisoformat(args.date) if args.date else None
+    parts = [p.strip() for p in args.part.split(",")] if args.part else None
 
     asyncio.run(main(
         module_codes     = codes,
@@ -216,4 +227,5 @@ if __name__ == "__main__":
         do_discover_m05  = args.discover_m05,
         do_health_check  = args.health_check,
         health_date      = hdate,
+        parts            = parts,
     ))

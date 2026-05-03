@@ -91,7 +91,115 @@ CREATE INDEX IF NOT EXISTS idx_fap_key_date ON m05_fact_appliance_price(applianc
 CREATE INDEX IF NOT EXISTS idx_dim_category ON m05_dim_appliance(category);
 CREATE INDEX IF NOT EXISTS idx_dim_source   ON m05_dim_appliance(source);
 
+-- Sıfır araç fiyatları (Modül 07 — COICOP 07.1)
+CREATE TABLE IF NOT EXISTS m07_car_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    brand       TEXT    NOT NULL,
+    model       TEXT    NOT NULL,
+    variant     TEXT    NOT NULL,
+    segment     TEXT    NOT NULL,
+    yakit_tipi  TEXT    NOT NULL DEFAULT 'benzin',
+    price       REAL    NOT NULL,
+    currency    TEXT    DEFAULT 'TRY',
+    date        TEXT    NOT NULL,
+    UNIQUE (brand, model, variant, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_date     ON m07_car_prices(date);
+CREATE INDEX IF NOT EXISTS idx_cp_brand    ON m07_car_prices(brand);
+CREATE INDEX IF NOT EXISTS idx_cp_segment  ON m07_car_prices(segment);
+
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON m01_price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON m01_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON m01_price_snapshots(location);
 CREATE INDEX IF NOT EXISTS idx_mp_market       ON m01_market_products(market);
+
+-- Toplu taşıma fiyatları (Modül 07 — COICOP 0732/0734)
+CREATE TABLE IF NOT EXISTS m07_transport_prices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider    TEXT    NOT NULL,
+    city        TEXT    NOT NULL,
+    ticket_type TEXT    NOT NULL,
+    price       REAL    NOT NULL,
+    date        TEXT    NOT NULL,
+    UNIQUE(provider, city, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_intercity_bus_prices (
+    id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+    provider    TEXT     NOT NULL,
+    origin_city TEXT     NOT NULL,
+    dest_city   TEXT     NOT NULL,
+    operator    TEXT     NOT NULL,
+    ticket_type TEXT     NOT NULL DEFAULT 'economy',
+    price       REAL     NOT NULL,
+    date        TEXT     NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, operator, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ibp_route    ON m07_intercity_bus_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_ibp_provider ON m07_intercity_bus_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_train_prices (
+    id           INTEGER  PRIMARY KEY AUTOINCREMENT,
+    provider     TEXT     NOT NULL,
+    origin_city  TEXT     NOT NULL,
+    dest_city    TEXT     NOT NULL,
+    train_type   TEXT     NOT NULL,
+    ticket_class TEXT     NOT NULL DEFAULT 'economy',
+    price        REAL     NOT NULL,
+    date         TEXT     NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, train_type, ticket_class, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp2_route    ON m07_train_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_tp2_provider ON m07_train_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_flight_prices (
+    id             INTEGER  PRIMARY KEY AUTOINCREMENT,
+    provider       TEXT     NOT NULL,
+    origin_iata    TEXT     NOT NULL,
+    dest_iata      TEXT     NOT NULL,
+    airline        TEXT     NOT NULL,    -- Havayolu adı: 'THY' | 'Pegasus' | 'Lufthansa'
+    cabin          TEXT     NOT NULL DEFAULT 'ECONOMY',
+    price          REAL     NOT NULL,
+    currency       TEXT     NOT NULL DEFAULT 'TRY',
+    departure_date TEXT     NOT NULL,
+    scraped_date   TEXT     NOT NULL,
+    UNIQUE(provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fp2_route   ON m07_flight_prices(origin_iata, dest_iata, scraped_date);
+CREATE INDEX IF NOT EXISTS idx_fp2_airline ON m07_flight_prices(airline);
+
+CREATE TABLE IF NOT EXISTS m07_taxi_prices (
+    id           INTEGER  PRIMARY KEY AUTOINCREMENT,
+    city         TEXT     NOT NULL,    -- 'istanbul' | 'ankara' | 'izmir'
+    category     TEXT     NOT NULL,    -- 'acilis' | 'km_ucreti' | 'indi_bindi'
+    price        REAL     NOT NULL,
+    date         TEXT     NOT NULL,
+    source_url   TEXT     NOT NULL DEFAULT '',
+    source_title TEXT     NOT NULL DEFAULT '',
+    UNIQUE(city, category, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_txp_city_date ON m07_taxi_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_txp_category  ON m07_taxi_prices(category);
+
+CREATE TABLE IF NOT EXISTS m07_ferry_prices (
+    id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+    operator    TEXT     NOT NULL,
+    city        TEXT     NOT NULL,
+    route       TEXT     NOT NULL,
+    ticket_type TEXT     NOT NULL,
+    price       REAL     NOT NULL,
+    date        TEXT     NOT NULL,
+    source_url  TEXT     NOT NULL DEFAULT '',
+    UNIQUE(operator, city, route, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fr_op_date ON m07_ferry_prices(operator, date);
+CREATE INDEX IF NOT EXISTS idx_fr_route   ON m07_ferry_prices(route);

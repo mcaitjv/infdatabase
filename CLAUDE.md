@@ -33,19 +33,7 @@ python -m pipeline.runner --dry-run
 
 ## Veritabanı
 
-**Varsayılan:** `data/prices.db` — yerel SQLite, sıfır kurulum.  
 **Production:** Neon PostgreSQL (neon.tech free tier, 512 MB).
-
-```python
-import duckdb
-con = duckdb.connect("data/prices.db")
-# M01 — market fiyatları
-con.sql("SELECT market, COUNT(*) FROM m01_market_products GROUP BY 1 ORDER BY 2 DESC").show()
-# M05 — beyaz eşya / mobilya
-con.sql("SELECT source, category, COUNT(*) FROM m05_dim_appliance GROUP BY 1,2 ORDER BY 3 DESC").show()
-# M07 — akaryakıt
-con.sql("SELECT provider, city, fuel_type, price, date FROM m07_fuel_prices ORDER BY date DESC LIMIT 20").show()
-```
 
 ---
 
@@ -223,7 +211,6 @@ async def test():
 asyncio.run(test())
 "
 ```
-
 ---
 
 ## Otomasyon
@@ -237,8 +224,6 @@ asyncio.run(test())
 
 - `data/prices.db` ve `.env` git'e eklenmez
 - CSV arşiv: 60 günden eski veriler otomatik export edilir → `data/exports/`
-- Tüm tablo adları modül prefix'li: `m01_`, `m05_`, `m07_`, `shared_`
-- Shell TR (`shell.com.tr`) bazı şehirlerde headless Chromium'u bloklar — Petrol Ofisi öncelikli
 - Opet İstanbul slug: `istanbul-anadolu`
 - `config/branches.yaml` yoksa proximity search'e fallback (Modül 01)
 - M05 mobilya → IKEA ürünleri Playwright gerektirir; Trendyol ve Vivense httpx ile çalışır

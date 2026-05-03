@@ -98,6 +98,24 @@ CREATE INDEX IF NOT EXISTS idx_fap_key_date ON m05_fact_appliance_price(applianc
 CREATE INDEX IF NOT EXISTS idx_dim_category ON m05_dim_appliance(category);
 CREATE INDEX IF NOT EXISTS idx_dim_source   ON m05_dim_appliance(source);
 
+-- Sıfır araç fiyatları (Modül 07 — COICOP 07.1)
+CREATE TABLE IF NOT EXISTS m07_car_prices (
+    id          SERIAL        PRIMARY KEY,
+    brand       VARCHAR(100)  NOT NULL,
+    model       VARCHAR(255)  NOT NULL,
+    variant     VARCHAR(255)  NOT NULL,
+    segment     VARCHAR(50)   NOT NULL,
+    yakit_tipi  VARCHAR(20)   NOT NULL DEFAULT 'benzin',
+    price       NUMERIC(12,2) NOT NULL,
+    currency    VARCHAR(10)   DEFAULT 'TRY',
+    date        DATE          NOT NULL,
+    UNIQUE (brand, model, variant, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_date    ON m07_car_prices(date);
+CREATE INDEX IF NOT EXISTS idx_cp_brand   ON m07_car_prices(brand);
+CREATE INDEX IF NOT EXISTS idx_cp_segment ON m07_car_prices(segment);
+
 -- ---- Performans indeksleri ----
 
 -- Tarih bazlı sorgular (enflasyon hesaplama, trend)
@@ -119,3 +137,93 @@ CREATE INDEX IF NOT EXISTS idx_mp_market
 -- Barkod aramaları
 CREATE INDEX IF NOT EXISTS idx_products_barcode
     ON products(barcode) WHERE barcode IS NOT NULL;
+
+-- Toplu taşıma fiyatları (Modül 07 — COICOP 0732/0734)
+CREATE TABLE IF NOT EXISTS m07_transport_prices (
+    id          SERIAL        PRIMARY KEY,
+    provider    VARCHAR(50)   NOT NULL,    -- 'iett' | 'ego' | 'izmirimkart'
+    city        VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara' | 'izmir'
+    ticket_type VARCHAR(50)   NOT NULL,    -- 'tam' | 'ogrenci' | 'indirimli' | 'genc'
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    UNIQUE(provider, city, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp_city_date ON m07_transport_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_tp_provider  ON m07_transport_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_intercity_bus_prices (
+    id          SERIAL        PRIMARY KEY,
+    provider    VARCHAR(50)   NOT NULL,    -- 'obilet' | 'biletall'
+    origin_city VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara'
+    dest_city   VARCHAR(50)   NOT NULL,    -- 'ankara' | 'izmir' | 'antalya'
+    operator    VARCHAR(100)  NOT NULL,    -- 'Metro Turizm' | 'Kamil Koç' | ...
+    ticket_type VARCHAR(50)   NOT NULL DEFAULT 'economy',
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, operator, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ibp_route    ON m07_intercity_bus_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_ibp_provider ON m07_intercity_bus_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_train_prices (
+    id           SERIAL        PRIMARY KEY,
+    provider     VARCHAR(50)   NOT NULL,    -- 'tcddbilet'
+    origin_city  VARCHAR(50)   NOT NULL,
+    dest_city    VARCHAR(50)   NOT NULL,
+    train_type   VARCHAR(50)   NOT NULL,    -- 'yht' | 'intercity'
+    ticket_class VARCHAR(50)   NOT NULL DEFAULT 'economy',
+    price        NUMERIC(10,4) NOT NULL,
+    date         DATE          NOT NULL,
+    UNIQUE(provider, origin_city, dest_city, train_type, ticket_class, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tp2_route    ON m07_train_prices(origin_city, dest_city, date);
+CREATE INDEX IF NOT EXISTS idx_tp2_provider ON m07_train_prices(provider);
+
+CREATE TABLE IF NOT EXISTS m07_flight_prices (
+    id             SERIAL        PRIMARY KEY,
+    provider       VARCHAR(50)   NOT NULL,    -- 'amadeus'
+    origin_iata    VARCHAR(3)    NOT NULL,    -- 'IST'
+    dest_iata      VARCHAR(3)    NOT NULL,    -- 'AYT' | 'FRA' | ...
+    airline        VARCHAR(100)  NOT NULL,    -- Havayolu adı: 'THY' | 'Pegasus' | 'Lufthansa'
+    cabin          VARCHAR(20)   NOT NULL DEFAULT 'ECONOMY',
+    price          NUMERIC(10,4) NOT NULL,
+    currency       VARCHAR(3)    NOT NULL DEFAULT 'TRY',
+    departure_date DATE          NOT NULL,    -- bugün + 7 gün
+    scraped_date   DATE          NOT NULL,
+    UNIQUE(provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fp2_route    ON m07_flight_prices(origin_iata, dest_iata, scraped_date);
+CREATE INDEX IF NOT EXISTS idx_fp2_airline  ON m07_flight_prices(airline);
+
+CREATE TABLE IF NOT EXISTS m07_taxi_prices (
+    id           SERIAL        PRIMARY KEY,
+    city         VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'ankara' | 'izmir'
+    category     VARCHAR(20)   NOT NULL,    -- 'acilis' | 'km_ucreti' | 'indi_bindi'
+    price        NUMERIC(10,4) NOT NULL,
+    date         DATE          NOT NULL,    -- snapshot.last_updated veya haber tarihi
+    source_url   TEXT          NOT NULL DEFAULT '',
+    source_title TEXT          NOT NULL DEFAULT '',
+    UNIQUE(city, category, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_txp_city_date ON m07_taxi_prices(city, date);
+CREATE INDEX IF NOT EXISTS idx_txp_category  ON m07_taxi_prices(category);
+
+CREATE TABLE IF NOT EXISTS m07_ferry_prices (
+    id          SERIAL        PRIMARY KEY,
+    operator    VARCHAR(50)   NOT NULL,    -- 'sehirhatlari' | 'ido' | 'izdeniz' | 'budo'
+    city        VARCHAR(50)   NOT NULL,    -- 'istanbul' | 'izmir' | 'bursa'
+    route       VARCHAR(100)  NOT NULL,    -- 'kent_ici' | 'istanbul-yalova' | 'bursa-istanbul'
+    ticket_type VARCHAR(50)   NOT NULL,    -- 'tam_bilet' | 'ogrenci' | 'aylik_abonman'
+    price       NUMERIC(10,4) NOT NULL,
+    date        DATE          NOT NULL,
+    source_url  TEXT          NOT NULL DEFAULT '',
+    UNIQUE(operator, city, route, ticket_type, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fr_op_date ON m07_ferry_prices(operator, date);
+CREATE INDEX IF NOT EXISTS idx_fr_route   ON m07_ferry_prices(route);

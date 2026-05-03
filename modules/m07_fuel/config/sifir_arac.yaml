@@ -1,0 +1,55 @@
+label: "Sıfır Araç Satışları"
+
+# path değerleri discovery aşamasında doldurulacak.
+# tracked_skus: discovery sonrası otomatik dolar.
+
+categories:
+  binek:
+    label: Binek (Sedan / Hatchback)
+    sources:
+      renault:    {path: "/fiyat-listesi.html"}
+      fiat:       {path: "/fiyat-listesi"}
+      volkswagen: {path: "/tr/modeller-fiyatlar/volkswagen-fiyat-listesi.html"}
+      ford:       {path: "/fiyat-listesi/otomobil"}
+      toyota:     {path: "/modeller"}
+      peugeot:    {path: "/fiyat-listesi/"}
+      opel:       {path: "/binek-araclar"}
+      citroen:    {path: "/fiyat-listesi"}
+      hyundai:    {path: "/tr/tr/satis/fiyat-listesi.html"}
+      skoda:      {path: "/fiyat-listesi"}
+      kia:        {path: "/satis-merkezi/fiyat-listesi.html"}
+      dacia:      {path: "/dacia-fiyat-listesi.html"}
+      honda:      {path: "/otomobil/otomobil-fiyat-listesi-2025"}
+      nissan:     {path: "/fiyat-listesi.html"}
+      mercedes:   {path: "/model"}
+      bmw:        {path: "/tr/fastlane/bmw-fiyat-listesi.html"}
+      audi:       {path: "/2026"}
+    tracked_skus: []
+
+  suv:
+    label: SUV / Crossover
+    sources:
+      toyota:      {path: "/modeller"}
+      volkswagen:  {path: "/tr/modeller-fiyatlar/volkswagen-fiyat-listesi.html"}
+      ford:        {path: "/fiyat-listesi/otomobil"}
+      hyundai:     {path: "/tr/tr/satis/fiyat-listesi.html"}
+      byd:         {path: "/fiyat-listesi"}
+      fiat:        {path: "/fiyat-listesi"}
+      mercedes:    {path: "/model"}
+      togg:        {path: "/price-list"}
+      bmw:         {path: "/tr/fastlane/bmw-fiyat-listesi.html"}
+      tesla:       {path: "/tr_TR"}  # arabam.com kaynak; _scrape_tesla URL'i sabit kullanır
+      chery:       {path: "/sifir-arac-fiyatlari/"}
+      kg_mobility: {path: "/fiyat-listesi"}
+      audi:        {path: "/2026"}
+      volvo:       {path: ""}  # 403
+      renault:     {path: "/fiyat-listesi.html"}
+      nissan:      {path: "/fiyat-listesi.html"}
+      kia:         {path: "/satis-merkezi/fiyat-listesi.html"}
+      peugeot:     {path: "/fiyat-listesi/"}
+      citroen:     {path: "/fiyat-listesi"}
+      skoda:       {path: "/fiyat-listesi"}
+      opel:        {path: "/binek-araclar"}
+      honda:       {path: "/otomobil/otomobil-fiyat-listesi-2025"}
+      ssangyong:   {path: ""}
+    tracked_skus: []

@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, FuelPriceRecord, PriceRecord, ScrapeRun
+from db.models import AppliancePriceRecord, CarPriceRecord, FerryPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TaxiPriceRecord, TrainRecord, TransportPriceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -371,6 +371,323 @@ async def batch_upsert_appliance_prices(conn, records: list[AppliancePriceRecord
     inserted = 0
     for r in records:
         if await upsert_appliance_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+# ── Modül 07 — Sıfır araç fiyatları ─────────────────────────────────────────
+
+async def upsert_car_price(conn, record: CarPriceRecord) -> bool:
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT OR IGNORE INTO m07_car_prices
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            record.yakit_tipi, float(record.price), record.currency, str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_car_prices
+                (brand, model, variant, segment, yakit_tipi, price, currency, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7, $8::date)
+            ON CONFLICT (brand, model, variant, date) DO NOTHING
+            """,
+            record.brand, record.model, record.variant, record.segment,
+            record.yakit_tipi, float(record.price), record.currency, rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_car_prices(conn, records: list[CarPriceRecord]) -> int:
+    """Toplu araç fiyatı ekler. Döndürür: eklenen yeni satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_car_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+# ── Modül 07 — Toplu taşıma fiyatları ────────────────────────────────────────
+
+async def upsert_transport_price(conn, record: TransportPriceRecord) -> bool:
+    """
+    m07_transport_prices tablosuna toplu taşıma fiyatı ekler.
+    Aynı (provider, city, ticket_type, date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_transport_prices (provider, city, ticket_type, price, date)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT (provider, city, ticket_type, date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.city, record.ticket_type,
+            float(record.price), str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_transport_prices (provider, city, ticket_type, price, date)
+            VALUES ($1, $2, $3, $4::numeric, $5::date)
+            ON CONFLICT (provider, city, ticket_type, date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.city, record.ticket_type,
+            float(record.price), rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_transport_prices(conn, records: list[TransportPriceRecord]) -> int:
+    """Toplu taşıma fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_transport_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_intercity_bus_price(conn, record: IntercityBusRecord) -> bool:
+    """
+    m07_intercity_bus_prices tablosuna şehirlerarası otobüs fiyatı ekler.
+    Aynı (provider, origin_city, dest_city, operator, ticket_type, date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_intercity_bus_prices
+                (provider, origin_city, dest_city, operator, ticket_type, price, date)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (provider, origin_city, dest_city, operator, ticket_type, date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.operator, record.ticket_type,
+            float(record.price), str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_intercity_bus_prices
+                (provider, origin_city, dest_city, operator, ticket_type, price, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7::date)
+            ON CONFLICT (provider, origin_city, dest_city, operator, ticket_type, date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.operator, record.ticket_type,
+            float(record.price), rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_intercity_bus_prices(conn, records: list[IntercityBusRecord]) -> int:
+    """Şehirlerarası otobüs fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_intercity_bus_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_train_price(conn, record: TrainRecord) -> bool:
+    """
+    m07_train_prices tablosuna tren bileti fiyatı ekler.
+    Aynı (provider, origin_city, dest_city, train_type, ticket_class, date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_train_prices
+                (provider, origin_city, dest_city, train_type, ticket_class, price, date)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (provider, origin_city, dest_city, train_type, ticket_class, date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.train_type, record.ticket_class,
+            float(record.price), str(rec_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_train_prices
+                (provider, origin_city, dest_city, train_type, ticket_class, price, date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7::date)
+            ON CONFLICT (provider, origin_city, dest_city, train_type, ticket_class, date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.origin_city, record.dest_city,
+            record.train_type, record.ticket_class,
+            float(record.price), rec_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_train_prices(conn, records: list[TrainRecord]) -> int:
+    """Tren bileti fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_train_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_flight_price(conn, record: FlightPriceRecord) -> bool:
+    """
+    m07_flight_prices tablosuna uçak bileti fiyatı ekler.
+    Aynı (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    dep_date = record.departure_date if isinstance(record.departure_date, date) else date.fromisoformat(str(record.departure_date))
+    scr_date = record.scraped_date if isinstance(record.scraped_date, date) else date.fromisoformat(str(record.scraped_date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_flight_prices
+                (provider, origin_iata, dest_iata, airline, cabin, price, currency, departure_date, scraped_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+            DO UPDATE SET price = excluded.price
+            """,
+            record.provider, record.origin_iata, record.dest_iata,
+            record.airline, record.cabin,
+            float(record.price), record.currency,
+            str(dep_date), str(scr_date),
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_flight_prices
+                (provider, origin_iata, dest_iata, airline, cabin, price, currency, departure_date, scraped_date)
+            VALUES ($1, $2, $3, $4, $5, $6::numeric, $7, $8::date, $9::date)
+            ON CONFLICT (provider, origin_iata, dest_iata, airline, cabin, departure_date, scraped_date)
+            DO UPDATE SET price = EXCLUDED.price
+            """,
+            record.provider, record.origin_iata, record.dest_iata,
+            record.airline, record.cabin,
+            float(record.price), record.currency,
+            dep_date, scr_date,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_flight_prices(conn, records: list[FlightPriceRecord]) -> int:
+    """Uçak bileti fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_flight_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_taxi_price(conn, record: TaxiPriceRecord) -> bool:
+    """
+    m07_taxi_prices tablosuna taksi tarife fiyatı ekler.
+    Aynı (city, category, date) varsa fiyat ve kaynak bilgisini günceller.
+    Döndürür: True → yeni satır eklendi, False → güncelleme yapıldı.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_taxi_prices
+                (city, category, price, date, source_url, source_title)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT (city, category, date)
+            DO UPDATE SET price = excluded.price,
+                          source_url = excluded.source_url,
+                          source_title = excluded.source_title
+            """,
+            record.city, record.category,
+            float(record.price), str(rec_date),
+            record.source_url, record.source_title,
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_taxi_prices
+                (city, category, price, date, source_url, source_title)
+            VALUES ($1, $2, $3::numeric, $4::date, $5, $6)
+            ON CONFLICT (city, category, date)
+            DO UPDATE SET price = EXCLUDED.price,
+                          source_url = EXCLUDED.source_url,
+                          source_title = EXCLUDED.source_title
+            """,
+            record.city, record.category,
+            float(record.price), rec_date,
+            record.source_url, record.source_title,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_taxi_prices(conn, records: list[TaxiPriceRecord]) -> int:
+    """Taksi tarife fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_taxi_price(conn, r):
+            inserted += 1
+    return inserted
+
+
+async def upsert_ferry_price(conn, record: FerryPriceRecord) -> bool:
+    """
+    m07_ferry_prices tablosuna vapur bileti fiyatı ekler.
+    Aynı (operator, city, route, ticket_type, date) varsa fiyatı günceller.
+    Döndürür: True → yeni satır, False → güncelleme.
+    """
+    rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+
+    if isinstance(conn, _SqliteConn):
+        result = await conn.execute(
+            """
+            INSERT INTO m07_ferry_prices
+                (operator, city, route, ticket_type, price, date, source_url)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (operator, city, route, ticket_type, date)
+            DO UPDATE SET price = excluded.price, source_url = excluded.source_url
+            """,
+            record.operator, record.city, record.route, record.ticket_type,
+            float(record.price), str(rec_date), record.source_url,
+        )
+    else:
+        result = await conn.execute(
+            """
+            INSERT INTO m07_ferry_prices
+                (operator, city, route, ticket_type, price, date, source_url)
+            VALUES ($1, $2, $3, $4, $5::numeric, $6::date, $7)
+            ON CONFLICT (operator, city, route, ticket_type, date)
+            DO UPDATE SET price = EXCLUDED.price, source_url = EXCLUDED.source_url
+            """,
+            record.operator, record.city, record.route, record.ticket_type,
+            float(record.price), rec_date, record.source_url,
+        )
+    return result == "INSERT 0 1"
+
+
+async def batch_upsert_ferry_prices(conn, records: list[FerryPriceRecord]) -> int:
+    """Vapur bileti fiyatlarını ekler/günceller. Döndürür: yeni eklenen satır sayısı."""
+    inserted = 0
+    for r in records:
+        if await upsert_ferry_price(conn, r):
             inserted += 1
     return inserted
 
