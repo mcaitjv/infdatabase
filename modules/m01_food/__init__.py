@@ -57,6 +57,8 @@ class FoodModule(BaseModule):
     name = "Gıda ve Alkolsüz İçecekler"
     weight = 24.44
 
+    PART_SCHEDULE = {"main": 0}   # her gün
+
     async def setup_schema(self, conn) -> None:
         """Gıda modülü mevcut ortak şemayı kullanır (m01_market_products + m01_price_snapshots)."""
         await apply_schema(conn)
@@ -66,6 +68,10 @@ class FoodModule(BaseModule):
         Tüm kategori keyword'lerini tarayarak her marketteki tüm gıda ürünlerini çeker.
         """
         import asyncio
+
+        if parts is None and not self._should_run("main"):
+            logger.info("[m01] Bugün çalışma günü değil — atlanıyor.")
+            return []
 
         locations  = _load_locations()
         categories = _load_categories()

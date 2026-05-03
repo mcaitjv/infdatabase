@@ -103,9 +103,6 @@ def _load_car_config() -> tuple[dict, dict]:
     return categories, part_map
 
 
-def _is_m07_run_day() -> bool:
-    """M07 tüm part'ları ayda 2 kez çalışır: ayın 1'i ve 15'i."""
-    return date.today().day in (1, 15)
 
 
 async def _run_single(provider: str, ScraperClass, locations: list[dict]) -> list:
@@ -126,6 +123,17 @@ class FuelModule(BaseModule):
     coicop_code = "07"
     name = "Ulaştırma — Akaryakıt"
     weight = 16.62
+
+    PART_SCHEDULE = {
+        "akaryakit":            0,   # her gün (locations.yaml)
+        "sifir_arac":           4,   # ayın 5, 10, 15, 20
+        "yolcu_tasima":         2,   # ayın 5 ve 20
+        "sehirlerarasi_otobus": 4,   # ayın 5, 10, 15, 20
+        "tren":                 1,   # ayın 15
+        "ucakbileti":           4,   # ayın 5, 10, 15, 20
+        "taksi":                1,   # ayın 15
+        "vapur":                2,   # ayın 5 ve 20
+    }
 
     async def setup_schema(self, conn) -> None:
         """m07_fuel_prices ve m07_car_prices tablolarını oluşturur."""
@@ -184,17 +192,18 @@ class FuelModule(BaseModule):
           taksi                — Google News haber araması (istanbul, ankara, izmir)
           vapur                — Şehir Hatları, İDO, İzdeniz, BUDO (snapshot + scrape)
 
-        Zamanlama: tüm part'lar ayın 1'i ve 15'inde çalışır.
+        Zamanlama: _PART_SCHEDULE dict'ine göre per-part frekans uygulanır.
+          0 → her gün  |  1 → ayın 15'i  |  2 → 5 ve 20  |  4 → 5, 10, 15, 20
         parts=None (scheduler)  → gün kontrolü uygulanır.
         parts=[...] (--part flag) → gün kontrolü bypass edilir (test/manuel run).
         """
         def _active(slug: str) -> bool:
             return parts is None or slug in parts
 
-        # Scheduler çalıştırmasında gün kontrolü
-        if parts is None and not _is_m07_run_day():
+        # Scheduler çalıştırmasında gün kontrolü — hiçbir part bugün çalışmıyorsa erken çık
+        if parts is None and not any(self._should_run(p) for p in self.PART_SCHEDULE):
             logger.info(
-                "[m07] Bugün %s. gün — çalışma günü değil (ayın 1'i ve 15'i). Atlanıyor.",
+                "[m07] Bugün %s. gün — hiçbir part için çalışma günü değil. Atlanıyor.",
                 date.today().day,
             )
             return []
@@ -203,7 +212,7 @@ class FuelModule(BaseModule):
         runs: list[ScrapeRun] = []
 
         # ── Akaryakıt (Petrol Ofisi / Opet / Shell) ──────────────────────────
-        if _active("akaryakit"):
+        if _active("akaryakit") and (parts is not None or self._should_run("akaryakit")):
             provider_scrapers = [
                 ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
                 ("opet",        lambda: _run_opet_with_aygaz(locations)),
@@ -259,43 +268,43 @@ class FuelModule(BaseModule):
             logger.debug("[m07] akaryakit part'ı atlandı")
 
         # ── Sıfır araç fiyatları ─────────────────────────────────────────────
-        if _active("sifir_arac"):
+        if _active("sifir_arac") and (parts is not None or self._should_run("sifir_arac")):
             runs += await self._run_car_prices(dry_run=dry_run)
         else:
             logger.debug("[m07] sifir_arac part'ı atlandı")
 
-        # ── Şehir içi toplu taşıma ────────────────────────────────────────────
-        if _active("yolcu_tasima"):
+        # ── Şehir içi toplu taşıma ───────────────────────────────────────────
+        if _active("yolcu_tasima") and (parts is not None or self._should_run("yolcu_tasima")):
             runs += await self._run_transport_services(dry_run=dry_run)
         else:
             logger.debug("[m07] yolcu_tasima part'ı atlandı")
 
         # ── Şehirlerarası otobüs ─────────────────────────────────────────────
-        if _active("sehirlerarasi_otobus"):
+        if _active("sehirlerarasi_otobus") and (parts is not None or self._should_run("sehirlerarasi_otobus")):
             runs += await self._run_sehirlerarasi(dry_run=dry_run)
         else:
             logger.debug("[m07] sehirlerarasi_otobus part'ı atlandı")
 
         # ── Tren ─────────────────────────────────────────────────────────────
-        if _active("tren"):
+        if _active("tren") and (parts is not None or self._should_run("tren")):
             runs += await self._run_tren(dry_run=dry_run)
         else:
             logger.debug("[m07] tren part'ı atlandı")
 
         # ── Uçak bileti ──────────────────────────────────────────────────────
-        if _active("ucakbileti"):
+        if _active("ucakbileti") and (parts is not None or self._should_run("ucakbileti")):
             runs += await self._run_ucakbileti(dry_run=dry_run)
         else:
             logger.debug("[m07] ucakbileti part'ı atlandı")
 
         # ── Taksi ────────────────────────────────────────────────────────────
-        if _active("taksi"):
+        if _active("taksi") and (parts is not None or self._should_run("taksi")):
             runs += await self._run_taksi(dry_run=dry_run)
         else:
             logger.debug("[m07] taksi part'ı atlandı")
 
         # ── Vapur ────────────────────────────────────────────────────────────
-        if _active("vapur"):
+        if _active("vapur") and (parts is not None or self._should_run("vapur")):
             runs += await self._run_vapur(dry_run=dry_run)
         else:
             logger.debug("[m07] vapur part'ı atlandı")
