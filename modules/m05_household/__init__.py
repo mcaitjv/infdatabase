@@ -140,6 +140,11 @@ class HouseholdModule(BaseModule):
                         async with IkeaScraper() as s:
                             prods = await s.discover_category(src_cfg["keyword"], cat_key)
                             await s._sleep(*sleep_s)
+                    elif src_name == "trendyol":
+                        trendyol_s = TrendyolScraper()
+                        async with trendyol_s:
+                            prods = await trendyol_s.discover_category(src_cfg["path"], cat_key)
+                            await trendyol_s._sleep(*sleep_s)
                     else:
                         continue
                     for p in prods:
@@ -289,7 +294,7 @@ class HouseholdModule(BaseModule):
             r, _ = await self._scrape_source("ikea", ikea, categories, dry_run)
             runs.extend(r)
 
-        # Trendyol (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        # Trendyol (Playwright) — mobilya kategorileri; tracked_skus dolmadan atlanır
         async with TrendyolScraper() as trendyol:
             r, _ = await self._scrape_source("trendyol", trendyol, categories, dry_run)
             runs.extend(r)
