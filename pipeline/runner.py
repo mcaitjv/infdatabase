@@ -27,6 +27,7 @@ from db.repository import get_connection
 from modules import get_modules
 from modules.m01_food import FoodModule
 from modules.m05_household import HouseholdModule
+from modules.m07_fuel import FuelModule
 
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(
