@@ -95,6 +95,7 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.beko import BekoScraper
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
+        from modules.m05_household.scrapers.ikea import IkeaScraper
 
         categories, part_map = _load_tracked()
         total_skus = 0
@@ -135,6 +136,15 @@ class HouseholdModule(BaseModule):
                         async with BshScraper(brand=src_name) as s:
                             prods = await s.discover_category(src_cfg["path"], cat_key)
                             await s._sleep(*sleep_s)
+                    elif src_name == "ikea":
+                        async with IkeaScraper() as s:
+                            prods = await s.discover_category(src_cfg["keyword"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "trendyol":
+                        trendyol_s = TrendyolScraper()
+                        async with trendyol_s:
+                            prods = await trendyol_s.discover_category(src_cfg["path"], cat_key)
+                            await trendyol_s._sleep(*sleep_s)
                     else:
                         continue
                     for p in prods:
@@ -180,8 +190,8 @@ class HouseholdModule(BaseModule):
                 source_config = sources[source_name]
                 if source_name == "vestel":
                     records = await scraper.scrape_tracked(tracked_skus, cat_key)
-                elif source_name == "samsung":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
+                elif source_name == "ikea":
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["keyword"])
                 else:
                     records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
 
@@ -235,6 +245,9 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.beko import BekoScraper
         from modules.m05_household.scrapers.arcelik import ArcelikScraper
         from modules.m05_household.scrapers.bsh import BshScraper
+        from modules.m05_household.scrapers.ikea import IkeaScraper
+        from modules.m05_household.scrapers.trendyol import TrendyolScraper
+        from modules.m05_household.scrapers.vivense import VivenseScraper
 
         categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []
@@ -274,6 +287,21 @@ class HouseholdModule(BaseModule):
         # Siemens (Playwright)
         async with BshScraper(brand="siemens") as siemens:
             r, _ = await self._scrape_source("siemens", siemens, categories, dry_run)
+            runs.extend(r)
+
+        # IKEA (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with IkeaScraper() as ikea:
+            r, _ = await self._scrape_source("ikea", ikea, categories, dry_run)
+            runs.extend(r)
+
+        # Trendyol (Playwright) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with TrendyolScraper() as trendyol:
+            r, _ = await self._scrape_source("trendyol", trendyol, categories, dry_run)
+            runs.extend(r)
+
+        # Vivense (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with VivenseScraper() as vivense:
+            r, _ = await self._scrape_source("vivense", vivense, categories, dry_run)
             runs.extend(r)
 
         return runs

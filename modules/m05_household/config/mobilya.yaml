@@ -1,0 +1,115 @@
+label: "Mobilya, Mefruşat ve Halılar"
+
+# TÜİK COICOP: 051 (2.9962%) — 05111 Ev mobilyaları (2.6236%) + 05114 Halı (0.3726%)
+# IKEA: keyword → frontendapi.ikea.com.tr search API
+# Trendyol: path → /sr?q=... (search URL — kategori sayfaları bot tespiti yapıyor)
+# Vivense: path → kategori sayfası URL'i
+
+categories:
+  mutfak_masasi:
+    label: Mutfak Masası
+    tuik_code: "0511102"
+    sources:
+      ikea:
+        keyword: "mutfak masası"
+      trendyol:
+        path: /sr?q=mutfak+masasi
+      vivense:
+        path: /mutfak-masasi
+    tracked_skus: []
+
+  mutfak_sandalyesi:
+    label: Mutfak Sandalyesi
+    tuik_code: "0511105"
+    sources:
+      ikea:
+        keyword: "yemek odası sandalyesi"
+      trendyol:
+        path: /sr?q=mutfak+sandalyesi
+      vivense:
+        path: /mutfak-sandalyesi
+    tracked_skus: []
+
+  yatak_odasi_takimi:
+    label: Yatak Odası Takımı
+    tuik_code: "0511108"
+    sources:
+      ikea:
+        keyword: "yatak odası takımı"
+      trendyol:
+        path: /sr?q=yatak+odasi+takimi
+      vivense:
+        path: /yatak-odasi-takimi
+    tracked_skus: []
+
+  yatak:
+    label: Yatak
+    tuik_code: "0511111"
+    sources:
+      ikea:
+        keyword: "yatak"
+      trendyol:
+        path: /sr?q=yatak
+      vivense:
+        path: /yatak
+    tracked_skus: []
+
+  yatak_bazasi:
+    label: Yatak Bazası
+    tuik_code: "0511114"
+    sources:
+      ikea:
+        keyword: "baza yatak"
+      trendyol:
+        path: /sr?q=baza+yatak
+      vivense:
+        path: /baza
+    tracked_skus: []
+
+  genc_odasi_takimi:
+    label: Genç Odası Takımı
+    tuik_code: "0511115"
+    sources:
+      ikea:
+        keyword: "genç odası takımı"
+      trendyol:
+        path: /sr?q=genc+odasi+takimi
+      vivense:
+        path: /genc-odasi-takimi
+    tracked_skus: []
+
+  oturma_odasi_takimi:
+    label: Oturma Odası Takımı
+    tuik_code: "0511116"
+    sources:
+      ikea:
+        keyword: "koltuk takımı"
+      trendyol:
+        path: /sr?q=koltuk+takimi
+      vivense:
+        path: /koltuk-takimi
+    tracked_skus: []
+
+  yemek_odasi_takimi:
+    label: Yemek Odası Takımı
+    tuik_code: "0511117"
+    sources:
+      ikea:
+        keyword: "yemek odası takımı"
+      trendyol:
+        path: /sr?q=yemek+odasi+takimi
+      vivense:
+        path: /yemek-odasi-takimi
+    tracked_skus: []
+
+  hali:
+    label: Halı
+    tuik_code: "0511401"
+    sources:
+      ikea:
+        keyword: "halı"
+      trendyol:
+        path: /sr?q=hali
+      vivense:
+        path: /hali
+    tracked_skus: []

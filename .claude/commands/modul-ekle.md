@@ -20,12 +20,13 @@ Tek bir komut, üç iş yapar:
 
 ### 0. Ön koşul
 
-`git branch --show-current` çalıştır. `main` değilse kullanıcıyı uyar:
+Her zaman **main'den taze branch** açılır. Eski branch'leri asla yeniden kullanma.
 
-> "Şu an `<dal>` dalındasın. Bu komut `main`'de çalıştırılmalı. Devam edeyim mi, yoksa
-> önce `main`'e geçeyim mi?"
+`git branch --show-current` çalıştır. `main` değilse:
 
-Kullanıcı onay verirse `git checkout main && git pull` (pull başarısızsa uyar, devam et).
+> "Şu an `<dal>` dalındasın. Main'e geçip güncel hali çekiyorum."
+
+`git checkout main` → `git pull` (pull başarısızsa uyar, devam et).
 
 ### 1. Niyet belirle
 
@@ -68,9 +69,13 @@ Seçilen tipe göre **sadece bir modül** oku (token tasarrufu):
 
 #### 2.4 Dal oluştur
 
+Main'de olduğundan emin ol (adım 0). Bugünün tarihini `YYYYMMDD` formatında kullanarak yeni branch aç:
+
 ```bash
-git checkout -b feature/module-<KOD>-<slug>
+git checkout -b feature/module-<KOD>-<slug>-<YYYYMMDD>
 ```
+
+Örn: `feature/module-03-giyim-20260503`. **Mevcut bir branch'e geçme.**
 
 #### 2.5 Scaffold oluştur
 
@@ -132,12 +137,15 @@ Eksik olanları `AskUserQuestion` ile sor:
 - **Kategoriler** (virgülle): `koltuk, masa, yatak, hali` vb.
 - **Kaynaklar** (her kategori için hangi siteler): IKEA, Trendyol, Karaca vb.
 
-#### 3c.2 Dal kontrolü
+#### 3c.2 Dal oluştur
+
+Main'de olduğundan emin ol (adım 0). Bugünün tarihiyle yeni branch aç:
 
 ```bash
-git checkout feature/module-<KOD>-<slug>
+git checkout -b feature/module-<KOD>-<slug>-<YYYYMMDD>
 ```
-Dal yoksa `git checkout -b feature/module-<KOD>-<slug>`.
+
+**Mevcut bir branch'e geçme** — eski branch'ler main'den geride kalabilir.
 
 #### 3c.2b Context yükle — minimal
 
@@ -230,13 +238,15 @@ feat(m<KOD>): <part_slug> part eklendi — <N> kategori, <kaynak listesi>
 
 Argüman yoksa `modules/m*_*/` klasörlerini listele, `AskUserQuestion` ile seçtir.
 
-#### 3.2 Dala geç
+#### 3.2 Dal oluştur
+
+Main'de olduğundan emin ol (adım 0). Bugünün tarihiyle yeni branch aç:
 
 ```bash
-git rev-parse --verify feature/module-<KOD>-<slug> 2>/dev/null \
-  && git checkout feature/module-<KOD>-<slug> \
-  || git checkout -b feature/module-<KOD>-<slug>
+git checkout -b feature/module-<KOD>-<slug>-<YYYYMMDD>
 ```
+
+**Mevcut bir branch'e geçme** — eski branch'ler main'den geride kalabilir.
 
 #### 3.3 Context yükle (dar tut!)
 
@@ -272,8 +282,10 @@ Sonra: **"Bu modülde ne yapacağız?"**
 
 ## Notlar
 
+- **Her zaman main'den taze branch aç.** Mevcut branch'e asla checkout yapma — eski branch'ler main'den geride kalabilir ve eksik modüller içerebilir.
+- **Branch adı:** `feature/module-<KOD>-<slug>-<YYYYMMDD>` — tarih suffix'i çakışmayı önler.
 - **Slug Türkçe karakter içeremez** (`giyim`, `saglik` — `giyim_ayakkabı` yanlış).
 - **Ağırlığı TÜİK 2026 ağırlıklarına göre** ver, uydurma.
 - **Scraper dosyalarının içeriği bu komutla oluşturulmaz** — modül tipine göre referansı kullanıcıyla birlikte yaz.
 - **Diğer modülleri context'e yükleme.** Seçilen modül dışındakileri okuma — token ekonomisi.
-- Commit yapmadan önce mutlaca kullanıcı onayı al.
+- Commit yapmadan önce mutlaka kullanıcı onayı al.
