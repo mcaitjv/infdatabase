@@ -10,8 +10,10 @@ yapılandırılmış veri mevcut değil. Strateji:
   3. Hash eşleşiyorsa → sabit fiyatları döndür.
   4. Hash değişmişse → logger.warning (tarife güncellendi, fiyatlar manuel güncellenmeli).
 
-Tarife tüm İstanbulKart geçerli hatlar için aynıdır:
-  otobüs (0732101), metro/tramvay (07312), dolmuş (0732106), vapur (0734001).
+Takip edilen ticket_type'lar:
+  elektronik_tek_gecis    — Elektronik Bilet tek geçişlik (otobüs/metro/tramvay)
+  metrobus_1durak_tam     — Metrobüs 1 durak, tam tarife
+  metrobus_1durak_ogrenci — Metrobüs 1 durak, öğrenci tarife
 """
 
 import base64
@@ -34,9 +36,11 @@ _URL = "https://iett.istanbul/icerik/IETT-Toplu-Ulasim-ucret-Tarifesi"
 _KNOWN_HASH = None  # İlk çalıştırmada hash hesaplanır; sonraki çalıştırmalarda karşılaştırılır.
 
 # Güncel fiyatlar — tarife görsel güncellendiğinde bu değerler elle güncellenmeli.
+# Kaynak: https://iett.istanbul/icerik/IETT-Toplu-Ulasim-ucret-Tarifesi (2026)
 _FARES = {
-    "tam":     Decimal("42.00"),
-    "ogrenci": Decimal("20.50"),
+    "elektronik_tek_gecis":    Decimal("60.00"),   # Elektronik Bilet — Tek Geçişlik
+    "metrobus_1durak_tam":     Decimal("30.07"),   # Metrobüs 1 Durak — Tam
+    "metrobus_1durak_ogrenci": Decimal("13.25"),   # Metrobüs 1 Durak — Öğrenci
 }
 
 
