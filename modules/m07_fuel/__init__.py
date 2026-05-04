@@ -86,7 +86,14 @@ def _load_vapur_config() -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
-_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml", "taksi.yaml", "vapur.yaml"}
+_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml", "taksi.yaml", "vapur.yaml", "motorsiklet.yaml"}
+
+
+def _load_motorsiklet_config() -> dict:
+    """motorsiklet.yaml'daki kategori ve kaynak bilgilerini yükler."""
+    path = _CONFIG_DIR / "motorsiklet.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("categories", {})
 
 
 def _load_car_config() -> tuple[dict, dict]:
@@ -127,6 +134,7 @@ class FuelModule(BaseModule):
     PART_SCHEDULE = {
         "akaryakit":            0,   # her gün (locations.yaml)
         "sifir_arac":           4,   # ayın 5, 10, 15, 20
+        "motorsiklet":          4,   # ayın 5, 10, 15, 20
         "yolcu_tasima":         2,   # ayın 5 ve 20
         "sehirlerarasi_otobus": 4,   # ayın 5, 10, 15, 20
         "tren":                 1,   # ayın 15
@@ -185,6 +193,7 @@ class FuelModule(BaseModule):
         Geçerli part slug'ları:
           akaryakit            — Petrol Ofisi, Opet, Shell
           sifir_arac           — Sıfır araç fiyatları
+          motorsiklet          — Motosiklet satış fiyatları (Honda, Yamaha, BMW, KTM)
           yolcu_tasima         — IETT, EGO, İzmirimkart
           sehirlerarasi_otobus — Obilet, Biletall
           tren                 — TCDD ebilet (tcddbilet.gov.tr)
@@ -272,6 +281,12 @@ class FuelModule(BaseModule):
             runs += await self._run_car_prices(dry_run=dry_run)
         else:
             logger.debug("[m07] sifir_arac part'ı atlandı")
+
+        # ── Motosiklet satış fiyatları ────────────────────────────────────────
+        if _active("motorsiklet") and (parts is not None or self._should_run("motorsiklet")):
+            runs += await self._run_motorsiklet_prices(dry_run=dry_run)
+        else:
+            logger.debug("[m07] motorsiklet part'ı atlandı")
 
         # ── Şehir içi toplu taşıma ───────────────────────────────────────────
         if _active("yolcu_tasima") and (parts is not None or self._should_run("yolcu_tasima")):
@@ -837,6 +852,61 @@ class FuelModule(BaseModule):
             run.status = "partial"
         except Exception as exc:
             logger.error("[m07] sifir_arac kritik hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+
+        return [run]
+
+    async def _run_motorsiklet_prices(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Motosiklet satış fiyatlarını marka sitelerinden çeker."""
+        from modules.m07_fuel.scrapers.motorsiklet_brands import MotorsikletBrandScraper
+
+        moto_cats = _load_motorsiklet_config()
+        run = ScrapeRun(
+            market     = "m07:motorsiklet",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            records = []
+            async with MotorsikletBrandScraper() as scraper:
+                for segment, cat_data in moto_cats.items():
+                    sources = cat_data.get("sources", {})
+                    for brand, brand_cfg in sources.items():
+                        path = brand_cfg.get("path", "")
+                        if not path:
+                            continue
+                        brand_records = await scraper.scrape_brand(brand, segment, path)
+                        records.extend(brand_records)
+
+            run.products_scraped = len(records)
+
+            if dry_run:
+                logger.info("[m07] Dry-run motorsiklet: %d kayıt (DB'ye yazılmadı)", len(records))
+                for r in records[:5]:
+                    print(f"  [{r.brand}] {r.model} {r.variant} ({r.segment}): {r.price} TL")
+                if len(records) > 5:
+                    print(f"  ... ve {len(records) - 5} kayıt daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_car_prices(conn, records)
+                    logger.info(
+                        "[m07] motorsiklet: %d kayıt işlendi, %d yeni eklendi",
+                        len(records), inserted,
+                    )
+
+            run.status = "success" if records else "partial"
+
+        except NotImplementedError:
+            logger.warning("[m07] motorsiklet: scraper henüz implementasyonu yok — atlanıyor")
+            run.status = "partial"
+        except Exception as exc:
+            logger.error("[m07] motorsiklet kritik hata: %s", exc, exc_info=True)
             run.status        = "failed"
             run.error_details = str(exc)
 

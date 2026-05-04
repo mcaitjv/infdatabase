@@ -1,0 +1,39 @@
+label: "Motosiklet Satış Fiyatları"
+
+# tracked_skus: discovery sonrası otomatik dolar.
+# path değerleri her markanın fiyat listesi sayfasına işaret eder.
+
+categories:
+  standart:
+    label: Standart / Naked
+    sources:
+      honda:  {path: "/motosiklet/fiyat-listesi"}
+      yamaha: {path: "/motosiklet/standart"}
+      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
+      ktm:    {path: "/tr/motosikletler"}
+    tracked_skus: []
+
+  spor:
+    label: Sport / Supersport
+    sources:
+      honda:  {path: "/motosiklet/fiyat-listesi"}
+      yamaha: {path: "/motosiklet/spor"}
+      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
+      ktm:    {path: "/tr/motosikletler"}
+    tracked_skus: []
+
+  touring:
+    label: Tur / Adventure
+    sources:
+      honda:  {path: "/motosiklet/fiyat-listesi"}
+      yamaha: {path: "/motosiklet/touring"}
+      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
+      ktm:    {path: "/tr/motosikletler"}
+    tracked_skus: []
+
+  scooter:
+    label: Scooter
+    sources:
+      honda:  {path: "/motosiklet/fiyat-listesi"}
+      yamaha: {path: "/motosiklet/scooter"}
+    tracked_skus: []
