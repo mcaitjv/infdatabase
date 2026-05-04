@@ -82,6 +82,8 @@ class HouseholdModule(BaseModule):
     name = "Mobilya, Mefruşat ve Ev Bakım"
     weight = 7.92
 
+    PART_SCHEDULE = {"main": 4}   # ayın 5, 10, 15, 20
+
     async def setup_schema(self, conn) -> None:
         from db.repository import apply_schema
         await apply_schema(conn)
@@ -240,6 +242,10 @@ class HouseholdModule(BaseModule):
     # ── Ana run ───────────────────────────────────────────────────────────────
 
     async def run(self, dry_run: bool = False, parts: list[str] | None = None) -> list[ScrapeRun]:
+        if parts is None and not self._should_run("main"):
+            logger.info("[m05] Bugün çalışma günü değil (5, 10, 15, 20 değil) — atlanıyor.")
+            return []
+
         from modules.m05_household.scrapers.vestel import VestelScraper
         from modules.m05_household.scrapers.samsung import SamsungScraper
         from modules.m05_household.scrapers.beko import BekoScraper

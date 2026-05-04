@@ -15,11 +15,29 @@ from datetime import date
 
 from db.models import ScrapeRun
 
+# Frekans → çalışma günleri  (0 = her gün, özel durum)
+RUN_DAYS: dict[int, tuple[int, ...]] = {
+    1: (15,),
+    2: (5, 20),
+    4: (5, 10, 15, 20),
+}
+
 
 class BaseModule(ABC):
     coicop_code: str   # "01", "07", …
     name: str          # "Gıda ve Alkolsüz İçecekler"
     weight: float      # 24.44  (TÜFE sepet ağırlık %)
+
+    # Her modül kendi PART_SCHEDULE'ını override eder.
+    # key: part slug  value: 0=her gün | 1=ayda 1 | 2=ayda 2 | 4=ayda 4
+    PART_SCHEDULE: dict[str, int] = {}
+
+    def _should_run(self, part: str) -> bool:
+        """Bugün bu part için çalışma günü mü? 0 = her gün."""
+        freq = self.PART_SCHEDULE.get(part, 2)
+        if freq == 0:
+            return True
+        return date.today().day in RUN_DAYS[freq]
 
     @abstractmethod
     async def run(
