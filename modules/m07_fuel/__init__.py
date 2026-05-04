@@ -881,8 +881,17 @@ class FuelModule(BaseModule):
                         path = brand_cfg.get("path", "")
                         if not path:
                             continue
-                        brand_records = await scraper.scrape_brand(brand, segment, path)
-                        records.extend(brand_records)
+                        tracked = brand_cfg.get("tracked_skus") or []
+                        try:
+                            brand_records = await scraper.scrape_brand(
+                                brand, segment, path, tracked_skus=tracked or None
+                            )
+                            records.extend(brand_records)
+                        except NotImplementedError:
+                            logger.warning(
+                                "[m07] motorsiklet/%s/%s: scraper stub — atlanıyor",
+                                brand, segment,
+                            )
 
             run.products_scraped = len(records)
 
@@ -902,9 +911,6 @@ class FuelModule(BaseModule):
 
             run.status = "success" if records else "partial"
 
-        except NotImplementedError:
-            logger.warning("[m07] motorsiklet: scraper henüz implementasyonu yok — atlanıyor")
-            run.status = "partial"
         except Exception as exc:
             logger.error("[m07] motorsiklet kritik hata: %s", exc, exc_info=True)
             run.status        = "failed"

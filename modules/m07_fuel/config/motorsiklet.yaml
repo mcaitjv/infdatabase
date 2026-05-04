@@ -1,39 +1,103 @@
 label: "Motosiklet Satış Fiyatları"
 
-# tracked_skus: discovery sonrası otomatik dolar.
-# path değerleri her markanın fiyat listesi sayfasına işaret eder.
+# Her source altında:
+#   path:         Scraper'ın kullanacağı URL path'i (base domain scraper içinde sabit)
+#   tracked_skus: Takip edilecek model adları (sayfadaki tam adla eşleşmeli)
 
 categories:
   standart:
     label: Standart / Naked
     sources:
-      honda:  {path: "/motosiklet/fiyat-listesi"}
-      yamaha: {path: "/motosiklet/standart"}
-      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
-      ktm:    {path: "/tr/motosikletler"}
-    tracked_skus: []
+      honda:
+        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
+        tracked_skus:
+          - "CB500 Hornet"
+          - "CB650R"
+          - "CB750 Hornet"
+          - "CL250"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "MT-125 (EU5+)"
+          - "MT-25 (EU5+)"
+          - "MT-07 (EU5+)"
+          - "MT-09"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "S 1000 R"
+          - "R nineT"
+          - "F 900 R"
+          - "R 1250 R"
 
   spor:
     label: Sport / Supersport
     sources:
-      honda:  {path: "/motosiklet/fiyat-listesi"}
-      yamaha: {path: "/motosiklet/spor"}
-      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
-      ktm:    {path: "/tr/motosikletler"}
-    tracked_skus: []
+      honda:
+        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
+        tracked_skus:
+          - "CBR500R"
+          - "CBR650R"
+          - "CBR1000RR-R Fireblade"
+          - "CBR1000RR-R SP"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "R3 (EU5+)"
+          - "R7"
+          - "R9"
+          - "R25 (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "S 1000 RR"
+          - "M 1000 RR"
+          - "S 1000 XR"
+          - "M 1000 XR"
 
   touring:
     label: Tur / Adventure
     sources:
-      honda:  {path: "/motosiklet/fiyat-listesi"}
-      yamaha: {path: "/motosiklet/touring"}
-      bmw:    {path: "/tr/fastlane/bmw-motorrad-fiyat-listesi.html"}
-      ktm:    {path: "/tr/motosikletler"}
-    tracked_skus: []
+      honda:
+        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
+        # 2026 sayfasında sadece TOURING kategorisi statik — NT1100/NC750X/Africa Twin yok
+        tracked_skus:
+          - "GL1800 Gold Wing Bagger"
+          - "GL1800 Gold Wing"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "Tracer 7 (EU5+)"
+          - "Tracer 9 (EU5+)"
+          - "Ténéré 700 (EU5+)"
+          - "Tracer 9 GT (Yan Çantalı) (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "R 1300 GS"
+          - "R 1300 GS Adventure"
+          - "F 900 GS"
+          - "F 900 GS Adventure"
 
   scooter:
     label: Scooter
     sources:
-      honda:  {path: "/motosiklet/fiyat-listesi"}
-      yamaha: {path: "/motosiklet/scooter"}
-    tracked_skus: []
+      honda:
+        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
+        tracked_skus:
+          - "SH125i"
+          - "Forza 250"
+          - "ADV350"
+          - "PCX125 DLX"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "NMAX 125 (EU5+)"
+          - "XMAX 250 (EU5+)"
+          - "XMAX 300 Tech MAX (EU5+)"
+          - "TMAX Tech MAX (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "CE 04"
+          - "CE 02"
