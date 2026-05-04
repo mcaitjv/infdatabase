@@ -1,20 +1,20 @@
 label: "Motosiklet Satış Fiyatları"
 
 # Her source altında:
-#   path:         Scraper'ın kullanacağı URL path'i (base domain scraper içinde sabit)
+#   path:         Scraper'ın kullandığı URL base path'i
+#                 Honda: yıl suffix'i olmadan — scraper mevcut yılı otomatik dener
+#                 Yamaha/BMW: tam path
 #   tracked_skus: Takip edilecek model adları (sayfadaki tam adla eşleşmeli)
+#                 Boş liste → filtreleme yok, tüm modeller alınır
 
 categories:
   standart:
     label: Standart / Naked
     sources:
       honda:
-        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
-        tracked_skus:
-          - "CB500 Hornet"
-          - "CB650R"
-          - "CB750 Hornet"
-          - "CL250"
+        # Honda NAKED/SUPERSPORT 2026 sayfasında JS-rendered → veri yok
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus: []
       yamaha:
         path: "/fiyat-listesi/road-price-list.html"
         tracked_skus:
@@ -34,12 +34,8 @@ categories:
     label: Sport / Supersport
     sources:
       honda:
-        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
-        tracked_skus:
-          - "CBR500R"
-          - "CBR650R"
-          - "CBR1000RR-R Fireblade"
-          - "CBR1000RR-R SP"
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus: []
       yamaha:
         path: "/fiyat-listesi/road-price-list.html"
         tracked_skus:
@@ -59,8 +55,8 @@ categories:
     label: Tur / Adventure
     sources:
       honda:
-        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
-        # 2026 sayfasında sadece TOURING kategorisi statik — NT1100/NC750X/Africa Twin yok
+        # 2026 sayfasındaki tüm touring modeller: GL1800 Gold Wing Bagger + GL1800 Gold Wing
+        path: "/motosiklet/motosiklet-fiyat-listesi"
         tracked_skus:
           - "GL1800 Gold Wing Bagger"
           - "GL1800 Gold Wing"
@@ -83,12 +79,12 @@ categories:
     label: Scooter
     sources:
       honda:
-        path: "/motosiklet/motosiklet-fiyat-listesi-2026"
+        # 2026 sayfasındaki tüm scooter modeller: SH125i + Forza 250 (3 varyant) + ADV350 (2 varyant)
+        path: "/motosiklet/motosiklet-fiyat-listesi"
         tracked_skus:
           - "SH125i"
           - "Forza 250"
           - "ADV350"
-          - "PCX125 DLX"
       yamaha:
         path: "/fiyat-listesi/road-price-list.html"
         tracked_skus:
