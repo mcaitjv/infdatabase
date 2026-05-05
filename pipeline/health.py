@@ -330,13 +330,17 @@ async def check_m07_health(conn, target_date: date) -> list[ModuleHealthReport]:
         freq = schedule.get(part, 2)
         return freq == 0 or target_date.day in RUN_DAYS.get(freq, ())
 
+    # m07_flight_prices uses scraped_date instead of the standard date column
+    _DATE_COL: dict[str, str] = {"flight": "scraped_date"}
+
     reports: list[ModuleHealthReport] = []
 
     for part, freq in schedule.items():
         if not _scheduled(part):
             continue
-        table   = f"m07_{part}_prices"
-        display = FuelModule.PART_DISPLAY.get(part, part.replace("_", " ").title())
+        table    = f"m07_{part}_prices"
+        date_col = _DATE_COL.get(part, "date")
+        display  = FuelModule.PART_DISPLAY.get(part, part.replace("_", " ").title())
 
         report = ModuleHealthReport(
             module_code=f"07-{part}",
@@ -344,8 +348,14 @@ async def check_m07_health(conn, target_date: date) -> list[ModuleHealthReport]:
             date=target_date,
         )
 
-        row   = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE date = $1", target_date)
-        row_y = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE date = $1", yesterday)
+        try:
+            row   = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE {date_col} = $1", target_date)
+            row_y = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE {date_col} = $1", yesterday)
+        except Exception as exc:
+            logger.error("[health] M07 %s sorgusu başarısız: %s", part, exc)
+            report.add_error(f"Health sorgusu başarısız: {exc}")
+            reports.append(report)
+            continue
         report.records_today     = int(row[0])   if row   else 0
         report.records_yesterday = int(row_y[0]) if row_y else 0
 
