@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import batch_upsert_car_prices, batch_upsert_ferry_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_car_prices, batch_upsert_ferry_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_motorsiklet_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.amadeus import AmadeusScraper
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
@@ -156,12 +156,13 @@ class FuelModule(BaseModule):
             sql = f.read()
 
         for table_pattern, idx_prefix in [
-            (r"m07_fuel_prices",         "idx_fp_"),
-            (r"m07_car_prices",          "idx_cp_"),
-            (r"m07_transport_prices",    "idx_tp_"),
-            (r"m07_intercity_bus_prices","idx_ibp_"),
-            (r"m07_train_prices",        "idx_tp2_"),
-            (r"m07_flight_prices",       "idx_fp2_"),
+            (r"m07_fuel_prices",          "idx_fp_"),
+            (r"m07_car_prices",           "idx_cp_"),
+            (r"m07_motorsiklet_prices",   "idx_mp_"),
+            (r"m07_transport_prices",     "idx_tp_"),
+            (r"m07_intercity_bus_prices", "idx_ibp_"),
+            (r"m07_train_prices",         "idx_tp2_"),
+            (r"m07_flight_prices",        "idx_fp2_"),
         ]:
             match = re.search(
                 rf"(CREATE TABLE IF NOT EXISTS {table_pattern}.*?;)",
@@ -180,7 +181,7 @@ class FuelModule(BaseModule):
                 except Exception:
                     pass
 
-        logger.info("[m07] m07_fuel_prices + m07_car_prices + m07_transport_prices + m07_intercity_bus_prices + m07_train_prices + m07_flight_prices şeması uygulandı.")
+        logger.info("[m07] m07_fuel_prices + m07_car_prices + m07_motorsiklet_prices + m07_transport_prices + ... şeması uygulandı.")
 
     async def run(
         self,
@@ -903,7 +904,7 @@ class FuelModule(BaseModule):
                     print(f"  ... ve {len(records) - 5} kayıt daha")
             else:
                 async with get_connection() as conn:
-                    inserted = await batch_upsert_car_prices(conn, records)
+                    inserted = await batch_upsert_motorsiklet_prices(conn, records)
                     logger.info(
                         "[m07] motorsiklet: %d kayıt işlendi, %d yeni eklendi",
                         len(records), inserted,
