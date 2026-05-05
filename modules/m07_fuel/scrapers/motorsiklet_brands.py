@@ -390,7 +390,7 @@ def _parse_bmw_motorrad_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
         seen.add(model)
 
         variant_raw = col1_2.get_text(strip=True) if col1_2 else ""
-        variant = variant_raw.strip("()") or "başlangıç"
+        variant = " ".join(re.sub(r"[()]", "", variant_raw).split()) or "başlangıç"
 
         hidden = col2.find("input", {"type": "hidden"})
         price_text = hidden.get("value", "") if hidden else col2.get_text(strip=True)
