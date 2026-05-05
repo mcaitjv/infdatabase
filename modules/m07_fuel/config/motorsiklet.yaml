@@ -26,9 +26,9 @@ categories:
         path: "/tr/fiyat-listesi.html"
         tracked_skus:
           - "S 1000 R"
-          - "R nineT"
+          - "R 12 nineT"
           - "F 900 R"
-          - "R 1250 R"
+          - "R 1300 R"
 
   spor:
     label: Sport / Supersport
@@ -94,6 +94,6 @@ categories:
           - "TMAX Tech MAX (EU5+)"
       bmw:
         path: "/tr/fiyat-listesi.html"
+        # CE 02 sayfada yok (discontinued); C 400 GT/X scooter ama tracked değil
         tracked_skus:
           - "CE 04"
-          - "CE 02"

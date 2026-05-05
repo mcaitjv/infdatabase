@@ -291,95 +291,100 @@ class MotorsikletBrandScraper:
         return [rec for rec in self._bmw_cache if rec.segment == segment]
 
 
+def _parse_bmw_motorrad_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
+    """
+    Borusan Motorrad portal (borusanotomotiv.com/motorrad) sayfa yapısı:
+      <div class="price [grey]">
+        <div class="col1">
+          <div class="col1_1">R 1300 GS </div>        ← model adı
+          <div class="col1_2">(Yarış Kırmızısı)</div> ← renk/varyant
+        </div>
+        <div class="col2">
+          1.159.544                                    ← anahtar teslim fiyat (TL)
+          <input type="hidden" ... value="1.159.544">  ← daha temiz kaynak
+        </div>
+      </div>
+    Fiyatlar "TL" suffix'siz, Türkçe noktalı formatta (1.159.544).
+    """
+    records: list[CarPriceRecord] = []
+    today = date.today()
+
+    for row in soup.find_all("div", class_="price"):
+        col1_1 = row.find("div", class_="col1_1")
+        col1_2 = row.find("div", class_="col1_2")
+        col2   = row.find("div", class_="col2")
+        if not col1_1 or not col2:
+            continue
+
+        model = col1_1.get_text(strip=True)
+        if not model:
+            continue
+
+        variant_raw = col1_2.get_text(strip=True) if col1_2 else ""
+        variant = variant_raw.strip("()") or "başlangıç"
+
+        hidden = col2.find("input", {"type": "hidden"})
+        price_text = hidden.get("value", "") if hidden else col2.get_text(strip=True)
+        price = _parse_price(price_text)
+        if not price or price < 100_000:
+            continue
+
+        records.append(CarPriceRecord(
+            brand="bmw",
+            model=model,
+            variant=variant,
+            segment=_bmw_segment(model),
+            price=price,
+            date=today,
+        ))
+
+    logger.debug("[motorsiklet] bmw: %d varyant parse edildi", len(records))
+    return records
+
+
 async def _scrape_bmw_motorrad_playwright() -> list[CarPriceRecord]:
     """
     BMW Motorrad TR fiyat listesini Playwright ile çeker.
-    Borusan portal iframe yapısını kullanır (car_brands._scrape_bmw ile aynı pattern).
+    borusanotomotiv.com/motorrad iframe'inden veri alır.
     """
     from playwright.async_api import async_playwright
-
-    records: list[CarPriceRecord] = []
-    today = date.today()
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         try:
-            await page.goto(_BMW_MOTORRAD_URL, timeout=45000, wait_until="networkidle")
-            await page.wait_for_timeout(1000)
+            await page.goto(_BMW_MOTORRAD_URL, timeout=45000, wait_until="domcontentloaded")
+            await page.wait_for_timeout(2000)
             try:
-                await page.click('button:has-text("Tümünü kabul et")', timeout=4000)
+                await page.click('button:has-text("Tümünü kabul et")', timeout=3000)
+                await page.wait_for_timeout(1000)
             except Exception:
                 pass
-            await page.wait_for_timeout(5000)
 
-            # Borusan portal iframe ara
+            # Borusan Motorrad iframe (borusanotomotiv.com/motorrad)
             borusa_frame = None
             for fr in page.frames:
-                if "borusa" in fr.url.lower() or "borusan" in fr.url.lower():
+                if "borusanotomotiv.com" in fr.url or "borusa" in fr.url.lower():
                     borusa_frame = fr
                     break
 
-            content = await (borusa_frame or page).content()
+            if not borusa_frame:
+                logger.warning("[motorsiklet] bmw: Borusan Motorrad iframe bulunamadı")
+                return []
+
+            # İframe içindeki .price elementlerinin yüklenmesini bekle
+            try:
+                await borusa_frame.wait_for_selector("div.price", timeout=10000)
+            except Exception:
+                logger.warning("[motorsiklet] bmw: div.price yüklenmedi, devam ediliyor")
+
+            content = await borusa_frame.content()
             soup = BeautifulSoup(content, "html.parser")
-
-            # Önce DetailTable pattern dene (car_brands ile aynı Borusan yapısı)
-            detail_rows = soup.find_all("div", class_=re.compile(r"DetailTable"))
-            if detail_rows:
-                seen: set[str] = set()
-                for dr in detail_rows[1:]:
-                    onclick = dr.get("onclick", "")
-                    m = re.search(r"'Model Detay', '(.+?)'", onclick)
-                    if not m:
-                        continue
-                    model_name = m.group(1)
-                    if model_name in seen:
-                        continue
-                    seen.add(model_name)
-
-                    price_wrap = dr.find("div", class_=re.compile(r"max10border"))
-                    if not price_wrap:
-                        continue
-                    price = _parse_price(price_wrap.get_text(strip=True))
-                    if not price or price < 200_000:
-                        continue
-
-                    hw = dr.find("div", class_=re.compile(r"\bhardware\b"))
-                    variant = hw.get_text(strip=True) if hw else "başlangıç"
-
-                    records.append(CarPriceRecord(
-                        brand="bmw",
-                        model=model_name,
-                        variant=variant,
-                        segment=_bmw_segment(model_name),
-                        price=price,
-                        date=today,
-                    ))
-            else:
-                # Fallback: fiyat tablosu farklı yapıda olabilir
-                # Fiyat içeren satırları ara: TL veya ₺ bulunan text
-                for el in soup.find_all(string=re.compile(r"\d[\d.]+\s*(TL|₺)")):
-                    parent = el.parent
-                    if not parent:
-                        continue
-                    # Model adı için yakın heading veya strong ara
-                    heading = parent.find_previous(["h3", "h4", "strong", "b"])
-                    if not heading:
-                        continue
-                    model_name = " ".join(heading.get_text(strip=True).split())
-                    price = _parse_price(el)
-                    if model_name and price and price > 200_000:
-                        records.append(CarPriceRecord(
-                            brand="bmw",
-                            model=model_name,
-                            variant="başlangıç",
-                            segment=_bmw_segment(model_name),
-                            price=price,
-                            date=today,
-                        ))
+            records = _parse_bmw_motorrad_page(soup)
 
         except Exception as exc:
             logger.error("[motorsiklet] bmw Playwright hata: %s", exc, exc_info=True)
+            records = []
         finally:
             await browser.close()
 
