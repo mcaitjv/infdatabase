@@ -24,6 +24,60 @@ _STATUS_LABEL = {
 }
 
 
+_FREQ_LABEL = {
+    0: "Her gün",
+    1: "Ayda 1 <span style='color:#9ca3af'>(15.)</span>",
+    2: "Ayda 2 <span style='color:#9ca3af'>(5. ve 20.)</span>",
+    4: "Ayda 4 <span style='color:#9ca3af'>(5., 10., 15., 20.)</span>",
+}
+
+
+def _build_schedule_table(target_date) -> str:
+    """M07 part'larının çalışma takvimini HTML tablo olarak üretir."""
+    try:
+        from modules.base import RUN_DAYS
+        from modules.m07_fuel import FuelModule
+    except Exception:
+        return ""
+
+    rows = ""
+    for part, freq in FuelModule.PART_SCHEDULE.items():
+        display    = FuelModule.PART_DISPLAY.get(part, part.replace("_", " ").title())
+        runs_today = freq == 0 or target_date.day in RUN_DAYS.get(freq, ())
+        today_cell = (
+            "<span style='color:#22c55e;font-weight:600'>✓</span>"
+            if runs_today else
+            "<span style='color:#d1d5db'>—</span>"
+        )
+        rows += (
+            f"<tr>"
+            f"<td style='padding:5px 12px;font-size:13px'>{display}</td>"
+            f"<td style='padding:5px 12px;font-size:13px;color:#6b7280'>{_FREQ_LABEL.get(freq, str(freq))}</td>"
+            f"<td style='padding:5px 12px;font-size:13px;text-align:center'>{today_cell}</td>"
+            f"</tr>"
+        )
+
+    return f"""
+    <div style='padding:16px 24px;border-top:1px solid #e5e7eb'>
+      <div style='font-size:13px;font-weight:600;color:#374151;margin-bottom:8px'>
+        M07 Çalışma Takvimi
+      </div>
+      <table style='width:100%;border-collapse:collapse'>
+        <thead>
+          <tr style='background:#f9fafb'>
+            <th style='padding:5px 12px;text-align:left;font-size:12px;color:#6b7280;
+                       font-weight:600;border-bottom:1px solid #e5e7eb'>Part</th>
+            <th style='padding:5px 12px;text-align:left;font-size:12px;color:#6b7280;
+                       font-weight:600;border-bottom:1px solid #e5e7eb'>Frekans</th>
+            <th style='padding:5px 12px;text-align:center;font-size:12px;color:#6b7280;
+                       font-weight:600;border-bottom:1px solid #e5e7eb'>Bugün</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>"""
+
+
 def _build_html(report: PipelineHealthReport) -> str:  # noqa: C901
     status_color = _STATUS_COLOR.get(report.overall_status, "#6b7280")
     status_label = _STATUS_LABEL.get(report.overall_status, report.overall_status.upper())
@@ -140,6 +194,8 @@ def _build_html(report: PipelineHealthReport) -> str:  # noqa: C901
       </thead>
       <tbody>{rows}</tbody>
     </table>
+
+    {_build_schedule_table(report.date)}
 
     {new_cat_html}
 

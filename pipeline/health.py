@@ -210,7 +210,14 @@ async def check_market_health(conn, target_date: date) -> ModuleHealthReport:
 
 
 async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthReport]:
-    """M05: her config dosyası için ayrı ModuleHealthReport döner."""
+    """M05: her config dosyası için ayrı ModuleHealthReport döner; bugün çalışması gerekmiyorsa boş liste."""
+    from modules.base import RUN_DAYS
+    from modules.m05_household import HouseholdModule
+
+    freq = HouseholdModule.PART_SCHEDULE.get("main", 4)
+    if freq != 0 and target_date.day not in RUN_DAYS.get(freq, ()):
+        return []
+
     yesterday = target_date - timedelta(days=1)
     thr = _THRESHOLDS["appliance"]
 
@@ -309,81 +316,77 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
     return reports
 
 
-async def check_fuel_health(conn, target_date: date) -> ModuleHealthReport:
-    """M07: m07_fuel_prices bütünlük ve anomali kontrolü."""
+async def check_m07_health(conn, target_date: date) -> list[ModuleHealthReport]:
+    """M07: sadece bugün çalışması gereken part'lar için birer ModuleHealthReport döner.
+    Part listesi FuelModule.PART_SCHEDULE + PART_META'dan otomatik okunur."""
+    from modules.base import RUN_DAYS
+    from modules.m07_fuel import FuelModule
+
+    schedule  = FuelModule.PART_SCHEDULE
     yesterday = target_date - timedelta(days=1)
-    report = ModuleHealthReport(
-        module_code="07",
-        module_name="Akaryakıt (M07)",
-        date=target_date,
-    )
+    thr       = _THRESHOLDS["fuel"]
 
-    # Beklenen kombinasyonlar
-    locations = _load_fuel_locations()
-    expected: set[tuple[str, str, str]] = set()
-    for loc in locations:
-        city = loc["city"]
-        for provider, fuel_types in _FUEL_EXPECTED.items():
-            for ft in fuel_types:
-                expected.add((provider, city, ft))
-    report.expected = len(expected)
+    def _scheduled(part: str) -> bool:
+        freq = schedule.get(part, 2)
+        return freq == 0 or target_date.day in RUN_DAYS.get(freq, ())
 
-    # Bugün DB'de olanlar
-    rows_today = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
-        target_date,
-    )
-    report.records_today = len(rows_today)
-    found: set[tuple[str, str, str]] = set()
-    today_prices: dict[tuple[str, str, str], float] = {}
-    for row in rows_today:
-        key = (str(row[0]), str(row[1]), str(row[2]))
-        found.add(key)
-        today_prices[key] = float(row[3])
+    reports: list[ModuleHealthReport] = []
 
-    # Dün
-    rows_yest = await conn.fetch(
-        "SELECT provider, city, fuel_type, price FROM m07_fuel_prices WHERE date = $1",
-        yesterday,
-    )
-    yest_prices: dict[tuple[str, str, str], float] = {}
-    for row in rows_yest:
-        key = (str(row[0]), str(row[1]), str(row[2]))
-        yest_prices[key] = float(row[3])
-    report.records_yesterday = len(rows_yest)
-
-    if report.records_today == 0 and report.expected > 0:
-        report.add_error("Bugün m07_fuel_prices tablosuna hiç kayıt yazılmamış")
-        return report
-
-    # Eksik kombinasyonlar
-    missing = expected - found
-    for provider, city, ft in sorted(missing):
-        label = f"{provider} / {city} / {ft}"
-        report.missing.append(label)
-        report.add_warning(f"Eksik yakıt verisi: {label}")
-
-    # Fiyat anomalisi
-    thr = _THRESHOLDS["fuel"]
-    for key, today_p in today_prices.items():
-        if key not in yest_prices:
+    for part, freq in schedule.items():
+        if not _scheduled(part):
             continue
-        yest_p = yest_prices[key]
-        if yest_p == 0:
-            continue
-        pct = (today_p - yest_p) / yest_p * 100
-        if abs(pct) / 100 > thr["warning"]:
-            provider, city, ft = key
-            label = f"{provider} / {city} / {ft}"
-            report.anomalies.append(
-                PriceAnomaly(label, yest_p, today_p, round(pct, 1))
+        table   = f"m07_{part}_prices"
+        display = FuelModule.PART_DISPLAY.get(part, part.replace("_", " ").title())
+
+        report = ModuleHealthReport(
+            module_code=f"07-{part}",
+            module_name=f"{display} (M07)",
+            date=target_date,
+        )
+
+        row   = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE date = $1", target_date)
+        row_y = await conn.fetchrow(f"SELECT COUNT(*) FROM {table} WHERE date = $1", yesterday)
+        report.records_today     = int(row[0])   if row   else 0
+        report.records_yesterday = int(row_y[0]) if row_y else 0
+
+        if report.records_today == 0:
+            report.add_error(f"Bugün {display} için hiç kayıt yazılmamış")
+        else:
+            if report.records_yesterday > 0:
+                change = abs(report.records_today - report.records_yesterday) / report.records_yesterday
+                if change > thr["error"]:
+                    report.add_error(
+                        f"Kayıt sayısı dünden %{change*100:.0f} farklı "
+                        f"({report.records_yesterday} → {report.records_today})"
+                    )
+                elif change > thr["warning"]:
+                    report.add_warning(
+                        f"Kayıt sayısı dünden %{change*100:.0f} farklı "
+                        f"({report.records_yesterday} → {report.records_today})"
+                    )
+
+        # Akaryakıt için beklenen kombinasyon detayı
+        if part == "fuel":
+            locations = _load_fuel_locations()
+            expected: set[tuple[str, str, str]] = set()
+            for loc in locations:
+                city = loc["city"]
+                for provider, fuel_types in _FUEL_EXPECTED.items():
+                    for ft in fuel_types:
+                        expected.add((provider, city, ft))
+            report.expected = len(expected)
+
+            rows_today = await conn.fetch(
+                "SELECT provider, city, fuel_type FROM m07_fuel_prices WHERE date = $1",
+                target_date,
             )
-            if abs(pct) / 100 > thr["error"]:
-                report.add_error(f"Kritik yakıt fiyat değişimi: {label} {_pct_label(pct)}")
-            else:
-                report.add_warning(f"Yakıt fiyat değişimi: {label} {_pct_label(pct)}")
+            found = {(str(r[0]), str(r[1]), str(r[2])) for r in rows_today}
+            for provider, city, ft in sorted(expected - found):
+                report.missing.append(f"{provider} / {city} / {ft}")
 
-    return report
+        reports.append(report)
+
+    return reports
 
 
 # ── Haftalık yeni kategori taraması ──────────────────────────────────────────
@@ -461,7 +464,7 @@ async def run_health_check(
 
     pipeline = PipelineHealthReport(date=target_date)
 
-    for check_fn in [check_market_health, check_appliance_health, check_fuel_health]:
+    for check_fn in [check_market_health, check_appliance_health, check_m07_health]:
         try:
             result = await check_fn(conn, target_date)
             if isinstance(result, list):
