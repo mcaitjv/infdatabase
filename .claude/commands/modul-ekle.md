@@ -132,10 +132,16 @@ Mevcut bir modüle yeni bir ürün/hizmet grubu ekler. Tip B (Discovery + Tracke
 
 Eksik olanları `AskUserQuestion` ile sor:
 - **Modül kodu** (hangi modüle ekleniyor): `05`
-- **Part slug** (ASCII, küçük harf, alt çizgi): `mobilya`, `tekstil`, `temizlik`
+- **Part slug** (ASCII, küçük harf, alt çizgi, tablo adıyla uyumlu): `mobilya`, `tekstil`, `temizlik`
+  - Tip C modüllerde (M07 gibi) **kural:** tablo adı `m07_{part}_prices` olacak — slug buna göre seç
 - **Part label** (Türkçe, görünen ad): `"Mobilya & Ev Tekstili"`
 - **Kategoriler** (virgülle): `koltuk, masa, yatak, hali` vb.
 - **Kaynaklar** (her kategori için hangi siteler): IKEA, Trendyol, Karaca vb.
+- **Frekans** (modülün `PART_SCHEDULE` varsa — M07 gibi Tip C modüllerde sor):
+  - `0` — Her gün
+  - `1` — Ayda 1 (15.)
+  - `2` — Ayda 2 (5. ve 20.)
+  - `4` — Ayda 4 (5., 10., 15., 20.)
 
 #### 3c.2 Dal oluştur
 
@@ -219,6 +225,28 @@ Onay alınırsa:
 - **Tip C** → Yeni `_run_<part_slug>()` fonksiyonu oluştur, `run()` içinden çağır. Ayrıca `_load_<part_slug>_config()` fonksiyonu ekle.
 
 Her iki tipte de: yeni DB modeli ve repository fonksiyonu gerekiyorsa, `db/models.py` ve `db/repository.py` güncellenmesi gerektiğini belirt.
+
+#### 3c.5b `PART_SCHEDULE` kaydı (PART_SCHEDULE olan modüller — M07 gibi)
+
+Modülün `__init__.py`'sinde `PART_SCHEDULE` dict'i varsa **otomatik olarak ekle** (onay almadan):
+
+```python
+PART_SCHEDULE = {
+    ...,
+    "<part_slug>": <frekans>,   # 3c.1'de toplanan değer
+}
+```
+
+`PART_DISPLAY` dict'i de varsa oraya da Türkçe label'ı ekle:
+
+```python
+PART_DISPLAY = {
+    ...,
+    "<part_slug>": "<Part Label>",
+}
+```
+
+Bu iki satırdan başka **hiçbir dosyaya dokunma** — `health.py` ve `notifier.py` tabloyu `m07_{part}_prices` kuralıyla otomatik türetir, health kontrolü ve mail takvimi otomatik dahil olur.
 
 #### 3c.6 Commit
 

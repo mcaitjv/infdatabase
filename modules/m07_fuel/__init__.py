@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 from db.models import ScrapeRun
-from db.repository import batch_upsert_car_prices, batch_upsert_ferry_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_car_prices, batch_upsert_ferry_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_motorsiklet_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 from modules.m07_fuel.scrapers.amadeus import AmadeusScraper
 from modules.m07_fuel.scrapers.aygaz import AygazScraper
@@ -86,7 +86,14 @@ def _load_vapur_config() -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
-_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml", "taksi.yaml", "vapur.yaml"}
+_TRANSPORT_YAMLS = {"locations.yaml", "yolcu_tasima.yaml", "sehirlerarasi_otobus.yaml", "tren.yaml", "ucakbileti.yaml", "taksi.yaml", "vapur.yaml", "motorsiklet.yaml"}
+
+
+def _load_motorsiklet_config() -> dict:
+    """motorsiklet.yaml'daki kategori ve kaynak bilgilerini yükler."""
+    path = _CONFIG_DIR / "motorsiklet.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("categories", {})
 
 
 def _load_car_config() -> tuple[dict, dict]:
@@ -124,15 +131,32 @@ class FuelModule(BaseModule):
     name = "Ulaştırma — Akaryakıt"
     weight = 16.62
 
+    # Kural: tablo adı = f"m07_{part}_prices"  (health.py otomatik türetir)
+    # Yeni part eklenince sadece buraya satır ekle — başka dosyaya dokunma.
     PART_SCHEDULE = {
-        "akaryakit":            0,   # her gün (locations.yaml)
-        "sifir_arac":           4,   # ayın 5, 10, 15, 20
-        "yolcu_tasima":         2,   # ayın 5 ve 20
-        "sehirlerarasi_otobus": 4,   # ayın 5, 10, 15, 20
-        "tren":                 1,   # ayın 15
-        "ucakbileti":           4,   # ayın 5, 10, 15, 20
-        "taksi":                1,   # ayın 15
-        "vapur":                2,   # ayın 5 ve 20
+        "fuel":          0,   # her gün (locations.yaml)
+        "car":           4,   # ayın 5, 10, 15, 20
+        "motorsiklet":   4,   # ayın 5, 10, 15, 20
+        "transport":     2,   # ayın 5 ve 20
+        "intercity_bus": 4,   # ayın 5, 10, 15, 20
+        "train":         1,   # ayın 15
+        "flight":        4,   # ayın 5, 10, 15, 20
+        "taxi":          1,   # ayın 15
+        "ferry":         2,   # ayın 5 ve 20
+    }
+
+    # İsteğe bağlı Türkçe görünen ad — eksik olursa part slug kullanılır.
+    # Yeni part eklenince buna da satır eklemek zorunda değilsin.
+    PART_DISPLAY: dict[str, str] = {
+        "fuel":          "Akaryakıt",
+        "car":           "Sıfır Araç",
+        "motorsiklet":   "Motorsiklet",
+        "transport":     "Şehir İçi Toplu Taşıma",
+        "intercity_bus": "Şehirlerarası Otobüs",
+        "train":         "Tren",
+        "flight":        "Uçak Bileti",
+        "taxi":          "Taksi",
+        "ferry":         "Vapur",
     }
 
     async def setup_schema(self, conn) -> None:
@@ -148,12 +172,13 @@ class FuelModule(BaseModule):
             sql = f.read()
 
         for table_pattern, idx_prefix in [
-            (r"m07_fuel_prices",         "idx_fp_"),
-            (r"m07_car_prices",          "idx_cp_"),
-            (r"m07_transport_prices",    "idx_tp_"),
-            (r"m07_intercity_bus_prices","idx_ibp_"),
-            (r"m07_train_prices",        "idx_tp2_"),
-            (r"m07_flight_prices",       "idx_fp2_"),
+            (r"m07_fuel_prices",          "idx_fp_"),
+            (r"m07_car_prices",           "idx_cp_"),
+            (r"m07_motorsiklet_prices",   "idx_mp_"),
+            (r"m07_transport_prices",     "idx_tp_"),
+            (r"m07_intercity_bus_prices", "idx_ibp_"),
+            (r"m07_train_prices",         "idx_tp2_"),
+            (r"m07_flight_prices",        "idx_fp2_"),
         ]:
             match = re.search(
                 rf"(CREATE TABLE IF NOT EXISTS {table_pattern}.*?;)",
@@ -172,7 +197,7 @@ class FuelModule(BaseModule):
                 except Exception:
                     pass
 
-        logger.info("[m07] m07_fuel_prices + m07_car_prices + m07_transport_prices + m07_intercity_bus_prices + m07_train_prices + m07_flight_prices şeması uygulandı.")
+        logger.info("[m07] m07_fuel_prices + m07_car_prices + m07_motorsiklet_prices + m07_transport_prices + ... şeması uygulandı.")
 
     async def run(
         self,
@@ -182,15 +207,16 @@ class FuelModule(BaseModule):
         """
         M07 part'larını çalıştırır.
 
-        Geçerli part slug'ları:
-          akaryakit            — Petrol Ofisi, Opet, Shell
-          sifir_arac           — Sıfır araç fiyatları
-          yolcu_tasima         — IETT, EGO, İzmirimkart
-          sehirlerarasi_otobus — Obilet, Biletall
-          tren                 — TCDD ebilet (tcddbilet.gov.tr)
-          ucakbileti           — obilet.com (yurt içi + yurt dışı, firma başına)
-          taksi                — Google News haber araması (istanbul, ankara, izmir)
-          vapur                — Şehir Hatları, İDO, İzdeniz, BUDO (snapshot + scrape)
+        Geçerli part slug'ları (tablo: m07_{slug}_prices):
+          fuel          — Petrol Ofisi, Opet, Shell
+          car           — Sıfır araç fiyatları
+          motorsiklet   — Motosiklet satış fiyatları (Honda, Yamaha, BMW, KTM)
+          transport     — IETT, EGO, İzmirimkart
+          intercity_bus — Obilet, Biletall
+          train         — TCDD ebilet (tcddbilet.gov.tr)
+          flight        — obilet.com (yurt içi + yurt dışı, firma başına)
+          taxi          — Google News haber araması (istanbul, ankara, izmir)
+          ferry         — Şehir Hatları, İDO, İzdeniz, BUDO (snapshot + scrape)
 
         Zamanlama: _PART_SCHEDULE dict'ine göre per-part frekans uygulanır.
           0 → her gün  |  1 → ayın 15'i  |  2 → 5 ve 20  |  4 → 5, 10, 15, 20
@@ -212,7 +238,7 @@ class FuelModule(BaseModule):
         runs: list[ScrapeRun] = []
 
         # ── Akaryakıt (Petrol Ofisi / Opet / Shell) ──────────────────────────
-        if _active("akaryakit") and (parts is not None or self._should_run("akaryakit")):
+        if _active("fuel") and (parts is not None or self._should_run("fuel")):
             provider_scrapers = [
                 ("petrolofisi", lambda: _run_single("petrolofisi", PetrolOfisiScraper, locations)),
                 ("opet",        lambda: _run_opet_with_aygaz(locations)),
@@ -265,49 +291,55 @@ class FuelModule(BaseModule):
                 logger.info("[m07] %s tamamlandı — %s, %.1fs", provider, run.status, duration)
                 runs.append(run)
         else:
-            logger.debug("[m07] akaryakit part'ı atlandı")
+            logger.debug("[m07] fuel part'ı atlandı")
 
         # ── Sıfır araç fiyatları ─────────────────────────────────────────────
-        if _active("sifir_arac") and (parts is not None or self._should_run("sifir_arac")):
+        if _active("car") and (parts is not None or self._should_run("car")):
             runs += await self._run_car_prices(dry_run=dry_run)
         else:
-            logger.debug("[m07] sifir_arac part'ı atlandı")
+            logger.debug("[m07] car part'ı atlandı")
+
+        # ── Motosiklet satış fiyatları ────────────────────────────────────────
+        if _active("motorsiklet") and (parts is not None or self._should_run("motorsiklet")):
+            runs += await self._run_motorsiklet_prices(dry_run=dry_run)
+        else:
+            logger.debug("[m07] motorsiklet part'ı atlandı")
 
         # ── Şehir içi toplu taşıma ───────────────────────────────────────────
-        if _active("yolcu_tasima") and (parts is not None or self._should_run("yolcu_tasima")):
+        if _active("transport") and (parts is not None or self._should_run("transport")):
             runs += await self._run_transport_services(dry_run=dry_run)
         else:
-            logger.debug("[m07] yolcu_tasima part'ı atlandı")
+            logger.debug("[m07] transport part'ı atlandı")
 
         # ── Şehirlerarası otobüs ─────────────────────────────────────────────
-        if _active("sehirlerarasi_otobus") and (parts is not None or self._should_run("sehirlerarasi_otobus")):
+        if _active("intercity_bus") and (parts is not None or self._should_run("intercity_bus")):
             runs += await self._run_sehirlerarasi(dry_run=dry_run)
         else:
-            logger.debug("[m07] sehirlerarasi_otobus part'ı atlandı")
+            logger.debug("[m07] intercity_bus part'ı atlandı")
 
         # ── Tren ─────────────────────────────────────────────────────────────
-        if _active("tren") and (parts is not None or self._should_run("tren")):
+        if _active("train") and (parts is not None or self._should_run("train")):
             runs += await self._run_tren(dry_run=dry_run)
         else:
-            logger.debug("[m07] tren part'ı atlandı")
+            logger.debug("[m07] train part'ı atlandı")
 
         # ── Uçak bileti ──────────────────────────────────────────────────────
-        if _active("ucakbileti") and (parts is not None or self._should_run("ucakbileti")):
+        if _active("flight") and (parts is not None or self._should_run("flight")):
             runs += await self._run_ucakbileti(dry_run=dry_run)
         else:
-            logger.debug("[m07] ucakbileti part'ı atlandı")
+            logger.debug("[m07] flight part'ı atlandı")
 
         # ── Taksi ────────────────────────────────────────────────────────────
-        if _active("taksi") and (parts is not None or self._should_run("taksi")):
+        if _active("taxi") and (parts is not None or self._should_run("taxi")):
             runs += await self._run_taksi(dry_run=dry_run)
         else:
-            logger.debug("[m07] taksi part'ı atlandı")
+            logger.debug("[m07] taxi part'ı atlandı")
 
         # ── Vapur ────────────────────────────────────────────────────────────
-        if _active("vapur") and (parts is not None or self._should_run("vapur")):
+        if _active("ferry") and (parts is not None or self._should_run("ferry")):
             runs += await self._run_vapur(dry_run=dry_run)
         else:
-            logger.debug("[m07] vapur part'ı atlandı")
+            logger.debug("[m07] ferry part'ı atlandı")
 
         return runs
 
@@ -321,7 +353,7 @@ class FuelModule(BaseModule):
         }
 
         run = ScrapeRun(
-            market     = "m07:yolcu_tasima",
+            market     = "m07:transport",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -388,7 +420,7 @@ class FuelModule(BaseModule):
         }
 
         run = ScrapeRun(
-            market     = "m07:sehirlerarasi_otobus",
+            market     = "m07:intercity_bus",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -455,7 +487,7 @@ class FuelModule(BaseModule):
         }
 
         run = ScrapeRun(
-            market     = "m07:tren",
+            market     = "m07:train",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -524,7 +556,7 @@ class FuelModule(BaseModule):
         }
 
         run = ScrapeRun(
-            market     = "m07:ucakbileti",
+            market     = "m07:flight",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -626,7 +658,7 @@ class FuelModule(BaseModule):
         tracked_cities: list[str] = cfg.get("tracked_cities", [])
 
         run = ScrapeRun(
-            market     = "m07:taksi",
+            market     = "m07:taxi",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -706,7 +738,7 @@ class FuelModule(BaseModule):
         }
 
         run = ScrapeRun(
-            market     = "m07:vapur",
+            market     = "m07:ferry",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -798,7 +830,7 @@ class FuelModule(BaseModule):
 
         car_cats, _ = _load_car_config()
         run = ScrapeRun(
-            market     = "m07:sifir_arac",
+            market     = "m07:car",
             run_date   = date.today(),
             started_at = datetime.now(),
         )
@@ -837,6 +869,67 @@ class FuelModule(BaseModule):
             run.status = "partial"
         except Exception as exc:
             logger.error("[m07] sifir_arac kritik hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+
+        return [run]
+
+    async def _run_motorsiklet_prices(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Motosiklet satış fiyatlarını marka sitelerinden çeker."""
+        from modules.m07_fuel.scrapers.motorsiklet_brands import MotorsikletBrandScraper
+
+        moto_cats = _load_motorsiklet_config()
+        run = ScrapeRun(
+            market     = "m07:motorsiklet",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            records = []
+            async with MotorsikletBrandScraper() as scraper:
+                for segment, cat_data in moto_cats.items():
+                    sources = cat_data.get("sources", {})
+                    for brand, brand_cfg in sources.items():
+                        path = brand_cfg.get("path", "")
+                        if not path:
+                            continue
+                        tracked = brand_cfg.get("tracked_skus") or []
+                        try:
+                            brand_records = await scraper.scrape_brand(
+                                brand, segment, path, tracked_skus=tracked or None
+                            )
+                            records.extend(brand_records)
+                        except NotImplementedError:
+                            logger.warning(
+                                "[m07] motorsiklet/%s/%s: scraper stub — atlanıyor",
+                                brand, segment,
+                            )
+
+            run.products_scraped = len(records)
+
+            if dry_run:
+                logger.info("[m07] Dry-run motorsiklet: %d kayıt (DB'ye yazılmadı)", len(records))
+                for r in records[:5]:
+                    print(f"  [{r.brand}] {r.model} {r.variant} ({r.segment}): {r.price} TL")
+                if len(records) > 5:
+                    print(f"  ... ve {len(records) - 5} kayıt daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_motorsiklet_prices(conn, records)
+                    logger.info(
+                        "[m07] motorsiklet: %d kayıt işlendi, %d yeni eklendi",
+                        len(records), inserted,
+                    )
+
+            run.status = "success" if records else "partial"
+
+        except Exception as exc:
+            logger.error("[m07] motorsiklet kritik hata: %s", exc, exc_info=True)
             run.status        = "failed"
             run.error_details = str(exc)
 

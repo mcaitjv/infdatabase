@@ -1,0 +1,120 @@
+label: "Motosiklet Satış Fiyatları"
+
+# Her source altında:
+#   path:         Scraper'ın kullandığı URL base path'i
+#                 Honda: yıl suffix'i olmadan — scraper mevcut yılı otomatik dener
+#                 Yamaha/BMW: tam path
+#   tracked_skus: Takip edilecek model adları (sayfadaki tam adla eşleşmeli)
+#                 Boş liste → filtreleme yok, tüm modeller alınır
+
+categories:
+  standart:
+    label: Standart / Naked
+    sources:
+      honda:
+        # Honda NAKED/SUPERSPORT 2026 sayfasında JS-rendered → veri yok
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus: []
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "MT-125 (EU5+)"
+          - "MT-25 (EU5+)"
+          - "MT-07 (EU5+)"
+          - "MT-09"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "S 1000 R"
+          - "R 12 nineT"
+          - "F 900 R"
+          - "R 1300 R"
+      kuba:
+        path: "/price_list"
+        tracked_skus:
+          - "ÇİTA 50RX"
+          - "CG50 RX PRO"
+          - "SUPERLIGHT 125"
+          - "EGE 50"
+
+  spor:
+    label: Sport / Supersport
+    sources:
+      honda:
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus: []
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "R3 (EU5+)"
+          - "R7"
+          - "R9"
+          - "R25 (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "S 1000 RR"
+          - "M 1000 RR"
+          - "S 1000 XR"
+          - "M 1000 XR"
+      # Kuba'nın spor segmenti yok
+
+  touring:
+    label: Tur / Adventure
+    sources:
+      honda:
+        # 2026 sayfasındaki tüm touring modeller: GL1800 Gold Wing Bagger + GL1800 Gold Wing
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus:
+          - "GL1800 Gold Wing Bagger"
+          - "GL1800 Gold Wing"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "Tracer 7 (EU5+)"
+          - "Tracer 9 (EU5+)"
+          - "Ténéré 700 (EU5+)"
+          - "Tracer 9 GT (Yan Çantalı) (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        tracked_skus:
+          - "R 1300 GS"
+          - "R 1300 GS Adventure"
+          - "F 900 GS"
+          - "F 900 GS Adventure"
+      kuba:
+        path: "/price_list"
+        # Sadece 2 touring modeli var
+        tracked_skus:
+          - "TK03"
+          - "TERRA125"
+
+  scooter:
+    label: Scooter
+    sources:
+      honda:
+        # 2026 sayfasındaki tüm scooter modeller: SH125i + Forza 250 (3 varyant) + ADV350 (2 varyant)
+        path: "/motosiklet/motosiklet-fiyat-listesi"
+        tracked_skus:
+          - "SH125i"
+          - "Forza 250"
+          - "ADV350"
+      yamaha:
+        path: "/fiyat-listesi/road-price-list.html"
+        tracked_skus:
+          - "NMAX 125 (EU5+)"
+          - "XMAX 250 (EU5+)"
+          - "XMAX 300 Tech MAX (EU5+)"
+          - "TMAX Tech MAX (EU5+)"
+      bmw:
+        path: "/tr/fiyat-listesi.html"
+        # CE 02 sayfada yok (discontinued); C 400 GT/X scooter ama tracked değil
+        tracked_skus:
+          - "CE 04"
+      kuba:
+        path: "/price_list"
+        tracked_skus:
+          - "BAYBERRY 50"
+          - "NEWCITY 50"
+          - "AROME 125 PRO"
+          - "NEWLIGHT125 PRO"

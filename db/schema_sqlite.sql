@@ -109,6 +109,22 @@ CREATE INDEX IF NOT EXISTS idx_cp_date     ON m07_car_prices(date);
 CREATE INDEX IF NOT EXISTS idx_cp_brand    ON m07_car_prices(brand);
 CREATE INDEX IF NOT EXISTS idx_cp_segment  ON m07_car_prices(segment);
 
+CREATE TABLE IF NOT EXISTS m07_motorsiklet_prices (
+    id          INTEGER       PRIMARY KEY AUTOINCREMENT,
+    brand       VARCHAR(100)  NOT NULL,
+    model       VARCHAR(255)  NOT NULL,
+    variant     VARCHAR(255)  NOT NULL,
+    segment     VARCHAR(50)   NOT NULL,
+    price       NUMERIC(12,2) NOT NULL,
+    currency    VARCHAR(10)   DEFAULT 'TRY',
+    date        DATE          NOT NULL,
+    UNIQUE (brand, model, variant, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mp_date     ON m07_motorsiklet_prices(date);
+CREATE INDEX IF NOT EXISTS idx_mp_brand    ON m07_motorsiklet_prices(brand);
+CREATE INDEX IF NOT EXISTS idx_mp_segment  ON m07_motorsiklet_prices(segment);
+
 CREATE INDEX IF NOT EXISTS idx_ps_date         ON m01_price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_product_date ON m01_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_ps_location     ON m01_price_snapshots(location);

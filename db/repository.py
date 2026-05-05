@@ -413,6 +413,37 @@ async def batch_upsert_car_prices(conn, records: list[CarPriceRecord]) -> int:
     return inserted
 
 
+async def batch_upsert_motorsiklet_prices(conn, records: list[CarPriceRecord]) -> int:
+    """Toplu motosiklet fiyatı ekler → m07_motorsiklet_prices tablosu."""
+    inserted = 0
+    for record in records:
+        rec_date = record.date if isinstance(record.date, date) else date.fromisoformat(str(record.date))
+        if isinstance(conn, _SqliteConn):
+            result = await conn.execute(
+                """
+                INSERT OR IGNORE INTO m07_motorsiklet_prices
+                    (brand, model, variant, segment, price, currency, date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                record.brand, record.model, record.variant, record.segment,
+                float(record.price), record.currency, str(rec_date),
+            )
+        else:
+            result = await conn.execute(
+                """
+                INSERT INTO m07_motorsiklet_prices
+                    (brand, model, variant, segment, price, currency, date)
+                VALUES ($1, $2, $3, $4, $5::numeric, $6, $7::date)
+                ON CONFLICT (brand, model, variant, date) DO NOTHING
+                """,
+                record.brand, record.model, record.variant, record.segment,
+                float(record.price), record.currency, rec_date,
+            )
+        if result == "INSERT 0 1":
+            inserted += 1
+    return inserted
+
+
 # ── Modül 07 — Toplu taşıma fiyatları ────────────────────────────────────────
 
 async def upsert_transport_price(conn, record: TransportPriceRecord) -> bool:
