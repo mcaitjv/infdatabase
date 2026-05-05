@@ -29,6 +29,13 @@ categories:
           - "R 12 nineT"
           - "F 900 R"
           - "R 1300 R"
+      kuba:
+        path: "/price_list"
+        tracked_skus:
+          - "ÇİTA 50RX"
+          - "CG50 RX PRO"
+          - "SUPERLIGHT 125"
+          - "EGE 50"
 
   spor:
     label: Sport / Supersport
@@ -50,6 +57,7 @@ categories:
           - "M 1000 RR"
           - "S 1000 XR"
           - "M 1000 XR"
+      # Kuba'nın spor segmenti yok
 
   touring:
     label: Tur / Adventure
@@ -74,6 +82,12 @@ categories:
           - "R 1300 GS Adventure"
           - "F 900 GS"
           - "F 900 GS Adventure"
+      kuba:
+        path: "/price_list"
+        # Sadece 2 touring modeli var
+        tracked_skus:
+          - "TK03"
+          - "TERRA125"
 
   scooter:
     label: Scooter
@@ -97,3 +111,10 @@ categories:
         # CE 02 sayfada yok (discontinued); C 400 GT/X scooter ama tracked değil
         tracked_skus:
           - "CE 04"
+      kuba:
+        path: "/price_list"
+        tracked_skus:
+          - "BAYBERRY 50"
+          - "NEWCITY 50"
+          - "AROME 125 PRO"
+          - "NEWLIGHT125 PRO"

@@ -1,13 +1,15 @@
 """
 Modül 07 — Motosiklet Satış Fiyat Scraper
 
-Honda, Yamaha ve BMW Motorrad resmi fiyat listesi sayfalarından
+Honda, Yamaha, BMW Motorrad ve Kuba Motor fiyat listelerinden
 model/varyant/segment/fiyat verisini çeker.
 
 Honda  : https://www.honda.com.tr  (httpx, Qwik SSR)
          2026 sayfasında: SCOOTER, BIG SCOOTER, TOURING (8 model/varyant)
 Yamaha : https://tr-yamaha-motor.com  (httpx, div.table + div.table-row)
 BMW    : https://www.bmw-motorrad.com.tr  (Playwright, Borusan portal)
+         Model başına 1 varyant (en ucuz) alınır.
+Kuba   : https://www.kubamotor.com.tr  (httpx, div.menu__sub-section)
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ logger = logging.getLogger(__name__)
 _HONDA_BASE = "https://www.honda.com.tr"
 _YAMAHA_BASE = "https://tr-yamaha-motor.com"
 _BMW_MOTORRAD_URL = "https://www.bmw-motorrad.com.tr/tr/fiyat-listesi.html"
+_KUBA_BASE = "https://www.kubamotor.com.tr"
 
 _HEADERS = {
     "User-Agent": (
@@ -55,6 +58,16 @@ _YAMAHA_CAT_TO_SEGMENT: dict[str, str] = {
     "Urban Mobility Scooter":       "scooter",
     "Urban Mobility - Elektrikli":  "scooter",
     "Urban Mobility":               "scooter",
+}
+
+# Kuba: kategori başlığı → segment
+_KUBA_CAT_TO_SEGMENT: dict[str, str] = {
+    "Touring":   "touring",
+    "Scooter":   "scooter",
+    "E-Scooter": "scooter",
+    "Klasik":    "standart",
+    "Cub":       "standart",
+    "Chopper":   "standart",
 }
 
 # BMW Motorrad: model adı anahtar kelimesi → segment
@@ -199,6 +212,48 @@ def _parse_yamaha_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
     return records
 
 
+def _parse_kuba_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
+    """
+    Kuba Motor fiyat listesi: div.menu__sub-section > h3.sub-section-title + div.sub-section__item
+      Model adı : span.visually-hidden
+      Fiyat     : p içinde "Fiyat: 76.568₺" formatında
+    """
+    records: list[CarPriceRecord] = []
+    today = date.today()
+    seen: set[str] = set()  # sayfa menüyü 2x render eder (mobil+desktop) — deduplicate
+
+    for sec in soup.find_all("div", class_="menu__sub-section"):
+        h3 = sec.find("h3", class_="sub-section-title")
+        if not h3:
+            continue
+        segment = _KUBA_CAT_TO_SEGMENT.get(h3.get_text(strip=True), "")
+        if not segment:
+            continue
+
+        for item in sec.find_all("div", class_="sub-section__item"):
+            name_el = item.find("span", class_="visually-hidden")
+            price_el = item.find("p")
+            if not name_el or not price_el:
+                continue
+            model = name_el.get_text(strip=True)
+            if not model or model in seen:
+                continue
+            seen.add(model)
+            price = _parse_price(price_el.get_text(strip=True))
+            if price:
+                records.append(CarPriceRecord(
+                    brand="kuba",
+                    model=model,
+                    variant="başlangıç",
+                    segment=segment,
+                    price=price,
+                    date=today,
+                ))
+
+    logger.debug("[motorsiklet] kuba: %d model parse edildi", len(records))
+    return records
+
+
 class MotorsikletBrandScraper:
     """Marka sitelerinden motosiklet başlangıç fiyatlarını çeker."""
 
@@ -207,6 +262,7 @@ class MotorsikletBrandScraper:
         self._honda_cache: list[CarPriceRecord] | None = None
         self._yamaha_cache: list[CarPriceRecord] | None = None
         self._bmw_cache: list[CarPriceRecord] | None = None
+        self._kuba_cache: list[CarPriceRecord] | None = None
 
     async def __aenter__(self) -> "MotorsikletBrandScraper":
         self._client = httpx.AsyncClient(
@@ -282,6 +338,17 @@ class MotorsikletBrandScraper:
 
         return [rec for rec in self._yamaha_cache if rec.segment == segment]
 
+    # ── Kuba Motor ─────────────────────────────────────────────────────────────
+
+    async def _scrape_kuba(self, segment: str, path: str) -> list[CarPriceRecord]:
+        if self._kuba_cache is None:
+            url = _KUBA_BASE + path
+            r = await self._client.get(url)
+            r.raise_for_status()
+            self._kuba_cache = _parse_kuba_page(BeautifulSoup(r.text, "html.parser"))
+
+        return [rec for rec in self._kuba_cache if rec.segment == segment]
+
     # ── BMW Motorrad ───────────────────────────────────────────────────────────
 
     async def _scrape_bmw(self, segment: str, path: str) -> list[CarPriceRecord]:
@@ -308,6 +375,7 @@ def _parse_bmw_motorrad_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
     """
     records: list[CarPriceRecord] = []
     today = date.today()
+    seen: set[str] = set()  # model başına 1 varyant (en ucuz = ilk sıradaki)
 
     for row in soup.find_all("div", class_="price"):
         col1_1 = row.find("div", class_="col1_1")
@@ -317,8 +385,9 @@ def _parse_bmw_motorrad_page(soup: BeautifulSoup) -> list[CarPriceRecord]:
             continue
 
         model = col1_1.get_text(strip=True)
-        if not model:
+        if not model or model in seen:
             continue
+        seen.add(model)
 
         variant_raw = col1_2.get_text(strip=True) if col1_2 else ""
         variant = variant_raw.strip("()") or "başlangıç"
@@ -361,12 +430,16 @@ async def _scrape_bmw_motorrad_playwright() -> list[CarPriceRecord]:
             except Exception:
                 pass
 
-            # Borusan Motorrad iframe (borusanotomotiv.com/motorrad)
+            # Borusan Motorrad iframe yüklenene kadar bekle (maks 15s)
             borusa_frame = None
-            for fr in page.frames:
-                if "borusanotomotiv.com" in fr.url or "borusa" in fr.url.lower():
-                    borusa_frame = fr
+            for _ in range(30):
+                for fr in page.frames:
+                    if "borusanotomotiv.com" in fr.url:
+                        borusa_frame = fr
+                        break
+                if borusa_frame:
                     break
+                await page.wait_for_timeout(500)
 
             if not borusa_frame:
                 logger.warning("[motorsiklet] bmw: Borusan Motorrad iframe bulunamadı")
@@ -374,7 +447,7 @@ async def _scrape_bmw_motorrad_playwright() -> list[CarPriceRecord]:
 
             # İframe içindeki .price elementlerinin yüklenmesini bekle
             try:
-                await borusa_frame.wait_for_selector("div.price", timeout=10000)
+                await borusa_frame.wait_for_selector("div.price", timeout=12000)
             except Exception:
                 logger.warning("[motorsiklet] bmw: div.price yüklenmedi, devam ediliyor")
 
