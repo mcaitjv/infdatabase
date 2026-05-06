@@ -159,7 +159,7 @@ class FoodModule(BaseModule):
                                     city, market_name, len(valid),
                                 )
                                 for r in valid[:3]:
-                                    print(f"  [{r.market}] {r.market_name} | {r.price} ₺ | {r.location}")
+                                    print(f"  [{r.market}] {r.market_name} | {r.price} TL | {r.location}")
                                 if len(valid) > 3:
                                     print(f"  ... ve {len(valid) - 3} ürün daha")
                             else:
@@ -218,7 +218,7 @@ class FoodModule(BaseModule):
             if dry_run:
                 logger.info("[m01:hal] Dry-run: %d ürün (DB'ye yazılmadı)", len(valid))
                 for r in valid[:5]:
-                    print(f"  [hal] {r.market_name} | {r.price} ₺/{r.volume}")
+                    print(f"  [hal] {r.market_name} | {r.price} TL/{r.volume}")
                 if len(valid) > 5:
                     print(f"  ... ve {len(valid) - 5} ürün daha")
             else:
