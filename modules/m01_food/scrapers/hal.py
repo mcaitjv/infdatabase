@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 _URL = "https://www.hal.gov.tr/Sayfalar/IhracatFiyatBulten.aspx"
 
-_TABLE_SELECTOR = "table.rgMasterTable tbody tr"
-_NEXT_PAGE_SELECTOR = "a.rgPageNext"
+_TABLE_SELECTOR = "table.gridView tr"
+# Pager satırındaki rakam linkleri (1'den büyük sayfa numaraları)
+_PAGER_LINK_SELECTOR = "table.gridView tr:last-child td a"
 
 
 def _slugify(text: str) -> str:
@@ -70,26 +71,33 @@ class HalScraper:
         await page.goto(_URL, wait_until="networkidle", timeout=60_000)
 
         records: list[PriceRecord] = []
-        page_num = 1
 
-        while True:
-            logger.debug("[hal] Sayfa %d scrape ediliyor…", page_num)
+        # İlk sayfayı çek
+        rows = await page.query_selector_all(_TABLE_SELECTOR)
+        batch = await self._parse_rows_async(rows)
+        records.extend(batch)
+        logger.info("[hal] Sayfa 1: %d kayıt", len(batch))
+
+        # Pager linklerini bul (2, 3, 4, 5 gibi sayfa numaraları)
+        pager_links = await page.query_selector_all(_PAGER_LINK_SELECTOR)
+        page_nums = []
+        for a in pager_links:
+            txt = (await a.inner_text()).strip()
+            if txt.isdigit() and int(txt) > 1:
+                page_nums.append(int(txt))
+
+        # Her sayfayı sırayla ziyaret et
+        for pg in sorted(set(page_nums)):
+            link = await page.query_selector(f"table.gridView tr:last-child td a:text-is('{pg}')")
+            if not link:
+                logger.warning("[hal] Sayfa %d linki bulunamadı — atlıyor.", pg)
+                continue
+            await link.click()
+            await page.wait_for_load_state("networkidle", timeout=30_000)
             rows = await page.query_selector_all(_TABLE_SELECTOR)
             batch = await self._parse_rows_async(rows)
             records.extend(batch)
-            logger.info("[hal] Sayfa %d: %d kayıt", page_num, len(batch))
-
-            next_btn = await page.query_selector(_NEXT_PAGE_SELECTOR)
-            if not next_btn:
-                break
-
-            is_disabled = await next_btn.get_attribute("class") or ""
-            if "rgDisabled" in is_disabled:
-                break
-
-            await next_btn.click()
-            await page.wait_for_load_state("networkidle", timeout=30_000)
-            page_num += 1
+            logger.info("[hal] Sayfa %d: %d kayıt", pg, len(batch))
 
         logger.info("[hal] Toplam %d hal fiyat kaydı çekildi.", len(records))
         return records
@@ -116,6 +124,11 @@ class HalScraper:
 
             texts = [await c.inner_text() for c in cells]
             urun_adi   = texts[0].strip()
+
+            # Pager satırını atla: ilk hücre yalnızca rakam/boşluk/sekme içerir
+            if re.fullmatch(r"[\d\s\t]+", urun_adi):
+                continue
+
             urun_cinsi = texts[1].strip()
             urun_turu  = texts[2].strip()
             fiyat_raw  = texts[3].strip()
