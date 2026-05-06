@@ -25,6 +25,7 @@ from modules.base import BaseModule
 from pipeline.validator import validate_batch
 from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
 from modules.m01_food.scrapers.marketfiyati import _MARKET_MAP as _MF_MARKET_MAP
+from modules.m01_food.scrapers.hal import HalScraper
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class FoodModule(BaseModule):
     name = "Gıda ve Alkolsüz İçecekler"
     weight = 24.44
 
-    PART_SCHEDULE = {"main": 0}   # her gün
+    PART_SCHEDULE = {"main": 0, "hal": 0}   # her gün
 
     async def setup_schema(self, conn) -> None:
         """Gıda modülü mevcut ortak şemayı kullanır (m01_market_products + m01_price_snapshots)."""
@@ -66,129 +67,178 @@ class FoodModule(BaseModule):
     async def run(self, dry_run: bool = False, parts: list[str] | None = None) -> list[ScrapeRun]:
         """
         Tüm kategori keyword'lerini tarayarak her marketteki tüm gıda ürünlerini çeker.
+        parts=None → tüm aktif partlar; parts=["hal"] → sadece hal.
         """
         import asyncio
 
-        if parts is None and not self._should_run("main"):
+        run_main = (parts is None or "main" in parts) and self._should_run("main")
+        run_hal  = (parts is None or "hal"  in parts) and self._should_run("hal")
+
+        if not run_main and not run_hal:
             logger.info("[m01] Bugün çalışma günü değil — atlanıyor.")
             return []
 
-        locations  = _load_locations()
-        categories = _load_categories()
-        branches   = _load_branches()
         runs: list[ScrapeRun] = []
 
         if not dry_run:
             async with get_connection() as conn:
                 await export_and_cleanup(conn, days=60, export_dir="data/exports")
 
-        if branches:
+        if run_main:
+            locations  = _load_locations()
+            categories = _load_categories()
+            branches   = _load_branches()
+
+            if branches:
+                logger.info(
+                    "[m01] Sabit şube modu: %d şehir, branches.yaml kullanılıyor",
+                    len(branches),
+                )
+            else:
+                logger.info("[m01] Proximity modu (branches.yaml yok)")
+
             logger.info(
-                "[m01] Sabit şube modu: %d şehir, branches.yaml kullanılıyor",
-                len(branches),
+                "[m01] %d konum × %d kategori başlıyor",
+                len(locations), len(categories),
             )
-        else:
-            logger.info("[m01] Proximity modu (branches.yaml yok)")
 
-        logger.info(
-            "[m01] %d konum × %d kategori başlıyor",
-            len(locations), len(categories),
-        )
+            async with MarketFiyatiScraper() as scraper:
+                for loc_idx, loc in enumerate(locations):
+                    city = loc["name"]
+                    city_branches = branches.get(city, {})
 
-        async with MarketFiyatiScraper() as scraper:
-            for loc_idx, loc in enumerate(locations):
-                city = loc["name"]
-                city_branches = branches.get(city, {})
-
-                depot_ids: list[str] | None = None
-                if city_branches:
-                    depot_ids = [b["depot_id"] for b in city_branches.values() if b.get("depot_id")]
-                    logger.info(
-                        "[m01] %s: %d sabit şube → %s",
-                        city, len(depot_ids),
-                        ", ".join(f"{m}={b['name']}" for m, b in city_branches.items()),
-                    )
-
-                logger.info("[m01] Konum: %s", city)
-                try:
-                    all_records = await scraper.scan_all_products(
-                        lat           = loc["lat"],
-                        lng           = loc["lng"],
-                        location_name = city,
-                        distance      = float(loc.get("distance_km", 10)),
-                        categories    = categories,
-                        depot_ids     = depot_ids,
-                    )
-                except Exception as exc:
-                    logger.error("[m01] %s kritik hata: %s", city, exc, exc_info=True)
-                    runs.append(ScrapeRun(
-                        market       = f"m01:{city}",
-                        run_date     = date.today(),
-                        started_at   = datetime.now(),
-                        finished_at  = datetime.now(),
-                        status       = "failed",
-                        error_details= str(exc),
-                    ))
-                    continue
-
-                by_market: dict[str, list] = collections.defaultdict(list)
-                for r in all_records:
-                    by_market[r.market].append(r)
-
-                for market_name, market_records in by_market.items():
-                    run = ScrapeRun(
-                        market     = f"m01:{city}:{market_name}",
-                        run_date   = date.today(),
-                        started_at = datetime.now(),
-                    )
-                    try:
-                        valid = validate_batch(market_records)
-                        run.products_scraped = len(valid)
-                        run.errors_count     = len(market_records) - len(valid)
-
-                        if dry_run:
-                            logger.info(
-                                "[m01] Dry-run %s / %s: %d ürün (DB'ye yazılmadı)",
-                                city, market_name, len(valid),
-                            )
-                            for r in valid[:3]:
-                                print(f"  [{r.market}] {r.market_name} | {r.price} ₺ | {r.location}")
-                            if len(valid) > 3:
-                                print(f"  ... ve {len(valid) - 3} ürün daha")
-                        else:
-                            async with get_connection() as conn:
-                                inserted = await batch_upsert_products_and_snapshots(conn, valid)
-                                logger.info(
-                                    "[m01] %s / %s: %d ürün, %d snapshot eklendi",
-                                    city, market_name, len(valid), inserted,
-                                )
-
-                        run.status = "success" if run.errors_count == 0 else "partial"
-
-                    except Exception as exc:
-                        logger.error(
-                            "[m01] %s / %s hata: %s", city, market_name, exc, exc_info=True
+                    depot_ids: list[str] | None = None
+                    if city_branches:
+                        depot_ids = [b["depot_id"] for b in city_branches.values() if b.get("depot_id")]
+                        logger.info(
+                            "[m01] %s: %d sabit şube → %s",
+                            city, len(depot_ids),
+                            ", ".join(f"{m}={b['name']}" for m, b in city_branches.items()),
                         )
-                        run.status        = "failed"
-                        run.error_details = str(exc)
 
-                    run.finished_at = datetime.now()
-                    if not dry_run:
-                        async with get_connection() as conn:
-                            await upsert_scrape_run(conn, run)
+                    logger.info("[m01] Konum: %s", city)
+                    try:
+                        all_records = await scraper.scan_all_products(
+                            lat           = loc["lat"],
+                            lng           = loc["lng"],
+                            location_name = city,
+                            distance      = float(loc.get("distance_km", 10)),
+                            categories    = categories,
+                            depot_ids     = depot_ids,
+                        )
+                    except Exception as exc:
+                        logger.error("[m01] %s kritik hata: %s", city, exc, exc_info=True)
+                        runs.append(ScrapeRun(
+                            market       = f"m01:{city}",
+                            run_date     = date.today(),
+                            started_at   = datetime.now(),
+                            finished_at  = datetime.now(),
+                            status       = "failed",
+                            error_details= str(exc),
+                        ))
+                        continue
 
-                    duration = (run.finished_at - run.started_at).total_seconds()
-                    logger.info(
-                        "[m01] %s / %s tamamlandı — %s, %.1fs",
-                        city, market_name, run.status, duration,
-                    )
-                    runs.append(run)
+                    by_market: dict[str, list] = collections.defaultdict(list)
+                    for r in all_records:
+                        by_market[r.market].append(r)
 
-                if loc_idx < len(locations) - 1:
-                    logger.info("[m01] Sonraki şehre geçmeden önce 10 dakika bekleniyor…")
-                    await asyncio.sleep(600)
+                    for market_name, market_records in by_market.items():
+                        run = ScrapeRun(
+                            market     = f"m01:{city}:{market_name}",
+                            run_date   = date.today(),
+                            started_at = datetime.now(),
+                        )
+                        try:
+                            valid = validate_batch(market_records)
+                            run.products_scraped = len(valid)
+                            run.errors_count     = len(market_records) - len(valid)
+
+                            if dry_run:
+                                logger.info(
+                                    "[m01] Dry-run %s / %s: %d ürün (DB'ye yazılmadı)",
+                                    city, market_name, len(valid),
+                                )
+                                for r in valid[:3]:
+                                    print(f"  [{r.market}] {r.market_name} | {r.price} ₺ | {r.location}")
+                                if len(valid) > 3:
+                                    print(f"  ... ve {len(valid) - 3} ürün daha")
+                            else:
+                                async with get_connection() as conn:
+                                    inserted = await batch_upsert_products_and_snapshots(conn, valid)
+                                    logger.info(
+                                        "[m01] %s / %s: %d ürün, %d snapshot eklendi",
+                                        city, market_name, len(valid), inserted,
+                                    )
+
+                            run.status = "success" if run.errors_count == 0 else "partial"
+
+                        except Exception as exc:
+                            logger.error(
+                                "[m01] %s / %s hata: %s", city, market_name, exc, exc_info=True
+                            )
+                            run.status        = "failed"
+                            run.error_details = str(exc)
+
+                        run.finished_at = datetime.now()
+                        if not dry_run:
+                            async with get_connection() as conn:
+                                await upsert_scrape_run(conn, run)
+
+                        duration = (run.finished_at - run.started_at).total_seconds()
+                        logger.info(
+                            "[m01] %s / %s tamamlandı — %s, %.1fs",
+                            city, market_name, run.status, duration,
+                        )
+                        runs.append(run)
+
+                    if loc_idx < len(locations) - 1:
+                        logger.info("[m01] Sonraki şehre geçmeden önce 10 dakika bekleniyor…")
+                        await asyncio.sleep(600)
+
+        if run_hal:
+            runs.extend(await self._run_hal(dry_run=dry_run))
 
         return runs
+
+    async def _run_hal(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """hal.gov.tr İhracat Fiyat Bülteni'nden toptan gıda fiyatlarını çeker."""
+        run = ScrapeRun(
+            market     = "m01:hal",
+            run_date   = date.today(),
+            started_at = datetime.now(),
+        )
+        try:
+            async with HalScraper() as scraper:
+                records = await scraper.scrape()
+
+            valid = validate_batch(records)
+            run.products_scraped = len(valid)
+            run.errors_count     = len(records) - len(valid)
+
+            if dry_run:
+                logger.info("[m01:hal] Dry-run: %d ürün (DB'ye yazılmadı)", len(valid))
+                for r in valid[:5]:
+                    print(f"  [hal] {r.market_name} | {r.price} ₺/{r.volume}")
+                if len(valid) > 5:
+                    print(f"  ... ve {len(valid) - 5} ürün daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_products_and_snapshots(conn, valid)
+                    logger.info("[m01:hal] %d ürün, %d snapshot eklendi", len(valid), inserted)
+                async with get_connection() as conn:
+                    await upsert_scrape_run(conn, run)
+
+            run.status = "success" if run.errors_count == 0 else "partial"
+
+        except Exception as exc:
+            logger.error("[m01:hal] hata: %s", exc, exc_info=True)
+            run.status        = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        duration = (run.finished_at - run.started_at).total_seconds()
+        logger.info("[m01:hal] tamamlandı — %s, %.1fs", run.status, duration)
+        return [run]
 
     async def discover_branches(self) -> None:
         """
