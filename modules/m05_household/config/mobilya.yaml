@@ -1,115 +1,650 @@
-label: "Mobilya, Mefruşat ve Halılar"
-
-# TÜİK COICOP: 051 (2.9962%) — 05111 Ev mobilyaları (2.6236%) + 05114 Halı (0.3726%)
-# IKEA: keyword → frontendapi.ikea.com.tr search API
-# Trendyol: path → /sr?q=... (search URL — kategori sayfaları bot tespiti yapıyor)
-# Vivense: path → kategori sayfası URL'i
-
+label: Mobilya, Mefruşat ve Halılar
 categories:
   mutfak_masasi:
     label: Mutfak Masası
-    tuik_code: "0511102"
+    tuik_code: '0511102'
     sources:
       ikea:
-        keyword: "mutfak masası"
+        path: /kategori/yemek-masalari
       trendyol:
         path: /sr?q=mutfak+masasi
       vivense:
-        path: /mutfak-masasi
-    tracked_skus: []
-
+        path: /mutfak-masalari
+    tracked_skus:
+    - sku: vina-mini-acilir-mutfak-masasi-karina-mese-modeli
+      model: Vina Mini Açılır Mutfak Masası, Karina Meşe
+      source: vivense
+    - sku: elis-mutfak-masasi-70x70-modeli
+      model: Elis Mutfak Masası, 70X70
+      source: vivense
+    - sku: elis-mutfak-masasi-ceviz-70x110-modeli
+      model: Elis Mutfak Masası, 70X110
+      source: vivense
+    - sku: vina-mutfak-masasi-beyaz-129x80-modeli
+      model: Vina Mutfak Masası, 129X80
+      source: vivense
+    - sku: vina-mini-acilir-mutfak-masasi-sedef-krem-modeli
+      model: Vina Mini Açılır Mutfak Masası, Sedef Krem
+      source: vivense
+    - sku: moon-kare-masa-dogal-masif-modeli
+      model: Bony Masa
+      source: vivense
+    - sku: pera-acilir-masa-130x80-carina-mese-modeli
+      model: Pera Açılır Masa
+      source: vivense
+    - sku: liva-masa-modeli
+      model: Liva Masa
+      source: vivense
+    - sku: cheri-iskandinav-dogal-masif-masa-mese-modeli
+      model: Cheri İskandinav Doğal Masif Masa, 80*140
+      source: vivense
+    - sku: vina-yuvarlak-acilir-masa-beyaz-modeli
+      model: Vina Yuvarlak Açılır Masa, 100X100
+      source: vivense
+    - sku: '57030138'
+      model: dekor fimDF01101B Flamingo Pratik Katlanır Beyaz Masa Portatif Yemek
+        ve Mutfak M
+      source: trendyol
+    - sku: '127146909'
+      model: dekor fimDF01104AC Pratik Portatif Raflı Duvara Monte Katlanır Masa Mutfak
+        ve Ye
+      source: trendyol
+    - sku: '774385691'
+      model: dekor fimDF01102AC Pratik Katlanır Açılır Kapanır, Raflı ve Çekmeceli
+        Çam Mutfak
+      source: trendyol
+    - sku: '944552147'
+      model: 'dekor fimDF01103B 3 Raflı, Yüksek Bar Masası, Dekoratif Mutfak ve Yemek
+        Masası, '
+      source: trendyol
+    - sku: '656102249'
+      model: Dekorfim
+      source: trendyol
+    - sku: '29420393'
+      model: SANDSBERG
+      source: ikea
+    - sku: '39578509'
+      model: VIHALS
+      source: ikea
+    - sku: '69608289'
+      model: SKÅLSTA
+      source: ikea
+    - sku: '70294339'
+      model: LISABO
+      source: ikea
+    - sku: '50386245'
+      model: MÖRBYLÅNGA
+      source: ikea
   mutfak_sandalyesi:
     label: Mutfak Sandalyesi
-    tuik_code: "0511105"
+    tuik_code: '0511105'
     sources:
       ikea:
-        keyword: "yemek odası sandalyesi"
+        path: /kategori/sandalyeler
       trendyol:
         path: /sr?q=mutfak+sandalyesi
       vivense:
-        path: /mutfak-sandalyesi
-    tracked_skus: []
-
+        path: /mutfak-sandalyeleri-ve-tabureler
+    tracked_skus:
+    - sku: nova-keten-mutfak-sandalyesi-siyah-ayakli-antrasit-modeli
+      model: Nova Keten Mutfak Sandalyesi, Siyah Ayaklı
+      source: vivense
+    - sku: elis-model-keten-mutfak-sandalyesi-siyah-ayakli-gri-modeli
+      model: Elis Model Keten Mutfak Sandalyesi, Siyah Ayaklı
+      source: vivense
+    - sku: oliver-black-sandalye-siyah-karina-modeli
+      model: Oliver Black Sandalye
+      source: vivense
+    - sku: trinity-sandalye-2-modeli
+      model: Trinity Sandalye
+      source: vivense
+    - sku: neo-sandalye2020-03-05-01-07-201441050857-modeli
+      model: Neo Sandalye
+      source: vivense
+    - sku: moon-hasirli-sandalye-modeli
+      model: Bony Sandalye
+      source: vivense
+    - sku: hazeran-iskandinav-sandalye-mese-krem-modeli
+      model: Hazeran İskandinav Sandalye, Meşe Krem
+      source: vivense
+    - sku: vina-mini-sandalye-karina-mese-antrasit-modeli
+      model: Vina Mini Sandalye
+      source: vivense
+    - sku: eti-sandalye-modeli
+      model: Eti Sandalye
+      source: vivense
+    - sku: vina-sandalye-atlantik-antrasit-1053-modeli
+      model: Vina Sandalye, Keten
+      source: vivense
+    - sku: '836265958'
+      model: En Çok Satan 1. Ürün
+      source: trendyol
+    - sku: '836265498'
+      model: En Çok Satan 1. Ürün
+      source: trendyol
+    - sku: '67177121'
+      model: En Çok Satan 1. Ürün
+      source: trendyol
+    - sku: '251223801'
+      model: En Çok Satan 1. Ürün
+      source: trendyol
+    - sku: '879234405'
+      model: En Çok Satan 1. Ürün
+      source: trendyol
+    - sku: '10610425'
+      model: GRÖTÅN
+      source: ikea
+    - sku: '80569998'
+      model: ROSENTORP
+      source: ikea
+    - sku: '70544866'
+      model: SKOGSTA
+      source: ikea
+    - sku: '60178887'
+      model: BEKVÄM
+      source: ikea
+    - sku: '50618194'
+      model: ROSENTORP
+      source: ikea
   yatak_odasi_takimi:
     label: Yatak Odası Takımı
-    tuik_code: "0511108"
+    tuik_code: 0511108
     sources:
       ikea:
-        keyword: "yatak odası takımı"
+        keyword: yatak odası takımı
       trendyol:
         path: /sr?q=yatak+odasi+takimi
       vivense:
-        path: /yatak-odasi-takimi
-    tracked_skus: []
-
+        path: /yatak-odasi-takimlari
+    tracked_skus:
+    - sku: travo-yatak-odasi-takimi-modeli
+      model: Travo Yatak Odası Takımı
+      source: vivense
+    - sku: eti-4-kapili-aynali-yatak-odasi-takimi-modeli
+      model: Eti Yatak Odası Takımı
+      source: vivense
+    - sku: pandora-yatak-odasi-takimi-koyu-ceviz-modeli
+      model: Pandora Nox Yatak Odası Takımı
+      source: vivense
+    - sku: madera-yatak-odasi-takimi-ahsap-kapakli-modeli
+      model: Madera Yatak Odası Takımı
+      source: vivense
+    - sku: life-yatak-odasi-takimi-4-kapakli-modeli
+      model: Life Yatak Odası Takımı
+      source: vivense
+    - sku: luna-yatak-odasi-takimi-cam-gardirop-5-kapakli-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: boston-yatak-odasi-takimi-6-kapakli-modeli
+      model: Boston Yatak Odası Takımı
+      source: vivense
+    - sku: bien-yatak-odasi-takimi-5-kapakli-modeli
+      model: Bien Yatak Odası Takımı, 5 Kapaklı
+      source: vivense
+    - sku: lotus-yatak-odasi-takimi-5-kapakli-modeli
+      model: Solina Yatak Odası Takımı
+      source: vivense
+    - sku: lora-yatak-odasi-takimi-4-kapakli-modeli
+      model: Lora Yatak Odası Takımı
+      source: vivense
+    - sku: '1132347470'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '1018451292'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '1075388247'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '1018379789'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '979345239'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '90404799'
+      model: MALM çift kişilik baza, beyaz
+      source: ikea
+    - sku: '39577557'
+      model: TONSTAD yatak odası seti, meşe kaplama
+      source: ikea
+    - sku: '19483442'
+      model: HEMNES yatak odası seti, beyaz vernik
+      source: ikea
+    - sku: '79488192'
+      model: SONGESAND yatak odası takımı, beyaz
+      source: ikea
+    - sku: '59499592'
+      model: IDANÄS yatak odası seti, beyaz
+      source: ikea
   yatak:
     label: Yatak
-    tuik_code: "0511111"
+    tuik_code: '0511111'
     sources:
       ikea:
-        keyword: "yatak"
+        path: /kategori/yataklar
       trendyol:
         path: /sr?q=yatak
       vivense:
-        path: /yatak
-    tracked_skus: []
-
+        path: /yataklar
+    tracked_skus:
+    - sku: luna-dormi-tek-kisilik-yatak-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: liva-pocket-yayli-yatak-90x190-modeli
+      model: Liva Pocket Yaylı Yatak
+      source: vivense
+    - sku: luna-by-vivense-visco-tek-kisilik-yatak-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: lenta-ortopedik-herkul-yayli-yatak-90x190-cm-modeli
+      model: Lenta Ortopedik Herkül Yaylı Yatak
+      source: vivense
+    - sku: luna-notte-plus-yatak-90x190-modeli
+      model: Luna Notte Plus Yatak
+      source: vivense
+    - sku: luna-cosmos-guard-tek-kisilik-yatak-antialerjik-120x200-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: bamboo-ultra-full-ortopedi-k-yatak-90x190-modeli
+      model: Bamboo Ultra Yatak
+      source: vivense
+    - sku: luna-galaxy-5z-pocket-yatak-160x200-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: luna-comet-memory-visco-yatak-120x200-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: luna-notte-yatak-90x190-modeli
+      model: Luna Notte Yatak
+      source: vivense
+    - sku: '1113345788'
+      model: WellgroLittles 150*48 cm Yeşil Yatak Bariyeri, Çocuk Yatak Korkuluğu
+      source: trendyol
+    - sku: '1112888208'
+      model: WellgroLittles 83*48 cm Beyaz Yatak Bariyeri, Çocuk Yatak Korkuluğu
+      source: trendyol
+    - sku: '1112891059'
+      model: WellgroLittles 110*48 cm Gri Yatak Bariyeri, Çocuk Yatak Korkuluğu
+      source: trendyol
+    - sku: '1113356753'
+      model: WellgroLittles 150*48 cm Pembe Yatak Bariyeri, Çocuk Yatak Korkuluğu
+      source: trendyol
+    - sku: '32871173'
+      model: WELLGRO
+      source: trendyol
+    - sku: '10480853'
+      model: ÅGOTNES
+      source: ikea
+    - sku: '60481652'
+      model: ÅKREHAMN
+      source: ikea
+    - sku: '30568642'
+      model: ÅFJÄLL
+      source: ikea
+    - sku: '70486729'
+      model: VANNAREID
+      source: ikea
+    - sku: '80568630'
+      model: ÅFJÄLL
+      source: ikea
   yatak_bazasi:
     label: Yatak Bazası
-    tuik_code: "0511114"
+    tuik_code: '0511114'
     sources:
       ikea:
-        keyword: "baza yatak"
+        path: /kategori/bazalar
       trendyol:
         path: /sr?q=baza+yatak
       vivense:
-        path: /baza
-    tracked_skus: []
-
+        path: /baza-1649230980
+    tracked_skus:
+    - sku: monarch-baza-baslik-modeli
+      model: Monarch Bazalı Karyola, 160X200
+      source: vivense
+    - sku: travo-karyola-bazali-modeli
+      model: Travo Karyola
+      source: vivense
+    - sku: madera-bazali-karyola-modeli
+      model: Madera Bazalı Karyola
+      source: vivense
+    - sku: luna-willow-bohem-bazali-karyola-160x200-modeli
+      model: Willow Bazalı Karyola Ve Başlık, 160X200
+      source: vivense
+    - sku: bold-baza-ve-baslik-seti-160x200-modeli
+      model: Bold Baza Ve Başlık Seti, 160X200
+      source: vivense
+    - sku: luna-nova-baza-ve-baslik-seti-acik-gri-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: luna-rhae-baza-ve-baslik-seti-kumas-degistirilebilir-90x190-1760532050715-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: luna-nova-baza-ve-baslik-seti-krem-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: capra-bohem-bazali-karyola-160x200-modeli
+      model: Capra Bohem Bazalı Karyola Ve Başlık, 160X200
+      source: vivense
+    - sku: calen-baza-ve-baslik-seti-160x200-modeli
+      model: Calen Baza Ve Başlık Seti, 160X200
+      source: vivense
+    - sku: '833476885'
+      model: En Çok Satan 3. Ürün
+      source: trendyol
+    - sku: '1090196612'
+      model: En Çok Satan 3. Ürün
+      source: trendyol
+    - sku: '142480838'
+      model: En Çok Satan 3. Ürün
+      source: trendyol
+    - sku: '921578344'
+      model: En Çok Satan 3. Ürün
+      source: trendyol
+    - sku: '1113092134'
+      model: En Çok Satan 3. Ürün
+      source: trendyol
+    - sku: '20404806'
+      model: MALM
+      source: ikea
+    - sku: 09094947
+      model: MANDAL
+      source: ikea
+    - sku: '89094948'
+      model: MANDAL
+      source: ikea
+    - sku: '89227731'
+      model: SLÄKT/LURÖY
+      source: ikea
+    - sku: '59099155'
+      model: BRIMNES/LURÖY
+      source: ikea
   genc_odasi_takimi:
     label: Genç Odası Takımı
-    tuik_code: "0511115"
+    tuik_code: '0511115'
     sources:
       ikea:
-        keyword: "genç odası takımı"
+        path: /kategori/cocuk-mobilyalari
       trendyol:
         path: /sr?q=genc+odasi+takimi
       vivense:
-        path: /genc-odasi-takimi
-    tracked_skus: []
-
+        path: /vivense-en-iyi-fiyat-cocuk-ve-genc-odalari
+    tracked_skus:
+    - sku: solina-genc-odasi-takimi-modeli
+      model: Solina Genç Odası Takımı
+      source: vivense
+    - sku: eti-genc-odasi2-modeli
+      model: Eti Genç Odası Takımı, 3 Kapaklı
+      source: vivense
+    - sku: bien-genc-odasi-takimi-3-kapakli-modeli
+      model: Bien Genç Odası Takımı, 3 Kapaklı
+      source: vivense
+    - sku: eti-3-kapili-gardirop-modeli
+      model: Eti Gardırop
+      source: vivense
+    - sku: solina-dolap-3-kapakli-modeli
+      model: Solina Gardırop
+      source: vivense
+    - sku: latre-genc-odasi-takimi-3-kapakli-modeli
+      model: Latre Genç Odası Takımı
+      source: vivense
+    - sku: milas-genc-odasi-takimi-3-kapakli-modeli
+      model: Milas Genç Odası Takımı
+      source: vivense
+    - sku: life-genc-odasi5-modeli
+      model: Life Yatak Odası Takımı
+      source: vivense
+    - sku: bien-gardirop-3-kapakli-2-cekmeceli-modeli
+      model: Bien Gardırop
+      source: vivense
+    - sku: strada-genc-odasi-gardirobu-2-kapakli-modeli
+      model: Strada Genç Odası Gardırobu
+      source: vivense
+    - sku: '790819200'
+      model: En Çok Ziyaret Edilen 2. Ürün
+      source: trendyol
+    - sku: '1113092134'
+      model: En Çok Ziyaret Edilen 2. Ürün
+      source: trendyol
+    - sku: '790817443'
+      model: En Çok Ziyaret Edilen 2. Ürün
+      source: trendyol
+    - sku: '1137801586'
+      model: En Çok Ziyaret Edilen 2. Ürün
+      source: trendyol
+    - sku: '930070481'
+      model: En Çok Ziyaret Edilen 2. Ürün
+      source: trendyol
+    - sku: '30581988'
+      model: MAMMUT
+      source: ikea
+    - sku: 00582098
+      model: TROFAST
+      source: ikea
+    - sku: '80253809'
+      model: KURA
+      source: ikea
+    - sku: '29123958'
+      model: MINNEN/LURÖY
+      source: ikea
+    - sku: '50365177'
+      model: MAMMUT
+      source: ikea
   oturma_odasi_takimi:
     label: Oturma Odası Takımı
-    tuik_code: "0511116"
+    tuik_code: '0511116'
     sources:
       ikea:
-        keyword: "koltuk takımı"
+        path: /kategori/koltuk-takimlari
       trendyol:
         path: /sr?q=koltuk+takimi
       vivense:
-        path: /koltuk-takimi
-    tracked_skus: []
-
+        path: /koltuk-takimlari-mobilyalari
+    tracked_skus:
+    - sku: girona-koltuk-takimi-ekru-modeli
+      model: Girona Koltuk Takımı
+      source: vivense
+    - sku: atlas-koltuk-takimi-krem-modeli
+      model: Atlas Koltuk Takımı
+      source: vivense
+    - sku: nesa-koltuk-takimi-krem-modeli
+      model: Nesa Koltuk Takımı
+      source: vivense
+    - sku: gloria-koltuk-takimi-gri-modeli
+      model: Gloria Koltuk Takımı
+      source: vivense
+    - sku: sento-koltuk-takimi-1764332981646-modeli
+      model: Sento Koltuk Takımı
+      source: vivense
+    - sku: hera-sandikli-yatakli-koltuk-takimi-antrasit-1758789058254-modeli
+      model: Hera Sandıklı Yataklı Koltuk Takımı
+      source: vivense
+    - sku: silva-koltuk-takimi-modeli
+      model: Silva Bohem Koltuk Takımı
+      source: vivense
+    - sku: ellas-koltuk-takimi-modeli
+      model: Ellas Koltuk Takımı
+      source: vivense
+    - sku: bellisimo-koltuk-takimi-krem-modeli
+      model: Bellisimo Koltuk Takımı
+      source: vivense
+    - sku: travo-koltuk-takimi-modeli
+      model: Travo Koltuk Takımı
+      source: vivense
+    - sku: '1123958075'
+      model: GOOD NİGHTPartner Sofa & Yatak & Berjer
+      source: trendyol
+    - sku: '829314665'
+      model: GOOD NİGHTLegom Köşe Koltuk & Aktivite Yatağı & Uzanma Koltuğu
+      source: trendyol
+    - sku: '944549351'
+      model: GOOD NİGHTLegom Aktivite Koltuğu & Yatak & Çok amaçlı
+      source: trendyol
+    - sku: '863332062'
+      model: GOOD NİGHTKanyon Çok Amaçlı Köşe Koltuk
+      source: trendyol
+    - sku: '656023170'
+      model: GOOD NIGHT HOME
+      source: trendyol
+    - sku: '39470231'
+      model: KIVIK
+      source: ikea
+    - sku: '49440597'
+      model: KIVIK
+      source: ikea
+    - sku: '29517045'
+      model: FRIHETEN
+      source: ikea
+    - sku: '50489012'
+      model: GLOSTAD
+      source: ikea
+    - sku: '89482830'
+      model: KIVIK
+      source: ikea
   yemek_odasi_takimi:
     label: Yemek Odası Takımı
-    tuik_code: "0511117"
+    tuik_code: '0511117'
     sources:
       ikea:
-        keyword: "yemek odası takımı"
+        keyword: yemek odası takımı
       trendyol:
         path: /sr?q=yemek+odasi+takimi
       vivense:
-        path: /yemek-odasi-takimi
-    tracked_skus: []
-
+        path: /yemek-odasi-takimlari-mobilyalari
+    tracked_skus:
+    - sku: pandora-yemek-odasi-takimi-modeli
+      model: Pandora Yemek Odası Takımı
+      source: vivense
+    - sku: girona-yemek-odasi-takimi-modeli
+      model: Girona Yemek Odası Takımı
+      source: vivense
+    - sku: madera-yemek-odasi-takimi-190cm-masa-modeli
+      model: Madera Yemek Odası Takımı
+      source: vivense
+    - sku: torenna-yemek-odasi-takimi-modeli
+      model: Torenna Yemek Odası Takımı
+      source: vivense
+    - sku: travo-yemek-odasi-takimi-modeli
+      model: Travo Yemek Odası Takımı
+      source: vivense
+    - sku: lora-yemek-odasi-takimi7-modeli
+      model: Lora Yemek Odası Takımı
+      source: vivense
+    - sku: avona-yemek-odasi-takimi-modeli
+      model: Avona Yemek Odası Takımı
+      source: vivense
+    - sku: eti-yemek-odasi-modeli
+      model: Eti Yemek Odası Takımı
+      source: vivense
+    - sku: haven-yemek-odasi-takimi-modeli
+      model: Haven Yemek Odası Takımı
+      source: vivense
+    - sku: sento-yemek-odasi-modeli
+      model: Sento Yemek Odası Takımı
+      source: vivense
+    - sku: '227130321'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '934093984'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '792882677'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '1044486468'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '1093219968'
+      model: En Çok Ziyaret Edilen 1. Ürün
+      source: trendyol
+    - sku: '49610132'
+      model: ROSENTORP yemek masası takımı, beyaz
+      source: ikea
+    - sku: '29589966'
+      model: VIHALS yemek masası takımı, yeşil-Tibbleby gri/yeşil
+      source: ikea
+    - sku: 09569323
+      model: MÖRBYLÅNGA/TOSSBERG yemek masası takımı, meşe kaplama kahverengi-gunnared
+        koyu gri
+      source: ikea
+    - sku: '80586002'
+      model: HAUGA katlanır mutfak masası, gri
+      source: ikea
+    - sku: '79596257'
+      model: TONSTAD döşemeli ahşap sandalye, Bomstad altın kahverengi-meşe görünümlü
+      source: ikea
   hali:
     label: Halı
-    tuik_code: "0511401"
+    tuik_code: '0511401'
     sources:
       ikea:
-        keyword: "halı"
+        path: /kategori/halilar
       trendyol:
         path: /sr?q=hali
       vivense:
-        path: /hali
-    tracked_skus: []
+        path: /hali-modelleri
+    tracked_skus:
+    - sku: harem-makina-halisi-gri-80x150-4508e-modeli
+      model: Noble Makine Halısı, Gri
+      source: vivense
+    - sku: pierre-loti-makina-halisi-antrasit-80x150-3005f-modeli
+      model: Reed Makine Halısı, Antrasit
+      source: vivense
+    - sku: luna-makine-halisi-8250-80x150-modeli
+      model: Halo Makine Halısı
+      source: vivense
+    - sku: harem-makina-halisi-mavi-80x150-4512v-modeli
+      model: Noble Makine Halısı, Mavi
+      source: vivense
+    - sku: harem-makina-halisi-beyaz-80x150-4505a-modeli
+      model: Noble Makine Halısı, Beyaz
+      source: vivense
+    - sku: harem-makina-halisi-kahve-80x150-4511d-modeli
+      model: Noble Makine Halısı, Kahve
+      source: vivense
+    - sku: harem-makina-halisi-krem-80x150-4503b-modeli
+      model: Noble Makine Halısı, Krem
+      source: vivense
+    - sku: pierre-loti-makina-halisi-krem-80x150-3003b-modeli
+      model: Reed Makine Halısı, Krem
+      source: vivense
+    - sku: pierre-loti-makina-halisi-bej-80x150-3002c-modeli
+      model: Reed Makine Halısı, Bej
+      source: vivense
+    - sku: glen-makine-halisi-gri-80x150-4001e-modeli
+      model: Glen Makine Halısı, 4001
+      source: vivense
+    - sku: '796330329'
+      model: venucci home & livingValeria %100 Polyester Vintage Modern Dokuma Salon
+        Oturma O
+      source: trendyol
+    - sku: '819984938'
+      model: venucci home & livingValeria %100 Polyester Vintage Modern Dokuma Salon
+        Oturma O
+      source: trendyol
+    - sku: '965034743'
+      model: venucci home & livingFrezia Floral Bambu Polyester Oturma Odası Salon
+        Mutfak Hal
+      source: trendyol
+    - sku: '965045046'
+      model: venucci home & livingFrezia Floral Bambu Polyester Oturma Odası Salon
+        Mutfak Hal
+      source: trendyol
+    - sku: '829656750'
+      model: Venucci Home & Living
+      source: trendyol
+    - sku: '40624242'
+      model: JÄRNVÄG
+      source: ikea
+    - sku: '40456757'
+      model: TIPHEDE
+      source: ikea
+    - sku: '60561856'
+      model: TIDTABELL
+      source: ikea
+    - sku: '10614254'
+      model: VOLLERSLEV
+      source: ikea
+    - sku: '40560805'
+      model: TVERSTED
+      source: ikea

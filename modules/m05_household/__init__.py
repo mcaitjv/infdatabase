@@ -140,13 +140,18 @@ class HouseholdModule(BaseModule):
                             await s._sleep(*sleep_s)
                     elif src_name == "ikea":
                         async with IkeaScraper() as s:
-                            prods = await s.discover_category(src_cfg["keyword"], cat_key)
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
                             await s._sleep(*sleep_s)
                     elif src_name == "trendyol":
                         trendyol_s = TrendyolScraper()
                         async with trendyol_s:
                             prods = await trendyol_s.discover_category(src_cfg["path"], cat_key)
                             await trendyol_s._sleep(*sleep_s)
+                    elif src_name == "vivense":
+                        from modules.m05_household.scrapers.vivense import VivenseScraper
+                        async with VivenseScraper() as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
                     else:
                         continue
                     for p in prods:

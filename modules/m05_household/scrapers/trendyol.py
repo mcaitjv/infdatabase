@@ -46,7 +46,11 @@ _EXTRACT_JS = """
         for (let i = 0; i < 6; i++) {
             card = card.parentElement;
             if (!card) break;
-            priceEl = card.querySelector('.sale-price') || card.querySelector('.price-value');
+            priceEl = card.querySelector('.sale-price')
+                    || card.querySelector('.price-value')
+                    || card.querySelector('[class*="prc-slg"]')
+                    || card.querySelector('[class*="prc-org"]')
+                    || card.querySelector('[class*="price"]');
             if (priceEl) break;
         }
         if (!priceEl) continue;
@@ -123,20 +127,23 @@ class TrendyolScraper:
             page = await ctx.new_page()
             try:
                 # Cookie warmup
-                await page.goto(_BASE + "/", wait_until="networkidle", timeout=30000)
-                await page.wait_for_timeout(3000)
+                await page.goto(_BASE + "/", wait_until="domcontentloaded", timeout=30000)
+                await page.wait_for_timeout(2000)
 
                 # Arama sayfası
-                await page.goto(url, wait_until="networkidle", timeout=45000)
-                await page.wait_for_timeout(5000)
+                await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                await page.wait_for_timeout(6000)
 
                 # Scroll → lazy-load fiyatları tetikle
                 await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
                 await page.wait_for_timeout(3000)
 
-                # Fiyat elementleri yüklenene kadar bekle (max 10s)
+                # Fiyat elementleri yüklenene kadar bekle (max 15s)
                 try:
-                    await page.wait_for_selector(".sale-price, .price-value", timeout=10000)
+                    await page.wait_for_selector(
+                        ".sale-price, .price-value, [class*='prc-slg'], [class*='prc-org']",
+                        timeout=15000,
+                    )
                 except Exception:
                     logger.warning("[trendyol] Fiyat elementi bulunamadi: %s", path)
 
