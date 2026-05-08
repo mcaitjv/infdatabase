@@ -152,6 +152,16 @@ class HouseholdModule(BaseModule):
                         async with VivenseScraper() as s:
                             prods = await s.discover_category(src_cfg["path"], cat_key)
                             await s._sleep(*sleep_s)
+                    elif src_name == "dogtas":
+                        from modules.m05_household.scrapers.dogtas import DogtasScraper
+                        async with DogtasScraper() as s:
+                            prods = await s.discover_category(src_cfg["path"], cat_key)
+                            await s._sleep(*sleep_s)
+                    elif src_name == "yatas":
+                        from modules.m05_household.scrapers.yatas import YatasScraper
+                        async with YatasScraper() as s:
+                            prods = await s.discover_category(src_cfg["cat_code"], cat_key)
+                            await s._sleep(*sleep_s)
                     else:
                         continue
                     for p in prods:
@@ -198,7 +208,9 @@ class HouseholdModule(BaseModule):
                 if source_name == "vestel":
                     records = await scraper.scrape_tracked(tracked_skus, cat_key)
                 elif source_name == "ikea":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["keyword"])
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config.get("keyword", source_config.get("path", "")))
+                elif source_name == "yatas":
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["cat_code"])
                 else:
                     records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
 
@@ -259,6 +271,8 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.ikea import IkeaScraper
         from modules.m05_household.scrapers.trendyol import TrendyolScraper
         from modules.m05_household.scrapers.vivense import VivenseScraper
+        from modules.m05_household.scrapers.dogtas import DogtasScraper
+        from modules.m05_household.scrapers.yatas import YatasScraper
 
         categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []
@@ -313,6 +327,16 @@ class HouseholdModule(BaseModule):
         # Vivense (httpx) — mobilya kategorileri; tracked_skus dolmadan atlanır
         async with VivenseScraper() as vivense:
             r, _ = await self._scrape_source("vivense", vivense, categories, dry_run)
+            runs.extend(r)
+
+        # Doğtaş (Playwright) — mobilya kategorileri; tracked_skus dolmadan atlanır
+        async with DogtasScraper() as dogtas:
+            r, _ = await self._scrape_source("dogtas", dogtas, categories, dry_run)
+            runs.extend(r)
+
+        # Yataş (httpx OCC API) — yatak kategorisi; tracked_skus dolmadan atlanır
+        async with YatasScraper() as yatas:
+            r, _ = await self._scrape_source("yatas", yatas, categories, dry_run)
             runs.extend(r)
 
         return runs
