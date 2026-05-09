@@ -360,7 +360,7 @@ async def upsert_appliance_price(conn, record: AppliancePriceRecord) -> bool:
             """
             INSERT INTO m05_fact_appliance_price (appliance_key, price, date)
             VALUES ($1, $2::numeric, $3::date)
-            ON CONFLICT (appliance_key, date) DO NOTHING
+            ON CONFLICT (appliance_key, date) DO UPDATE SET price = EXCLUDED.price
             """,
             appliance_key, float(record.price), rec_date,
         )

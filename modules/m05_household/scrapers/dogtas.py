@@ -168,11 +168,14 @@ class DogtasScraper:
         from bs4 import BeautifulSoup
 
         soup = BeautifulSoup(html, "lxml")
-        price_el = soup.select_one(".price-group")
-        if not price_el:
+
+        # div.first = ana ürün başlık bölümü; .sale-price burada mevcut fiyatı gösterir
+        # (sayfa altındaki .price-group'lar öneri kartlarına aittir — yanlış ürün olabilir)
+        sale = soup.select_one("div.first .sale-price")
+        if not sale:
             return None
 
-        m = _PRICE_RE.search(price_el.get_text(" ", strip=True))
+        m = _PRICE_RE.search(sale.get_text(" ", strip=True))
         return _parse_price(m.group(1)) if m else None
 
     async def scrape_tracked(
