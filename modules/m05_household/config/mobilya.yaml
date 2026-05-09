@@ -85,11 +85,11 @@ categories:
     - sku: marlin-sandalye-tuylu-sonil-desen-3120027528
       model: MARLINSandalye
       source: dogtas
-    - sku: marlin-sandalye-tuylu-3120027527
-      model: MARLINSandalye
+    - sku: kalia-sandalye-sonil-gri-3120026059
+      model: KALIASandalye
       source: dogtas
-    - sku: linthe-sandalye-orme-kumas-gri-3120027374
-      model: LINTHESandalye
+    - sku: legna-sandalye-sonil-krem-3120026972
+      model: LEGNASandalye
       source: dogtas
     - sku: linthe-sandalye-orme-kumas-gri-3120027373
       model: LINTHESandalye
