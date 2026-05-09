@@ -1,115 +1,504 @@
-label: "Mobilya, Mefruşat ve Halılar"
-
-# TÜİK COICOP: 051 (2.9962%) — 05111 Ev mobilyaları (2.6236%) + 05114 Halı (0.3726%)
-# IKEA: keyword → frontendapi.ikea.com.tr search API
-# Trendyol: path → /sr?q=... (search URL — kategori sayfaları bot tespiti yapıyor)
-# Vivense: path → kategori sayfası URL'i
-
+label: Mobilya, Mefruşat ve Halılar
 categories:
   mutfak_masasi:
     label: Mutfak Masası
-    tuik_code: "0511102"
+    tuik_code: '0511102'
     sources:
       ikea:
-        keyword: "mutfak masası"
-      trendyol:
-        path: /sr?q=mutfak+masasi
-      vivense:
+        path: /kategori/yemek-masalari
+      dogtas:
         path: /mutfak-masasi
-    tracked_skus: []
-
+      vivense:
+        path: /mutfak-masalari
+    tracked_skus:
+    - sku: '29420393'
+      model: SANDSBERG
+      source: ikea
+    - sku: '39578509'
+      model: VIHALS
+      source: ikea
+    - sku: '69608289'
+      model: SKÅLSTA
+      source: ikea
+    - sku: '70294339'
+      model: LISABO
+      source: ikea
+    - sku: '50386245'
+      model: MÖRBYLÅNGA
+      source: ikea
+    - sku: torre-mutfak-masasi-3200423732
+      model: TORREMutfak Masası
+      source: dogtas
+    - sku: bronte-mutfak-masasi-gri-mese-3200410743
+      model: BRONTEMutfak Masası - Yuvarlak
+      source: dogtas
+    - sku: plato-mutfak-masasi-ceviz-3200410738
+      model: PLATOMutfak Masası
+      source: dogtas
+    - sku: clarita-mutfak-masasi-kahverengi-3200395637
+      model: CLARITAMutfak Masası
+      source: dogtas
+    - sku: vina-mutfak-masasi-beyaz-3200395636
+      model: VINAMutfak Masası
+      source: dogtas
+    - sku: vina-mini-acilir-mutfak-masasi-karina-mese-modeli
+      model: Vina Mini Açılır Mutfak Masası, Karina Meşe
+      source: vivense
+    - sku: elis-mutfak-masasi-70x70-modeli
+      model: Elis Mutfak Masası, 70X70
+      source: vivense
+    - sku: elis-mutfak-masasi-ceviz-70x110-modeli
+      model: Elis Mutfak Masası, 70X110
+      source: vivense
+    - sku: vina-mutfak-masasi-beyaz-129x80-modeli
+      model: Vina Mutfak Masası, 129X80
+      source: vivense
+    - sku: vina-mini-acilir-mutfak-masasi-sedef-krem-modeli
+      model: Vina Mini Açılır Mutfak Masası, Sedef Krem
+      source: vivense
   mutfak_sandalyesi:
     label: Mutfak Sandalyesi
-    tuik_code: "0511105"
+    tuik_code: '0511105'
     sources:
       ikea:
-        keyword: "yemek odası sandalyesi"
-      trendyol:
-        path: /sr?q=mutfak+sandalyesi
+        path: /kategori/sandalyeler
+      dogtas:
+        path: /ahsap-ayakli-sandalye
       vivense:
-        path: /mutfak-sandalyesi
-    tracked_skus: []
-
+        path: /mutfak-sandalyeleri-ve-tabureler
+    tracked_skus:
+    - sku: '10610425'
+      model: GRÖTÅN
+      source: ikea
+    - sku: '80569998'
+      model: ROSENTORP
+      source: ikea
+    - sku: '70544866'
+      model: SKOGSTA
+      source: ikea
+    - sku: '60178887'
+      model: BEKVÄM
+      source: ikea
+    - sku: '50618194'
+      model: ROSENTORP
+      source: ikea
+    - sku: marlin-sandalye-tuylu-sonil-desen-3120027528
+      model: MARLINSandalye
+      source: dogtas
+    - sku: kalia-sandalye-sonil-gri-3120026059
+      model: KALIASandalye
+      source: dogtas
+    - sku: legna-sandalye-sonil-krem-3120026972
+      model: LEGNASandalye
+      source: dogtas
+    - sku: linthe-sandalye-orme-kumas-gri-3120027373
+      model: LINTHESandalye
+      source: dogtas
+    - sku: noralis-sandalye-3120026815
+      model: NORALISSandalye
+      source: dogtas
+    - sku: nova-keten-mutfak-sandalyesi-siyah-ayakli-antrasit-modeli
+      model: Nova Keten Mutfak Sandalyesi, Siyah Ayaklı
+      source: vivense
+    - sku: elis-model-keten-mutfak-sandalyesi-siyah-ayakli-gri-modeli
+      model: Elis Model Keten Mutfak Sandalyesi, Siyah Ayaklı
+      source: vivense
+    - sku: oliver-black-sandalye-siyah-karina-modeli
+      model: Oliver Black Sandalye
+      source: vivense
+    - sku: trinity-sandalye-2-modeli
+      model: Trinity Sandalye
+      source: vivense
+    - sku: neo-sandalye2020-03-05-01-07-201441050857-modeli
+      model: Neo Sandalye
+      source: vivense
   yatak_odasi_takimi:
     label: Yatak Odası Takımı
-    tuik_code: "0511108"
+    tuik_code: 0511108
     sources:
       ikea:
-        keyword: "yatak odası takımı"
-      trendyol:
-        path: /sr?q=yatak+odasi+takimi
+        path: /kategori/yatak-odasi-mobilya-takimlari
+      dogtas:
+        path: /yatak-odasi-takimlari
       vivense:
-        path: /yatak-odasi-takimi
-    tracked_skus: []
-
+        path: /yatak-odasi-takimlari
+    tracked_skus:
+    - sku: '39577557'
+      model: TONSTAD
+      source: ikea
+    - sku: '19483442'
+      model: HEMNES
+      source: ikea
+    - sku: '79483401'
+      model: IDANÄS
+      source: ikea
+    - sku: '69483393'
+      model: BRIMNES
+      source: ikea
+    - sku: '29483427'
+      model: HEMNES
+      source: ikea
+    - sku: travo-yatak-odasi-takimi-modeli
+      model: Travo Yatak Odası Takımı
+      source: vivense
+    - sku: eti-4-kapili-aynali-yatak-odasi-takimi-modeli
+      model: Eti Yatak Odası Takımı
+      source: vivense
+    - sku: pandora-yatak-odasi-takimi-koyu-ceviz-modeli
+      model: Pandora Nox Yatak Odası Takımı
+      source: vivense
+    - sku: madera-yatak-odasi-takimi-ahsap-kapakli-modeli
+      model: Madera Yatak Odası Takımı
+      source: vivense
+    - sku: life-yatak-odasi-takimi-4-kapakli-modeli
+      model: Life Yatak Odası Takımı
+      source: vivense
+    - sku: optima-dolap-sistemleri
+      model: OPTIMADolap Sistemleri
+      source: dogtas
+    - sku: integra-dolap-sistemleri
+      model: INTEGRADolap Sistemleri
+      source: dogtas
+    - sku: marlin-yatak-odasi-takimi
+      model: MARLINYatak Odası Takımı
+      source: dogtas
+    - sku: linthe-yatak-odasi-takimi
+      model: LINTHEYatak Odası Takımı
+      source: dogtas
+    - sku: noralis-yatak-odasi-takimi
+      model: NORALISYatak Odası Takımı
+      source: dogtas
   yatak:
     label: Yatak
-    tuik_code: "0511111"
+    tuik_code: '0511111'
     sources:
       ikea:
-        keyword: "yatak"
-      trendyol:
-        path: /sr?q=yatak
+        path: /kategori/yataklar
+      yatas:
+        cat_code: '10'
       vivense:
-        path: /yatak
-    tracked_skus: []
-
+        path: /yataklar
+    tracked_skus:
+    - sku: '10480853'
+      model: ÅGOTNES
+      source: ikea
+    - sku: '60481652'
+      model: ÅKREHAMN
+      source: ikea
+    - sku: '30568642'
+      model: ÅFJÄLL
+      source: ikea
+    - sku: '70486729'
+      model: VANNAREID
+      source: ikea
+    - sku: '80568630'
+      model: ÅFJÄLL
+      source: ikea
+    - sku: '121145'
+      model: Five-Z
+      source: yatas
+    - sku: '13830845'
+      model: Athletic
+      source: yatas
+    - sku: '1431610'
+      model: Spinal Support Bamboo
+      source: yatas
+    - sku: '14326066'
+      model: Activio
+      source: yatas
+    - sku: '14377695'
+      model: Oxy Fresh
+      source: yatas
+    - sku: luna-dormi-tek-kisilik-yatak-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: liva-pocket-yayli-yatak-90x190-modeli
+      model: Liva Pocket Yaylı Yatak
+      source: vivense
+    - sku: luna-by-vivense-visco-tek-kisilik-yatak-90x190-modeli
+      model: Luna Bedding
+      source: vivense
+    - sku: lenta-ortopedik-herkul-yayli-yatak-90x190-cm-modeli
+      model: Lenta Ortopedik Herkül Yaylı Yatak
+      source: vivense
+    - sku: luna-notte-plus-yatak-90x190-modeli
+      model: Luna Notte Plus Yatak
+      source: vivense
   yatak_bazasi:
     label: Yatak Bazası
-    tuik_code: "0511114"
+    tuik_code: '0511114'
     sources:
       ikea:
-        keyword: "baza yatak"
-      trendyol:
-        path: /sr?q=baza+yatak
+        path: /kategori/bazalar
+      dogtas:
+        path: /bazali-karyola
       vivense:
-        path: /baza
-    tracked_skus: []
-
+        path: /baza-1649230980
+    tracked_skus:
+    - sku: '20404806'
+      model: MALM
+      source: ikea
+    - sku: 09094947
+      model: MANDAL
+      source: ikea
+    - sku: '89227731'
+      model: SLÄKT/LURÖY
+      source: ikea
+    - sku: '59099155'
+      model: BRIMNES/LURÖY
+      source: ikea
+    - sku: '99047744'
+      model: MALM/LURÖY
+      source: ikea
+    - sku: marlin-sandikli-baza-kasa-160-cm-tuylu-krem-3200427117
+      model: MARLINSandıklı Bazalı Karyola - 160 cm - Başlıksız
+      source: dogtas
+    - sku: linthe-sandikli-baza-kasa-160-cm-orme-kumas-gri-3200427029
+      model: LINTHESandıklı Bazalı Karyola - 160 cm - Başlıksız
+      source: dogtas
+    - sku: noralis-basliksiz-bazali-karyola-160-cm-gri-3200425583
+      model: NORALISBaşlıksız Bazalı Karyola - 160 cm
+      source: dogtas
+    - sku: noralis-basliksiz-karyola-160-cm-gri-3200425582
+      model: NORALISBaşlıksız Karyola - 180 cm
+      source: dogtas
+    - sku: kalia-sandikli-baza-kasa-160-cm-sonil-gri-3200425560
+      model: KALIASandıklı Bazalı Karyola - 160 cm - BaşlıksızMelanj Şönil Dokuma
+      source: dogtas
+    - sku: monarch-baza-baslik-modeli
+      model: Monarch Bazalı Karyola, 160X200
+      source: vivense
+    - sku: travo-karyola-bazali-modeli
+      model: Travo Karyola
+      source: vivense
+    - sku: madera-bazali-karyola-modeli
+      model: Madera Bazalı Karyola
+      source: vivense
+    - sku: luna-willow-bohem-bazali-karyola-160x200-modeli
+      model: Willow Bazalı Karyola Ve Başlık, 160X200
+      source: vivense
+    - sku: bold-baza-ve-baslik-seti-160x200-modeli
+      model: Bold Baza Ve Başlık Seti, 160X200
+      source: vivense
   genc_odasi_takimi:
     label: Genç Odası Takımı
-    tuik_code: "0511115"
+    tuik_code: '0511115'
     sources:
       ikea:
-        keyword: "genç odası takımı"
-      trendyol:
-        path: /sr?q=genc+odasi+takimi
+        path: /kategori/cocuk-mobilyalari
+      dogtas:
+        path: /genc-odasi-takimlari
       vivense:
-        path: /genc-odasi-takimi
-    tracked_skus: []
-
+        path: /vivense-en-iyi-fiyat-cocuk-ve-genc-odalari
+    tracked_skus:
+    - sku: solina-genc-odasi-takimi-modeli
+      model: Solina Genç Odası Takımı
+      source: vivense
+    - sku: eti-genc-odasi2-modeli
+      model: Eti Genç Odası Takımı, 3 Kapaklı
+      source: vivense
+    - sku: bien-genc-odasi-takimi-3-kapakli-modeli
+      model: Bien Genç Odası Takımı, 3 Kapaklı
+      source: vivense
+    - sku: eti-3-kapili-gardirop-modeli
+      model: Eti Gardırop
+      source: vivense
+    - sku: solina-dolap-3-kapakli-modeli
+      model: Solina Gardırop
+      source: vivense
+    - sku: '30581988'
+      model: MAMMUT
+      source: ikea
+    - sku: 00582098
+      model: TROFAST
+      source: ikea
+    - sku: '80253809'
+      model: KURA
+      source: ikea
+    - sku: '29123958'
+      model: MINNEN/LURÖY
+      source: ikea
+    - sku: '50365177'
+      model: MAMMUT
+      source: ikea
+    - sku: north-genc-odasi
+      model: NORTHGenç Odası Takımı
+      source: dogtas
+    - sku: toscana-genc-odasi-takimi
+      model: TOSCANAGenç Odası Takımı
+      source: dogtas
+    - sku: glen-tortana-genc-odasi
+      model: GLEN TORTANAGenç Odası
+      source: dogtas
+    - sku: glen-orma-genc-odasi-takimi
+      model: GLEN ORMAGenç Odası Takımı
+      source: dogtas
   oturma_odasi_takimi:
     label: Oturma Odası Takımı
-    tuik_code: "0511116"
+    tuik_code: '0511116'
     sources:
       ikea:
-        keyword: "koltuk takımı"
-      trendyol:
-        path: /sr?q=koltuk+takimi
+        path: /kategori/koltuk-takimlari
+      dogtas:
+        path: /koltuk-takimlari
       vivense:
-        path: /koltuk-takimi
-    tracked_skus: []
-
+        path: /koltuk-takimlari-mobilyalari
+    tracked_skus:
+    - sku: '39470231'
+      model: KIVIK
+      source: ikea
+    - sku: '29517045'
+      model: FRIHETEN
+      source: ikea
+    - sku: '50489012'
+      model: GLOSTAD
+      source: ikea
+    - sku: '10586604'
+      model: STOCKHOLM 2025
+      source: ikea
+    - sku: '80489303'
+      model: TONSTAD
+      source: ikea
+    - sku: svea-koltuk-takimi
+      model: SVEAKoltuk Takımı
+      source: dogtas
+    - sku: avenia-koltuk-takimi
+      model: AVENİAKoltuk Takımı
+      source: dogtas
+    - sku: marlin-koltuk-takimi
+      model: MARLINKoltuk Takımı
+      source: dogtas
+    - sku: linthe-koltuk-takimi
+      model: LINTHEKoltuk Takımı
+      source: dogtas
+    - sku: noralis-koltuk-takimi
+      model: NORALISKoltuk Takımı
+      source: dogtas
+    - sku: girona-koltuk-takimi-ekru-modeli
+      model: Girona Koltuk Takımı
+      source: vivense
+    - sku: atlas-koltuk-takimi-krem-modeli
+      model: Atlas Koltuk Takımı
+      source: vivense
+    - sku: nesa-koltuk-takimi-krem-modeli
+      model: Nesa Koltuk Takımı
+      source: vivense
+    - sku: gloria-koltuk-takimi-gri-modeli
+      model: Gloria Koltuk Takımı
+      source: vivense
+    - sku: sento-koltuk-takimi-1764332981646-modeli
+      model: Sento Koltuk Takımı
+      source: vivense
   yemek_odasi_takimi:
     label: Yemek Odası Takımı
-    tuik_code: "0511117"
+    tuik_code: '0511117'
     sources:
       ikea:
-        keyword: "yemek odası takımı"
-      trendyol:
-        path: /sr?q=yemek+odasi+takimi
+        path: /kategori/yemek-odasi-mobilyalari
+      dogtas:
+        path: /yemek-odasi-takimlari
       vivense:
-        path: /yemek-odasi-takimi
-    tracked_skus: []
-
+        path: /yemek-odasi-takimlari-mobilyalari
+    tracked_skus:
+    - sku: '30606583'
+      model: HÄGERNÄS 4 tabureli bar masası takımı
+      source: ikea
+    - sku: '49610132'
+      model: ROSENTORP 4 sandalyeli yemek masası takımı, beyaz
+      source: ikea
+    - sku: '29388656'
+      model: VOXLÖV 4 sandalyeli yemek masası takımı, bambu
+      source: ikea
+    - sku: '59610141'
+      model: ROSENTORP 4 sandalyeli yemek masası takımı, beyaz
+      source: ikea
+    - sku: '79589964'
+      model: VIHALS 4 sandalyeli yemek masası takımı, yeşil
+      source: ikea
+    - sku: pandora-yemek-odasi-takimi-modeli
+      model: Pandora Yemek Odası Takımı
+      source: vivense
+    - sku: girona-yemek-odasi-takimi-modeli
+      model: Girona Yemek Odası Takımı
+      source: vivense
+    - sku: madera-yemek-odasi-takimi-190cm-masa-modeli
+      model: Madera Yemek Odası Takımı
+      source: vivense
+    - sku: torenna-yemek-odasi-takimi-modeli
+      model: Torenna Yemek Odası Takımı
+      source: vivense
+    - sku: travo-yemek-odasi-takimi-modeli
+      model: Travo Yemek Odası Takımı
+      source: vivense
+    - sku: marlin-yemek-odasi-takimi
+      model: MARLINYemek Odası Takımı
+      source: dogtas
+    - sku: linthe-yemek-odasi-takimi
+      model: LINTHEYemek Odası Takımı
+      source: dogtas
+    - sku: noralis-yemek-odasi-takimi
+      model: NORALISYemek Odası Takımı
+      source: dogtas
+    - sku: kalia-yemek-odasi-takimi
+      model: KALIAYemek Odası Takımı
+      source: dogtas
+    - sku: legna-yemek-odasi-takimi
+      model: LEGNAYemek Odası Takımı
+      source: dogtas
   hali:
     label: Halı
-    tuik_code: "0511401"
+    tuik_code: '0511401'
     sources:
       ikea:
-        keyword: "halı"
-      trendyol:
-        path: /sr?q=hali
-      vivense:
+        path: /kategori/halilar
+      dogtas:
         path: /hali
-    tracked_skus: []
+      vivense:
+        path: /hali-modelleri
+    tracked_skus:
+    - sku: '40624242'
+      model: JÄRNVÄG
+      source: ikea
+    - sku: '40456757'
+      model: TIPHEDE
+      source: ikea
+    - sku: '60561856'
+      model: TIDTABELL
+      source: ikea
+    - sku: '10614254'
+      model: VOLLERSLEV
+      source: ikea
+    - sku: '40560805'
+      model: TVERSTED
+      source: ikea
+    - sku: akira-hali-200x290-cm-3200418291
+      model: "Akira\n                                Halı 200 x 290 cm"
+      source: dogtas
+    - sku: javari-hali-200-x-290-cm-3200414258
+      model: "Javari\n                                Halı 200 x 290 cm"
+      source: dogtas
+    - sku: lucas-hali-3200419439
+      model: "Lucas\n                                Halı"
+      source: dogtas
+    - sku: romina-hali-1200x1800-mm-3200422232
+      model: "Romina\n                                Doğtaş Home Romına Halı 1200\
+        \ X 1800"
+      source: dogtas
+    - sku: elio-hali-1200x1800-mm-3200422231
+      model: "Elio\n                                Doğtaş Home Elıo Halı 1200 X 1800"
+      source: dogtas
+    - sku: harem-makina-halisi-gri-80x150-4508e-modeli
+      model: Noble Makine Halısı, Gri
+      source: vivense
+    - sku: pierre-loti-makina-halisi-antrasit-80x150-3005f-modeli
+      model: Reed Makine Halısı, Antrasit
+      source: vivense
+    - sku: luna-makine-halisi-8250-80x150-modeli
+      model: Halo Makine Halısı
+      source: vivense
+    - sku: harem-makina-halisi-beyaz-80x150-4505a-modeli
+      model: Noble Makine Halısı, Beyaz
+      source: vivense
+    - sku: harem-makina-halisi-kahve-80x150-4511d-modeli
+      model: Noble Makine Halısı, Kahve
+      source: vivense

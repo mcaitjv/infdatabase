@@ -1,11 +1,11 @@
 """
 IKEA TR Scraper — ikea.com.tr
 
-API base: https://frontendapi.ikea.com.tr
-Discovery: GET /api/search/products?k={keyword}&size=40&page={page}
-Tracking:  GET /api/products/{sprCode}
+Discovery: Playwright — https://www.ikea.com.tr/kategori/{slug}
+           Ürün kartlarından sprCode + ad çıkarımı
+Tracking:  GET frontendapi.ikea.com.tr/api/products/{sprCode}
 
-SKU: sprCode (8 haneli string, örn. "90349326")
+SKU: sprCode (8 haneli string, URL'nin son segmenti, örn. "90404799")
 """
 
 import logging
@@ -22,8 +22,39 @@ from scrapers.base import BaseScraper
 logger = logging.getLogger(__name__)
 
 _API_BASE = "https://frontendapi.ikea.com.tr"
-_BUNDLE_RE = re.compile(r"\bset\b|\bpaket\b|hediyeli|\+.*(?:birlikte|ile)\b|kampanya", re.I)
-_PAGE_SIZE = 40
+_SITE_BASE = "https://www.ikea.com.tr"
+_BUNDLE_RE = re.compile(r"hediyeli|\+.*(?:birlikte|ile)\b|kampanya", re.I)
+
+# Playwright JS: ürün kartlarından sprCode + ad + fiyat çıkarır
+_EXTRACT_JS = """
+() => {
+    const seen = new Set();
+    const results = [];
+    for (const a of document.querySelectorAll('a[href*="/urun/"]')) {
+        const href = a.getAttribute('href') || '';
+        const m = href.match(/-(\d{8})$/);
+        if (!m || seen.has(m[1])) continue;
+        const sprCode = m[1];
+
+        // Ad: heading veya ilk anlamlı metin
+        const nameEl = a.querySelector('h2, h3, [class*="title"], [class*="name"], [class*="product-name"]');
+        const name = (nameEl ? nameEl.innerText : a.innerText).trim().split('\\n')[0].substring(0, 80);
+        if (!name) continue;
+
+        // Fiyat: sayısal metin içeren span/div
+        let price = 0;
+        const priceEl = a.querySelector('[class*="price"], [class*="fiyat"]');
+        if (priceEl) {
+            const raw = priceEl.innerText.replace(/[^\\d,.]/g, '').replace('.', '').replace(',', '.');
+            price = parseFloat(raw) || 0;
+        }
+
+        seen.add(sprCode);
+        results.push({ sprCode, name, price });
+    }
+    return results;
+}
+"""
 
 
 class IkeaScraper(BaseScraper):
@@ -49,60 +80,65 @@ class IkeaScraper(BaseScraper):
     async def scrape_product(self, sku: str) -> None:
         raise NotImplementedError("discover_category / scrape_tracked kullanın")
 
-    # ── Search API ────────────────────────────────────────────────────────────
+    # ── Discovery (Playwright + kategori sayfası) ─────────────────────────────
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=5, max=30))
-    async def _search_page(self, keyword: str, page: int = 1) -> dict:
-        resp = await self.client.get(
-            "/api/search/products",
-            params={"k": keyword, "size": _PAGE_SIZE, "page": page},
-        )
-        resp.raise_for_status()
-        return resp.json()
-
-    def _parse_item(self, item: dict, category: str) -> dict | None:
-        name = f"{item.get('title', '')} {item.get('subTitle', '')}".strip()
-        if not name or _BUNDLE_RE.search(name):
-            return None
-
-        sku = str(item.get("sprCode", ""))
-        if not sku:
-            return None
-
-        price_raw = item.get("price")
-        if price_raw is None:
-            return None
-
+    async def _fetch_category_products(self, path: str) -> list[dict]:
+        """Playwright ile /kategori/{slug} sayfasını render et, ürün kartlarını döndür."""
         try:
-            price = Decimal(str(price_raw))
-        except InvalidOperation:
-            return None
+            from playwright.async_api import async_playwright
+        except ImportError:
+            raise RuntimeError("playwright gerekli — pip install playwright && playwright install chromium")
 
-        if price <= 0 or not item.get("isSellable", True):
-            return None
+        url = f"{_SITE_BASE}{path}"
+        logger.info("[ikea] Kategori yukleniyor: %s", url)
 
-        return {"sku": sku, "model": name, "category": category, "price": price}
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-dev-shm-usage"],
+            )
+            ctx = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                ),
+                locale="tr-TR",
+                timezone_id="Europe/Istanbul",
+            )
+            page = await ctx.new_page()
+            try:
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                await page.wait_for_timeout(3000)
+                for _ in range(4):
+                    await page.evaluate("window.scrollBy(0, 1500)")
+                    await page.wait_for_timeout(1000)
+                return await page.evaluate(_EXTRACT_JS)
+            finally:
+                await browser.close()
 
-    async def discover_category(self, keyword: str, category: str, max_pages: int = 2) -> list[dict]:
-        """Search API ile kategori keşfi. keyword = mobilya.yaml'daki ikea.keyword."""
-        products: list[dict] = []
+    async def discover_category(self, path: str, category: str) -> list[dict]:
+        """Kategori sayfasından ürün keşfi. path = mobilya.yaml'daki ikea.path (/kategori/...)."""
         try:
-            for page in range(1, max_pages + 1):
-                data = await self._search_page(keyword, page)
-                items = data.get("products", [])
-                if not items:
-                    break
-                for item in items:
-                    parsed = self._parse_item(item, category)
-                    if parsed:
-                        products.append(parsed)
-                total = data.get("total", 0)
-                if page * _PAGE_SIZE >= total:
-                    break
-                if page < max_pages:
-                    await self._sleep(2.0, 4.0)
+            raw = await self._fetch_category_products(path)
         except Exception as exc:
             logger.warning("[ikea] discover %s hata: %s", category, exc)
+            return []
+
+        products = []
+        for item in raw:
+            name = item.get("name", "")
+            if not name or _BUNDLE_RE.search(name):
+                continue
+            try:
+                price = Decimal(str(item["price"])) if item.get("price") else Decimal("0")
+            except InvalidOperation:
+                price = Decimal("0")
+            products.append({
+                "sku": item["sprCode"],
+                "model": name,
+                "category": category,
+                "price": price,
+            })
 
         logger.info("[ikea] %s: %d urun kesfedildi", category, len(products))
         return products
