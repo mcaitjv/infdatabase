@@ -1,0 +1,358 @@
+label: Züccaciye, Yemek Takımı ve Ev Gereçleri
+categories:
+  cam_ev_esyasi:
+    label: Cam Ev Eşyası
+    tuik_code: '0540102'
+    sources:
+      karaca:
+        paths:
+        - /bardak-bardak-seti
+        - /surahi
+        - /vazo
+      korkmazstore:
+        path: /cam-bardak-setleri
+      pasabahce:
+        paths:
+        - /bardaklar/
+        - /surahi/
+        - /kaseler/
+    tracked_skus:
+    - sku: /korkmaz-palm-12-parca-cay-bardak-seti
+      model: Korkmaz Palm 12 Parça Çay Bardak Seti A8997-3
+      source: korkmazstore
+    - sku: /korkmaz-manolya-2li-su-bardagi-a9515-4
+      model: Korkmaz Manolya 2li Su Bardağı A9515-4
+      source: korkmazstore
+    - sku: /korkmaz-freedom-platin-6li-ayakli-kadeh-seti-a9505-2
+      model: Korkmaz Freedom Platin 6lı Ayaklı Kadeh Seti A9505-2
+      source: korkmazstore
+    - sku: /korkmaz-freedom-platin-6li-mesrubat-bardak-seti-a9505-3
+      model: Korkmaz Freedom Platin 6lı Meşrubat Bardak Seti A9505-3
+      source: korkmazstore
+    - sku: /korkmaz-freedom-platin-6li-su-bardagi-a9505-4
+      model: Korkmaz Freedom Platin 6lı Su Bardağı A9505-4
+      source: korkmazstore
+    - sku: karaca-buble-latte-bardagi-390-ml-seffaf
+      model: Karaca Bubble Latte Bardağı 390 ml Şeffaf
+      source: karaca
+    - sku: karaca-rcr-etna-mesrubat-bardagi-340-ml
+      model: Karaca Rcr Etna Meşrubat Bardağı 340 ml
+      source: karaca
+    - sku: karaca-foret-5-parca-surahi-seti-seffaf
+      model: Karaca Foret Akrilik Kırılmaz 5 Parça Sürahi Seti Şeffaf
+      source: karaca
+    - sku: karaca-loise-basucu-surahisi-pembe-1100-ml
+      model: Karaca Loise Başucu Sürahisi Pembe
+      source: karaca
+    - sku: karaca-boris-cam-vazo-antrasit-17x17x18-5-cm
+      model: Karaca Home Boris Cam Vazo Antrasit 17x17x18,5 cm
+      source: karaca
+    - sku: best-mom-kirmizi-mesrubat-bardagi-395-cc-p-000000000010032028
+      model: Best Mom Kirmizi Mesrubat Bardagi 395 Cc
+      source: pasabahce
+    - sku: best-mom-pembe-mesrubat-bardagi-395-cc-p-000000000010032027
+      model: Best Mom Pembe Mesrubat Bardagi 395 Cc
+      source: pasabahce
+    - sku: rigi-seramik-surahi-p-000000000010030834
+      model: Rigi Seramik Surahi
+      source: pasabahce
+    - sku: selcuklu-kartal-desenlii-surahi-p-000000000010031306
+      model: Selcuklu Kartal Desenlii Surahi
+      source: pasabahce
+    - sku: estrella-kase-p-000000000010022590
+      model: Estrella Kase
+      source: pasabahce
+  porselen_ev_esyasi:
+    label: Porselen Ev Eşyası
+    tuik_code: '0540104'
+    sources:
+      karaca:
+        path: /yemek-takimlari
+      korkmazstore:
+        path: /cay-kahve-takimlari
+      pasabahce:
+        path: /tabaklar/
+    tracked_skus:
+    - sku: karaca-forever-bone-bomo-53-parca-12-kisilik-yemek-takimi
+      model: Karaca Forever Bone Bomo 53 Parça 12 Kişilik Yemek Takımı
+      source: karaca
+    - sku: karaca-stream-bone-belinda-24-parca-6-kisilik-yemek-takimi
+      model: Karaca Fine Bone Belinda 24 Parça 6 Kişilik Yemek Takımı
+      source: karaca
+    - sku: karaca-elegance-bone-montebello-60-parca-8-kisilik-yemek-takimi-ve-kahvalti-seti
+      model: Karaca Elegance Bone Montebello 60 Parça 8 Kişilik Yemek Takımı
+      source: karaca
+    - sku: bernardo-lyon-24-parca-porselen-yemek-takimi-beyaz
+      model: Bernardo Lyon 24 Parça Yemek Takımı
+      source: karaca
+    - sku: karaca-forever-bone-antique-24-parca-6-kisilik-yemek-takimi
+      model: Karaca Forever Bone Antique 24 Parça 6 Kişilik Yemek Takımı
+      source: karaca
+    - sku: eco-seramik-pasta-tabagi-beyaz-p-000000000010027619
+      model: Eco Seramik Pasta Tabagi Beyaz
+      source: pasabahce
+    - sku: solid-porselen-yemek-tabagi-beyaz-p-000000000010026089
+      model: Solid Porselen Yemek Tabagi Beyaz
+      source: pasabahce
+    - sku: venezia-porselen-pasta-tabagi-yesil-p-000000000010025067
+      model: Venezia Porselen Pasta Tabagi Yesil
+      source: pasabahce
+    - sku: venezia-porselen-yemek-tabagi-yesil-p-000000000010025066
+      model: Venezia Porselen Yemek Tabagi Yesil
+      source: pasabahce
+    - sku: electrum-seramik-mini-tabak-su-yesili-p-000000000010020397
+      model: Electrum Seramik Mini Tabak Su Yesili
+      source: pasabahce
+    - sku: /korkmaz-hasbahce-kumru-ak-12-parca-cay-bardak-seti
+      model: Korkmaz Hasbahçe Kumru Ak 12 Parça Çay Bardak Seti A9509-3
+      source: korkmazstore
+    - sku: /korkmaz-eva-4-parca-kahve-fincan-takimi-9791
+      model: Korkmaz Eva 4 Parça Kahve Fincan Takımı A8648-6
+      source: korkmazstore
+    - sku: /korkmaz-kappa-4-parca-cizgi-desen-kahve-fincan-takimi
+      model: Korkmaz Kappa 4 Parça Çizgi Desen Kahve Fincan Takımı A8699-2
+      source: korkmazstore
+    - sku: /korkmaz-kappa-4-parca-kahve-fincan-takimi-9305
+      model: Korkmaz Kappa 4 Parça Kahve Fincan Takımı A8699-3
+      source: korkmazstore
+    - sku: /korkmaz-angela-4-parca-beyaz-kahve-fincan-takimi
+      model: Korkmaz Angela 4 Parça Beyaz Kahve Fincan Takımı A8779-1
+      source: korkmazstore
+  kasik_catal_bicak:
+    label: Kaşık Çatal Bıçak Takımı
+    tuik_code: '0540201'
+    sources:
+      karaca:
+        path: /catal-kasik-bicak-takimlari
+      korkmazstore:
+        path: /catal-kasik-seti
+      pasabahce:
+        path: /catal-kasik-bicak/
+    tracked_skus:
+    - sku: karaca-orion-platin-6-kisilik-30-parca-catal-kasik-bicak-takimii
+      model: Karaca Orion Platin 6 Kişilik 30 Parça Çatal Kaşık Bıçak Takımı
+      source: karaca
+    - sku: jumbo-9410-84-parca-12-kisilik-catal-kasik-bicak-seti
+      model: Jumbo 9410 84 Parça 12 Kişilik Çatal Kaşık Bıçak Takımı
+      source: karaca
+    - sku: karaca-new-porto-platin-12-kisilik-60-parca-catal-kasik-bicak-takimi
+      model: Karaca New Porto Platin 12 Kişilik 60 Parça Çatal Kaşık Bıçak Takımı
+      source: karaca
+    - sku: karaca-lizbon-platin-12-kisilik-60-parca-catal-kasik-bicak-takimi
+      model: Karaca Lizbon Platin 12 Kişilik 60 Parça Çatal Kaşık Bıçak Takımı
+      source: karaca
+    - sku: karaca-camille-12-kisilik-84-parca-catal-kasik-bicak-takimi
+      model: Karaca Camille 12 Kişilik 84 Parça Çatal Kaşık Bıçak Takımı
+      source: karaca
+    - sku: /korkmaz-rona-36-parca-ckb-seti
+      model: Korkmaz Rona 36 Parça ÇKB Seti A2502
+      source: korkmazstore
+    - sku: /korkmaz-rona-24-parca-catal-kasik-bicak-seti
+      model: Korkmaz Rona 24 Parça Çatal Kaşık Bıçak Seti A2501
+      source: korkmazstore
+    - sku: /korkmaz-talia-72-parca-catal-kasik-bicak-seti
+      model: Korkmaz Talia 72 Parça Çatal Kaşık Bıçak Seti A2486
+      source: korkmazstore
+    - sku: /korkmaz-felisa-84-parca-catal-kasik-bicak-seti
+      model: Korkmaz Felisa 84 Parça Çatal Kaşık Bıçak Seti A2518
+      source: korkmazstore
+    - sku: /korkmaz-lora-satin-gold-24-parca-catal-kasik-bicak-seti
+      model: Korkmaz Lora Satin Gold 24 Parça Çatal Kaşık Bıçak Seti A2487
+      source: korkmazstore
+    - sku: 6-li-vienna-yemek-kasigi-p-000000000010031784
+      model: 6 Li Vienna Yemek Kasigi
+      source: pasabahce
+    - sku: 6-li-vienna-tatli-kasigi-p-000000000010031785
+      model: 6 Li Vienna Tatli Kasigi
+      source: pasabahce
+    - sku: s-s-servis-kasigi-p-000000000010028644
+      model: S S Servis Kasigi
+      source: pasabahce
+    - sku: s-s-makarna-servis-kasigi-p-000000000010028643
+      model: S S Makarna Servis Kasigi
+      source: pasabahce
+    - sku: s-s-peynir-bicak-seti-4-lu-p-000000000010028651
+      model: S S Peynir Bicak Seti 4 Lu
+      source: pasabahce
+  celik_mutfak:
+    label: Çelik Mutfak Eşyası
+    tuik_code: '0540301'
+    sources:
+      korkmazstore:
+        paths:
+        - /celik-tencere
+        - /duduklu-tencere
+        - /caydanlik
+        - /cezve
+      karaca:
+        paths:
+        - /tencere-seti
+        - /duduklu-tencere
+        - /caydanlik
+      emsan:
+        paths:
+        - /emsan-celik-tencere-setleri
+        - /duduklu-tencere
+        - /caydanlik
+        - /cezve-takimi
+        - /suzgec
+    tracked_skus:
+    - sku: /korkmaz-alfa-16-cm-tencere
+      model: Korkmaz Alfa 16x9 cm Tencere A1016
+      source: korkmazstore
+    - sku: /korkmaz-alfa-18-cm-tencere
+      model: Korkmaz Alfa 18x10 cm Tencere A1017
+      source: korkmazstore
+    - sku: /korkmaz-turbo-50-lt-duduklu-tencere
+      model: Korkmaz Turbo 5 lt Düdüklü Tencere A155
+      source: korkmazstore
+    - sku: /korkmaz-aqua-caydanlik-takimi
+      model: Korkmaz Aqua Çaydanlık Takımı 1.5 lt A225
+      source: korkmazstore
+    - sku: /korkmaz-granita-cezve-2-fincan
+      model: Korkmaz Granita Cezve 2 Fincan A1239-2
+      source: korkmazstore
+    - sku: emsan-emirgan-xl-13-parca-saklama-kapli-celik-tencere-seti
+      model: Emsan Emirgan XL 13 Parça Saklama Kaplı Çelik Tencere Seti
+      source: karaca
+    - sku: karaca-biodiamond-easy-clip-13-parca-tencere-seti
+      model: Karaca Biodiamond Easy Clip Çıkarılabilir Saplı 13 Parça Tencere ve Tava
+        Seti
+      source: karaca
+    - sku: emsan-marsilya-duduklu-tencere-5-litre
+      model: Emsan Marsilya İndüksiyon Tabanlı Düdüklü Tencere 5 Litre
+      source: karaca
+    - sku: emsan-alim-caydanlik-takimi-mini
+      model: Emsan Alim Çaydanlık Takımı Mini
+      source: karaca
+    - sku: karaca-flat-borosilikat-cam-caydanlik-smoke-grey
+      model: Karaca Flat Borosilikat Cam Çaydanlık Smoke Grey
+      source: karaca
+    - sku: emsan-biogranit-white-stone-3-parca-tencere-seti
+      model: Emsan Biogranit White Stone 3 Parça Tencere Seti
+      source: emsan
+    - sku: emsan-vera-duduklu-tencere-6-litre-siyah
+      model: Emsan Vera Düdüklü Tencere 6 Litre Siyah
+      source: emsan
+    - sku: emsan-bade-devrilmez-caydanlik-takimi-large
+      model: Emsan Bade Devrilmez Çaydanlık Takımı Large
+      source: emsan
+    - sku: emsan-aaron-cezve-350-ml
+      model: Emsan Aaron Cezve 350 ml
+      source: emsan
+    - sku: emsan-soft-katlanabilir-buyuk-suzgec
+      model: Emsan Soft Katlanabilir Büyük Süzgeç
+      source: emsan
+  yapismazli_mutfak:
+    label: Yapışmaz Mutfak Eşyası
+    tuik_code: '0540314'
+    sources:
+      karaca:
+        path: /granit-tencere
+      korkmazstore:
+        path: /granit-tava
+      pasabahce:
+        path: /tava/
+    tracked_skus:
+    - sku: emsan-biogranit-white-stone-7-parca-tencere-seti
+      model: Emsan Biogranit White Stone 7 Parça Tencere ve Tava Seti
+      source: karaca
+    - sku: karaca-biogranit-blackgold-7-prc-tencere-seti
+      model: Karaca Biogranit Blackgold 7 Parça Tencere Seti
+      source: karaca
+    - sku: emsan-biogranit-white-stone-3-parca-tencere-seti
+      model: Emsan Biogranit White Stone 3 Parça Tencere Seti
+      source: karaca
+    - sku: karaca-mutfaksever-biogranit-dokum-pankek-tava-26-cm
+      model: Karaca Mutfaksever Biogranit Pankek Tava 26 Cm Krem
+      source: karaca
+    - sku: karaca-mutfaksever-black-gozleme-ve-lavas-tavasi-34-cm
+      model: Karaca Mutfaksever Biogranit Gözleme Ve Lava Tavası 34 Cm Siyah
+      source: karaca
+    - sku: /korkmaz-pro-chef-18x32-cm-tava-8488
+      model: Korkmaz Pro-Chef 18x3.2 cm Tava A2839-1
+      source: korkmazstore
+    - sku: /korkmaz-pro-chef-20x33-cm-tava-8489
+      model: Korkmaz Pro-Chef 20x3.3 cm Tava A2840-1
+      source: korkmazstore
+    - sku: /korkmaz-pro-chef-22x4-cm-tava-8490
+      model: Korkmaz Pro-Chef 22x4 cm Tava A2841-1
+      source: korkmazstore
+    - sku: /korkmaz-pro-chef-24x42-cm-tava-8491
+      model: Korkmaz Pro-Chef 24x4.2 cm Tava A2842-1
+      source: korkmazstore
+    - sku: /korkmaz-pro-chef-26x45-cm-tava-8492
+      model: Korkmaz Pro-Chef 26x4.5 cm Tava A2843-1
+      source: korkmazstore
+    - sku: chef-tava-kirmizi-26-cm-p-000000000010031050
+      model: Chef Tava Kirmizi 26 Cm
+      source: pasabahce
+    - sku: paslanmaz-celik-mini-tava-p-000000000010011272
+      model: Paslanmaz Celik Mini Tava
+      source: pasabahce
+    - sku: wok-tava-28-cm-siyah-p-000000000010023315
+      model: Wok Tava 28 Cm Siyah
+      source: pasabahce
+    - sku: tava-28-cm-siyah-p-000000000010023313
+      model: Tava 28 Cm Siyah
+      source: pasabahce
+    - sku: sosluk-tava-16-cm-siyah-p-000000000010023317
+      model: Sosluk Tava 16 Cm Siyah
+      source: pasabahce
+  termos:
+    label: Termos
+    tuik_code: '0540316'
+    sources:
+      korkmazstore:
+        path: /termoslar
+      karaca:
+        path: /termos
+      pasabahce:
+        path: /ara/?search_text=termos
+    tracked_skus:
+    - sku: /korkmaz-freedom-1-litre-siyah-pipetli-bardak-termos-a5577
+      model: Korkmaz Freedom 1 Litre Siyah Pipetli Bardak Termos A5577
+      source: korkmazstore
+    - sku: /korkmaz-freedom-1-litre-pembe-pipetli-bardak-termos-a5577-1
+      model: Korkmaz Freedom 1 Litre Pembe Pipetli Bardak Termos A5577-1
+      source: korkmazstore
+    - sku: /korkmaz-freedom-1-litre-gri-pipetli-bardak-termos-a5577-2
+      model: Korkmaz Freedom 1 Litre Gri Pipetli Bardak Termos A5577-2
+      source: korkmazstore
+    - sku: /korkmaz-freedom-plus-siyah-kahve-bardagi
+      model: Korkmaz Freedom Plus Siyah Kahve Bardağı A5539
+      source: korkmazstore
+    - sku: /korkmaz-freedom-plus-kirmizi-kahve-bardagi
+      model: Korkmaz Freedom Plus Kırmızı Kahve Bardağı A5539-1
+      source: korkmazstore
+    - sku: karaca-x-fenerbahce-lisansli-celik-sizdirmaz-termos-kutulu-450-ml
+      model: Karaca x Fenerbahçe Lisanslı Çelik Sızdırmaz Termos Kutulu 450 ml
+      source: karaca
+    - sku: karaca-inoxis-celik-sizdirmaz-termos-550-ml-siyah
+      model: Karaca İnoxis Çelik Sızdırmaz Termos 550 Ml Siyah
+      source: karaca
+    - sku: karaca-rimo-celik-sizdirmaz-600-ml-termos-krem
+      model: Karaca Rimo Sızdırmaz Çelik Termos 600 ml Krem
+      source: karaca
+    - sku: emsan-star-ice-pipetli-celik-sizdirmaz-termos-antrasit-550-ml
+      model: Emsan Star Ice Pipetli Çelik Sızdırmaz Termos Antrasit 550 ml
+      source: karaca
+    - sku: stanley-the-quencher-protour-flip-straw-tumbler-pipetli-termos-118-lt-acik-pembe
+      model: Stanley The Quencher ProTour Flip Straw Tumbler Pipetli Termos 1,18 LT
+        Açık Pembe
+      source: karaca
+    - sku: jolly-termos-bardak-330-cc-p-000000000010029621
+      model: Jolly Termos Bardak 330 Cc
+      source: pasabahce
+    - sku: jolly-termos-bardak-420-cc-p-000000000010029622
+      model: Jolly Termos Bardak 420 Cc
+      source: pasabahce
+    - sku: cozy-termos-530-cc-yesil-p-000000000010014570
+      model: Cozy Termos 530 Cc Yesil
+      source: pasabahce
+    - sku: cozy-termos-530-cc-gri-p-000000000010014569
+      model: Cozy Termos 530 Cc Gri
+      source: pasabahce
+    - sku: cozy-termos-700-cc-yesil-p-000000000010014572
+      model: Cozy Termos 700 Cc Yesil
+      source: pasabahce

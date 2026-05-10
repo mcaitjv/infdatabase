@@ -30,6 +30,15 @@ _MODULE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = Path(_MODULE_DIR) / "config"
 
 
+def _paths(src_cfg: dict) -> list[str]:
+    """YAML source config'inden path(s) listesi döner. 'paths' varsa onu, yoksa ['path'] kullanır."""
+    return src_cfg.get("paths") or [src_cfg.get("path", "")]
+
+
+def _first_path(src_cfg: dict) -> str:
+    return _paths(src_cfg)[0]
+
+
 # ── Config ────────────────────────────────────────────────────────────────────
 
 def _load_tracked() -> tuple[dict, dict]:
@@ -83,12 +92,12 @@ class HouseholdModule(BaseModule):
     weight = 7.92
 
     PART_SCHEDULE = {
-        "main":    0,   # her gün — beyaz eşya, mobilya
+        "main":    0,   # her gün — beyaz eşya, mobilya, züccaciye
         "evbakim": 0,   # her gün — COICOP 056 market ürünleri
     }
 
     PART_DISPLAY: dict[str, str] = {
-        "main":    "Beyaz Eşya & Mobilya",
+        "main":    "Beyaz Eşya & Mobilya & Züccaciye",
         "evbakim": "Ev Bakımı (COICOP 056)",
     }
 
@@ -111,12 +120,15 @@ class HouseholdModule(BaseModule):
         total_skus = 0
 
         _SOURCE_SCRAPERS = {
-            "vestel":  lambda cfg: (VestelScraper(),  "cat_id"),
-            "samsung": lambda cfg: (SamsungScraper(),  "path"),
-            "beko":    lambda cfg: (BekoScraper(),     "path"),
-            "arcelik": lambda cfg: (ArcelikScraper(),  "path"),
-            "bosch":   lambda cfg: (BshScraper(brand="bosch"),    "path"),
-            "siemens": lambda cfg: (BshScraper(brand="siemens"),  "path"),
+            "vestel":       lambda cfg: (VestelScraper(),              "cat_id"),
+            "samsung":      lambda cfg: (SamsungScraper(),             "path"),
+            "beko":         lambda cfg: (BekoScraper(),                "path"),
+            "arcelik":      lambda cfg: (ArcelikScraper(),             "path"),
+            "bosch":        lambda cfg: (BshScraper(brand="bosch"),    "path"),
+            "siemens":      lambda cfg: (BshScraper(brand="siemens"),  "path"),
+            "karaca":       lambda cfg: (KaracaScraper(),              "path"),
+            "korkmazstore": lambda cfg: (KorkmazstoreScraper(),        "path"),
+            "pasabahce":    lambda cfg: (PasabahceScraper(),           "path"),
         }
 
         for cat_key, cat_data in categories.items():
@@ -170,6 +182,34 @@ class HouseholdModule(BaseModule):
                         async with YatasScraper() as s:
                             prods = await s.discover_category(src_cfg["cat_code"], cat_key)
                             await s._sleep(*sleep_s)
+                    elif src_name == "karaca":
+                        from modules.m05_household.scrapers.karaca import KaracaScraper
+                        async with KaracaScraper() as s:
+                            prods = []
+                            for disc_path in _paths(src_cfg):
+                                prods.extend(await s.discover_category(disc_path, cat_key))
+                                await s._sleep(*sleep_s)
+                    elif src_name == "korkmazstore":
+                        from modules.m05_household.scrapers.korkmazstore import KorkmazstoreScraper
+                        async with KorkmazstoreScraper() as s:
+                            prods = []
+                            for disc_path in _paths(src_cfg):
+                                prods.extend(await s.discover_category(disc_path, cat_key))
+                                await s._sleep(*sleep_s)
+                    elif src_name == "pasabahce":
+                        from modules.m05_household.scrapers.pasabahce import PasabahceScraper
+                        async with PasabahceScraper() as s:
+                            prods = []
+                            for disc_path in _paths(src_cfg):
+                                prods.extend(await s.discover_category(disc_path, cat_key))
+                                await s._sleep(*sleep_s)
+                    elif src_name == "emsan":
+                        from modules.m05_household.scrapers.emsan import EmsanScraper
+                        async with EmsanScraper() as s:
+                            prods = []
+                            for disc_path in _paths(src_cfg):
+                                prods.extend(await s.discover_category(disc_path, cat_key))
+                                await s._sleep(*sleep_s)
                     else:
                         continue
                     for p in prods:
@@ -216,11 +256,11 @@ class HouseholdModule(BaseModule):
                 if source_name == "vestel":
                     records = await scraper.scrape_tracked(tracked_skus, cat_key)
                 elif source_name == "ikea":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config.get("keyword", source_config.get("path", "")))
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config.get("keyword", _first_path(source_config)))
                 elif source_name == "yatas":
                     records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["cat_code"])
                 else:
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["path"])
+                    records = await scraper.scrape_tracked(tracked_skus, cat_key, _first_path(source_config))
 
                 error_count = 0
                 for rec in records:
@@ -330,6 +370,10 @@ class HouseholdModule(BaseModule):
         from modules.m05_household.scrapers.vivense import VivenseScraper
         from modules.m05_household.scrapers.dogtas import DogtasScraper
         from modules.m05_household.scrapers.yatas import YatasScraper
+        from modules.m05_household.scrapers.karaca import KaracaScraper
+        from modules.m05_household.scrapers.korkmazstore import KorkmazstoreScraper
+        from modules.m05_household.scrapers.pasabahce import PasabahceScraper
+        from modules.m05_household.scrapers.emsan import EmsanScraper
 
         categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []
@@ -394,6 +438,26 @@ class HouseholdModule(BaseModule):
         # Yataş (httpx OCC API) — yatak kategorisi; tracked_skus dolmadan atlanır
         async with YatasScraper() as yatas:
             r, _ = await self._scrape_source("yatas", yatas, categories, dry_run)
+            runs.extend(r)
+
+        # Karaca (httpx + JSON-LD) — züccaciye kategorileri; tracked_skus dolmadan atlanır
+        async with KaracaScraper() as karaca:
+            r, _ = await self._scrape_source("karaca", karaca, categories, dry_run)
+            runs.extend(r)
+
+        # Korkmazstore (httpx) — züccaciye kategorileri; tracked_skus dolmadan atlanır
+        async with KorkmazstoreScraper() as korkmaz:
+            r, _ = await self._scrape_source("korkmazstore", korkmaz, categories, dry_run)
+            runs.extend(r)
+
+        # Paşabahçe (Playwright) — züccaciye kategorileri; tracked_skus dolmadan atlanır
+        async with PasabahceScraper() as pasabahce:
+            r, _ = await self._scrape_source("pasabahce", pasabahce, categories, dry_run)
+            runs.extend(r)
+
+        # Emsan (httpx) — çelik mutfak kategorisi; tracked_skus dolmadan atlanır
+        async with EmsanScraper() as emsan:
+            r, _ = await self._scrape_source("emsan", emsan, categories, dry_run)
             runs.extend(r)
 
         # Ev Bakımı (COICOP 056) — main çalışma günüyle çakışırsa da ekle
