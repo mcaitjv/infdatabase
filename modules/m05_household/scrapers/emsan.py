@@ -169,18 +169,15 @@ class EmsanScraper:
 
         soup = BeautifulSoup(html, "lxml")
 
-        # Fiyat container'ları: indirimli fiyat son sırada
-        for sel in ("[class*='price']", "[class*='fiyat']", "span"):
-            candidates = soup.select(sel) if sel.startswith("[") else soup.find_all(sel)
-            prices = []
-            for el in candidates:
+        # Öncelik sırası: indirimli fiyat (.pdp-new-price) → ana fiyat (.total-price)
+        for css in (".pdp-new-price", ".total-price", "[class*='new-price']"):
+            el = soup.select_one(css)
+            if el:
                 m = _PRICE_RE.search(el.get_text(strip=True))
                 if m:
                     p = _parse_price(m.group(1))
                     if p and p > 10:
-                        prices.append(p)
-            if prices:
-                return min(prices)  # en düşük = indirimli fiyat
+                        return p
 
         return None
 
