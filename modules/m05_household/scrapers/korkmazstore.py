@@ -51,6 +51,15 @@ def _parse_price(raw: str) -> Decimal | None:
         return None
 
 
+def _parse_json_price(raw) -> Decimal | None:
+    """JSON-LD offers.price: '649.00' veya float → Decimal direkt."""
+    try:
+        val = Decimal(str(raw))
+        return val if val > 0 else None
+    except InvalidOperation:
+        return None
+
+
 class KorkmazstoreScraper:
     market_name = "korkmazstore"
 
@@ -151,7 +160,7 @@ class KorkmazstoreScraper:
                     offers = data.get("offers", {})
                     price_str = offers.get("price") or offers.get("lowPrice")
                     if price_str is not None:
-                        return _parse_price(str(price_str))
+                        return _parse_json_price(price_str)
             except Exception:
                 continue
 
