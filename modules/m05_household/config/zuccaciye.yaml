@@ -50,8 +50,8 @@ categories:
     - sku: best-mom-kirmizi-mesrubat-bardagi-395-cc-p-000000000010032028
       model: Best Mom Kirmizi Mesrubat Bardagi 395 Cc
       source: pasabahce
-    - sku: best-mom-pembe-mesrubat-bardagi-395-cc-p-000000000010032027
-      model: Best Mom Pembe Mesrubat Bardagi 395 Cc
+    - sku: 6-li-toros-su-bardagi-205-cc-p-000000000010032284
+      model: 6 Li Toros Su Bardagi 205 Cc
       source: pasabahce
     - sku: rigi-seramik-surahi-p-000000000010030834
       model: Rigi Seramik Surahi
@@ -112,11 +112,11 @@ categories:
     - sku: /korkmaz-kappa-4-parca-cizgi-desen-kahve-fincan-takimi
       model: Korkmaz Kappa 4 Parça Çizgi Desen Kahve Fincan Takımı A8699-2
       source: korkmazstore
-    - sku: /korkmaz-kappa-4-parca-kahve-fincan-takimi-9305
-      model: Korkmaz Kappa 4 Parça Kahve Fincan Takımı A8699-3
-      source: korkmazstore
     - sku: /korkmaz-angela-4-parca-beyaz-kahve-fincan-takimi
       model: Korkmaz Angela 4 Parça Beyaz Kahve Fincan Takımı A8779-1
+      source: korkmazstore
+    - sku: /korkmaz-orient-4-parca-kahve-fincan-takimi-9784
+      model: Korkmaz Orient 4 Parça Kahve Fincan Takımı A8644-4
       source: korkmazstore
   kasik_catal_bicak:
     label: Kaşık Çatal Bıçak Takımı
@@ -313,17 +313,17 @@ categories:
     - sku: /korkmaz-freedom-1-litre-siyah-pipetli-bardak-termos-a5577
       model: Korkmaz Freedom 1 Litre Siyah Pipetli Bardak Termos A5577
       source: korkmazstore
-    - sku: /korkmaz-freedom-1-litre-pembe-pipetli-bardak-termos-a5577-1
-      model: Korkmaz Freedom 1 Litre Pembe Pipetli Bardak Termos A5577-1
-      source: korkmazstore
-    - sku: /korkmaz-freedom-1-litre-gri-pipetli-bardak-termos-a5577-2
-      model: Korkmaz Freedom 1 Litre Gri Pipetli Bardak Termos A5577-2
-      source: korkmazstore
     - sku: /korkmaz-freedom-plus-siyah-kahve-bardagi
       model: Korkmaz Freedom Plus Siyah Kahve Bardağı A5539
       source: korkmazstore
-    - sku: /korkmaz-freedom-plus-kirmizi-kahve-bardagi
-      model: Korkmaz Freedom Plus Kırmızı Kahve Bardağı A5539-1
+    - sku: /korkmaz-eterna-siyah-kahve-bardagi
+      model: Korkmaz Eterna Siyah Kahve Bardağı 380 ml A5540
+      source: korkmazstore
+    - sku: /korkmaz-essential-sport-inox-termos
+      model: Korkmaz Essential Sport Inox Termos A742
+      source: korkmazstore
+    - sku: /korkmaz-forest-satin-termos-750-ml
+      model: Korkmaz Forest Satin Termos 750 ml A5562-2
       source: korkmazstore
     - sku: karaca-x-fenerbahce-lisansli-celik-sizdirmaz-termos-kutulu-450-ml
       model: Karaca x Fenerbahçe Lisanslı Çelik Sızdırmaz Termos Kutulu 450 ml
@@ -350,8 +350,8 @@ categories:
     - sku: cozy-termos-530-cc-yesil-p-000000000010014570
       model: Cozy Termos 530 Cc Yesil
       source: pasabahce
-    - sku: cozy-termos-530-cc-gri-p-000000000010014569
-      model: Cozy Termos 530 Cc Gri
+    - sku: stanley-aerolight-mavi-470-cc-termos-p-000000000010032080
+      model: Stanley Aerolight Mavi 470 Cc Termos
       source: pasabahce
     - sku: cozy-termos-700-cc-yesil-p-000000000010014572
       model: Cozy Termos 700 Cc Yesil
