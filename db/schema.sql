@@ -43,6 +43,34 @@ CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     UNIQUE(market_product_id, snapshot_date, location)  -- aynı ürün farklı konumlarda farklı fiyat olabilir
 );
 
+-- Ev Bakımı ürün kataloğu (Modül 05 — COICOP 056)
+CREATE TABLE IF NOT EXISTS m05_evbakim_products (
+    id          BIGSERIAL    PRIMARY KEY,
+    market      VARCHAR(50)  NOT NULL,             -- migros / a101 / bim / sok
+    market_sku  VARCHAR(100),                      -- markete özgü ürün kodu
+    market_name VARCHAR(255) NOT NULL,             -- marketteki görünen ad
+    brand       VARCHAR(100),                      -- marka adı (API'den)
+    volume      VARCHAR(50),                       -- hacim/ağırlık ("1 LT", "500 G" vb.)
+    is_active   BOOLEAN      DEFAULT TRUE,
+    UNIQUE(market, market_sku)
+);
+
+-- Günlük fiyat kayıtları — ev bakımı ürünleri
+CREATE TABLE IF NOT EXISTS m05_evbakim_snapshots (
+    id            BIGSERIAL     PRIMARY KEY,
+    product_id    BIGINT        NOT NULL REFERENCES m05_evbakim_products(id) ON DELETE CASCADE,
+    snapshot_date DATE          NOT NULL,
+    price         NUMERIC(10,2) NOT NULL,
+    is_available  BOOLEAN       DEFAULT TRUE,
+    location      VARCHAR(100),                    -- "Istanbul", "Ankara" vb.
+    scraped_at    TIMESTAMP     DEFAULT NOW(),
+    UNIQUE(product_id, snapshot_date, location)
+);
+
+CREATE INDEX IF NOT EXISTS idx_evb_date     ON m05_evbakim_snapshots(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_evb_prod     ON m05_evbakim_snapshots(product_id, snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_evb_market   ON m05_evbakim_products(market);
+
 -- Scraper çalışma logları: her run kaydedilir
 CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               SERIAL       PRIMARY KEY,
