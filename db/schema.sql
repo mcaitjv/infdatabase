@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     market_product_id BIGINT        NOT NULL REFERENCES m01_market_products(id) ON DELETE CASCADE,
     snapshot_date     DATE          NOT NULL,
     price             NUMERIC(10,2) NOT NULL,      -- normal (etiket) fiyatı
-    discounted_price  NUMERIC(10,2),               -- indirimli fiyat (NULL = indirim yok)
+    islem_hacmi       NUMERIC(10,2),               -- işlem hacmi (hal) veya indirimli fiyat (market)
     is_available      BOOLEAN       DEFAULT TRUE,  -- stokta var mı
     location          VARCHAR(100),                -- konum adı (marketfiyati için: "Istanbul", "Ankara", ...)
     scraped_at        TIMESTAMP     DEFAULT NOW(),

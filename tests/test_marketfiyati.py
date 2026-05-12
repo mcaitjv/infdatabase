@@ -10,7 +10,7 @@ from decimal import Decimal
 import pytest
 
 from db.models import PriceRecord
-from scrapers.marketfiyati import MarketFiyatiScraper, _MARKET_MAP
+from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper, _MARKET_MAP
 
 
 def make_scraper() -> MarketFiyatiScraper:
@@ -49,7 +49,7 @@ def test_parse_single_depot():
     assert r.price == Decimal("9.75")
     assert r.market_sku == "10VG"
     assert r.location == "Istanbul"
-    assert r.discounted_price is None
+    assert r.islem_hacmi is None
 
 
 def test_parse_multi_depot():
@@ -87,7 +87,7 @@ def test_parse_discount_ratio():
     assert len(records) == 1
     r = records[0]
     assert r.price == Decimal("100.0")
-    assert r.discounted_price == Decimal("80.00")
+    assert r.islem_hacmi == Decimal("80.00")
 
 
 def test_parse_zero_price_skipped():

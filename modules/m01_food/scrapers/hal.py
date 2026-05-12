@@ -111,7 +111,7 @@ class HalScraper:
           1: Ürün Cinsi
           2: Ürün Türü
           3: Ortalama Fiyat
-          4: İşlem Hacmi    (atlanır)
+          4: İşlem Hacmi
           5: Birim Adı
         """
         results: list[PriceRecord] = []
@@ -131,8 +131,9 @@ class HalScraper:
 
             urun_cinsi = texts[1].strip()
             urun_turu  = texts[2].strip()
-            fiyat_raw  = texts[3].strip()
-            birim      = texts[5].strip() if len(texts) > 5 else "Kg"
+            fiyat_raw   = texts[3].strip()
+            islem_hacmi = _parse_price(texts[4].strip()) if len(texts) > 4 else None
+            birim       = texts[5].strip() if len(texts) > 5 else "Kg"
 
             price = _parse_price(fiyat_raw)
             if price is None:
@@ -148,6 +149,7 @@ class HalScraper:
                 market_sku=    market_sku,
                 market_name=   market_name,
                 price=         price,
+                islem_hacmi=   islem_hacmi,
                 volume=        birim,
                 snapshot_date= today,
             ))

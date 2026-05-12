@@ -84,7 +84,7 @@ class MigrosScraper(BaseScraper):
             market_sku=sku,
             market_name=data.get("name", ""),
             price=Decimal(str(normal)),
-            discounted_price=Decimal(str(discounted)) if discounted else None,
+            islem_hacmi=Decimal(str(discounted)) if discounted else None,
             is_available=data.get("inStock", True),
             snapshot_date=date.today(),
         )

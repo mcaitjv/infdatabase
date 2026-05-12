@@ -22,14 +22,9 @@ def validate(record: PriceRecord) -> list[str]:
     if record.price > _MAX_PRICE:
         errors.append(f"Anormal yüksek fiyat: {record.price}")
 
-    if record.discounted_price is not None:
-        if record.discounted_price <= 0:
-            errors.append(f"Sıfır/negatif indirimli fiyat: {record.discounted_price}")
-        if record.discounted_price >= record.price:
-            errors.append(
-                f"İndirimli fiyat ({record.discounted_price}) "
-                f"≥ normal fiyat ({record.price})"
-            )
+    if record.islem_hacmi is not None:
+        if record.islem_hacmi <= 0:
+            errors.append(f"Sıfır/negatif islem_hacmi: {record.islem_hacmi}")
 
     return errors
 

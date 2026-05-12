@@ -235,7 +235,7 @@ class MarketFiyatiScraper(BaseScraper):
                     market_sku       = product_id,
                     market_name      = product_name,
                     price            = price,
-                    discounted_price = discounted,
+                    islem_hacmi      = discounted,
                     is_available     = True,
                     snapshot_date    = date.today(),
                     location         = location_name,
