@@ -33,48 +33,79 @@ _FREQ_LABEL = {
 
 
 def _build_schedule_table(target_date) -> str:
-    """M07 part'larının çalışma takvimini HTML tablo olarak üretir."""
+    """Tüm modüllerin çalışma takvimini HTML tablo olarak üretir."""
     try:
         from modules.base import RUN_DAYS
-        from modules.m07_fuel import FuelModule
+        from modules import ALL_MODULES
     except Exception:
         return ""
 
-    rows = ""
-    for part, freq in FuelModule.PART_SCHEDULE.items():
-        display    = FuelModule.PART_DISPLAY.get(part, part.replace("_", " ").title())
-        runs_today = freq == 0 or target_date.day in RUN_DAYS.get(freq, ())
-        today_cell = (
-            "<span style='color:#22c55e;font-weight:600'>✓</span>"
-            if runs_today else
-            "<span style='color:#d1d5db'>—</span>"
-        )
-        rows += (
-            f"<tr>"
-            f"<td style='padding:5px 12px;font-size:13px'>{display}</td>"
-            f"<td style='padding:5px 12px;font-size:13px;color:#6b7280'>{_FREQ_LABEL.get(freq, str(freq))}</td>"
-            f"<td style='padding:5px 12px;font-size:13px;text-align:center'>{today_cell}</td>"
-            f"</tr>"
-        )
+    # Modül başlık renkleri (COICOP kodu → renk)
+    _MOD_COLOR = {
+        "01": "#3b82f6",
+        "05": "#8b5cf6",
+        "07": "#f59e0b",
+    }
+
+    sections = ""
+    for code, ModClass in sorted(ALL_MODULES.items()):
+        mod_name  = getattr(ModClass, "name", f"Modül {code}")
+        color     = _MOD_COLOR.get(code, "#6b7280")
+        schedule  = getattr(ModClass, "PART_SCHEDULE", None)
+        display   = getattr(ModClass, "PART_DISPLAY", {})
+
+        if schedule:
+            rows = ""
+            for part, freq in schedule.items():
+                part_label = display.get(part, part.replace("_", " ").title())
+                runs_today = freq == 0 or target_date.day in RUN_DAYS.get(freq, ())
+                today_cell = (
+                    "<span style='color:#22c55e;font-weight:600'>✓</span>"
+                    if runs_today else
+                    "<span style='color:#d1d5db'>—</span>"
+                )
+                rows += (
+                    f"<tr>"
+                    f"<td style='padding:4px 12px;font-size:13px'>{part_label}</td>"
+                    f"<td style='padding:4px 12px;font-size:13px;color:#6b7280'>{_FREQ_LABEL.get(freq, str(freq))}</td>"
+                    f"<td style='padding:4px 12px;font-size:13px;text-align:center'>{today_cell}</td>"
+                    f"</tr>"
+                )
+        else:
+            # PART_SCHEDULE olmayan modüller her gün çalışır (M01 gibi)
+            today_cell = "<span style='color:#22c55e;font-weight:600'>✓</span>"
+            rows = (
+                f"<tr>"
+                f"<td style='padding:4px 12px;font-size:13px;color:#6b7280' colspan='2'>Tüm kategoriler</td>"
+                f"<td style='padding:4px 12px;font-size:13px;color:#6b7280'>{_FREQ_LABEL[0]}</td>"
+                f"<td style='padding:4px 12px;font-size:13px;text-align:center'>{today_cell}</td>"
+                f"</tr>"
+            )
+            # Sütun sayısı farklı — tek satır özel durumu
+            rows = (
+                f"<tr>"
+                f"<td style='padding:4px 12px;font-size:13px'>Tüm kategoriler</td>"
+                f"<td style='padding:4px 12px;font-size:13px;color:#6b7280'>{_FREQ_LABEL[0]}</td>"
+                f"<td style='padding:4px 12px;font-size:13px;text-align:center'>{today_cell}</td>"
+                f"</tr>"
+            )
+
+        sections += f"""
+      <div style='margin-bottom:12px'>
+        <div style='font-size:12px;font-weight:700;color:{color};
+                    text-transform:uppercase;letter-spacing:.05em;
+                    margin-bottom:4px'>M{code} — {mod_name}</div>
+        <table style='width:100%;border-collapse:collapse'>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>"""
 
     return f"""
     <div style='padding:16px 24px;border-top:1px solid #e5e7eb'>
-      <div style='font-size:13px;font-weight:600;color:#374151;margin-bottom:8px'>
-        M07 Çalışma Takvimi
+      <div style='font-size:13px;font-weight:600;color:#374151;margin-bottom:12px'>
+        Çalışma Takvimi
       </div>
-      <table style='width:100%;border-collapse:collapse'>
-        <thead>
-          <tr style='background:#f9fafb'>
-            <th style='padding:5px 12px;text-align:left;font-size:12px;color:#6b7280;
-                       font-weight:600;border-bottom:1px solid #e5e7eb'>Part</th>
-            <th style='padding:5px 12px;text-align:left;font-size:12px;color:#6b7280;
-                       font-weight:600;border-bottom:1px solid #e5e7eb'>Frekans</th>
-            <th style='padding:5px 12px;text-align:center;font-size:12px;color:#6b7280;
-                       font-weight:600;border-bottom:1px solid #e5e7eb'>Bugün</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+      {sections}
     </div>"""
 
 

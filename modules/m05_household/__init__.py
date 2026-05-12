@@ -87,6 +87,11 @@ class HouseholdModule(BaseModule):
         "evbakim": 0,   # her gün — COICOP 056 market ürünleri
     }
 
+    PART_DISPLAY: dict[str, str] = {
+        "main":    "Beyaz Eşya & Mobilya",
+        "evbakim": "Ev Bakımı (COICOP 056)",
+    }
+
     async def setup_schema(self, conn) -> None:
         from db.repository import apply_schema
         await apply_schema(conn)
