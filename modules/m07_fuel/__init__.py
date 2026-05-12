@@ -138,9 +138,9 @@ class FuelModule(BaseModule):
         "car":           4,   # ayın 5, 10, 15, 20
         "motorsiklet":   4,   # ayın 5, 10, 15, 20
         "transport":     2,   # ayın 5 ve 20
-        "intercity_bus": 4,   # ayın 5, 10, 15, 20
+        "intercity_bus": 0,   # her gün
         "train":         1,   # ayın 15
-        "flight":        4,   # ayın 5, 10, 15, 20
+        "flight":        0,   # her gün
         "taxi":          1,   # ayın 15
         "ferry":         2,   # ayın 5 ve 20
     }

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     market_product_id INTEGER NOT NULL REFERENCES m01_market_products(id) ON DELETE CASCADE,
     snapshot_date     TEXT NOT NULL,
     price             REAL NOT NULL,
-    discounted_price  REAL,
+    islem_hacmi       REAL,
     is_available      INTEGER DEFAULT 1,
     location          TEXT,
     scraped_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

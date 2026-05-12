@@ -65,7 +65,7 @@ class SokScraper(BaseScraper):
             market_sku=sku,
             market_name=name_tag.get_text(strip=True) if name_tag else sku,
             price=price,
-            discounted_price=discounted,
+            islem_hacmi=discounted,
             is_available=True,
             snapshot_date=date.today(),
         )

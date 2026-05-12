@@ -92,7 +92,7 @@ class A101Scraper(BaseScraper):
             market_sku=sku,
             market_name=name,
             price=price,
-            discounted_price=discounted,
+            islem_hacmi=discounted,
             is_available=True,
             snapshot_date=date.today(),
         )

@@ -9,7 +9,7 @@ class PriceRecord(BaseModel):
     market_sku: str
     market_name: str
     price: Decimal
-    discounted_price: Decimal | None = None
+    islem_hacmi: Decimal | None = None
     is_available: bool = True
     snapshot_date: date
     location: str | None = None   # marketfiyati branch'i için: "Istanbul", "Ankara" vb.
@@ -21,13 +21,6 @@ class PriceRecord(BaseModel):
     def price_must_be_positive(cls, v: Decimal) -> Decimal:
         if v <= 0:
             raise ValueError(f"Fiyat sıfır veya negatif olamaz: {v}")
-        return v
-
-    @field_validator("discounted_price")
-    @classmethod
-    def discounted_must_be_less(cls, v: Decimal | None, info) -> Decimal | None:
-        if v is not None and "price" in info.data and v >= info.data["price"]:
-            raise ValueError("İndirimli fiyat normal fiyattan büyük veya eşit olamaz")
         return v
 
 

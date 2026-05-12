@@ -154,14 +154,14 @@ async def batch_upsert_products_and_snapshots(
         result = await conn.execute(
             """
             INSERT INTO m01_price_snapshots
-                (market_product_id, snapshot_date, price, discounted_price, is_available, location)
+                (market_product_id, snapshot_date, price, islem_hacmi, is_available, location)
             VALUES ($1, $2::date, $3::numeric, $4::numeric, $5::boolean, $6::varchar)
             ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
             """,
             sku_to_id[key],
             r.snapshot_date if isinstance(r.snapshot_date, date) else date.fromisoformat(str(r.snapshot_date)),
             float(r.price),
-            float(r.discounted_price) if r.discounted_price else None,
+            float(r.islem_hacmi) if r.islem_hacmi else None,
             r.is_available,
             r.location,
         )
@@ -251,7 +251,7 @@ async def export_and_cleanup(
             data = await conn.fetch(
                 """
                 SELECT
-                    ps.id, ps.snapshot_date, ps.price, ps.discounted_price,
+                    ps.id, ps.snapshot_date, ps.price, ps.islem_hacmi,
                     ps.is_available, ps.location, ps.scraped_at,
                     mp.market, mp.market_sku, mp.market_name, mp.brand, mp.volume
                 FROM m01_price_snapshots ps
@@ -268,7 +268,7 @@ async def export_and_cleanup(
             with open(filepath, "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow([
-                    "id", "snapshot_date", "price", "discounted_price",
+                    "id", "snapshot_date", "price", "islem_hacmi",
                     "is_available", "location", "scraped_at",
                     "market", "market_sku", "market_name", "brand", "volume",
                 ])
