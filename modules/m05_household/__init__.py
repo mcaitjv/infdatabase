@@ -83,7 +83,7 @@ class HouseholdModule(BaseModule):
     weight = 7.92
 
     PART_SCHEDULE = {
-        "main":    4,   # ayın 5, 10, 15, 20 — beyaz eşya, mobilya
+        "main":    0,   # her gün — beyaz eşya, mobilya
         "evbakim": 0,   # her gün — COICOP 056 market ürünleri
     }
 
@@ -308,7 +308,7 @@ class HouseholdModule(BaseModule):
         run_evbakim = (parts is None and self._should_run("evbakim")) or (parts is not None and "evbakim" in parts)
 
         if not run_main and not run_evbakim:
-            logger.info("[m05] Bugün çalışma günü değil — atlanıyor.")
+            logger.info("[m05] Hiçbir part bu gün için planlanmamış — atlanıyor.")
             return []
 
         if not run_main:
