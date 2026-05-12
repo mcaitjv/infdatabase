@@ -3,78 +3,141 @@
 #
 # Her keyword bir API çağrısı üretir ve o kategorideki tüm ürünler çekilir.
 # Geniş kategori isimleri tercih edilir — fazla spesifik olunursa ürünler atlanır.
-#
-# Yeni kategori eklemek için buraya satır ekle, kodda değişiklik gerekmez.
 
 categories:
-  # Süt & Süt Ürünleri
-  - "süt"
-  - "yoğurt"
-  - "peynir"
-  - "tereyağı"
-  - "kaymak"
-  - "ayran"
-  - "kefir"
+  # ── 0111 Tahıllar ve tahıl ürünleri ────────────────────────────────────────
+  - "pirinç"           # 0111121
+  - "bulgur"           # 0111192
+  - "un"               # 0111211
+  - "ekmek"            # 0111311
+  - "bisküvi"          # 0111393
+  - "kraker"           # 0111394
+  - "gofret"           # 0111396
+  - "baklava"          # 0111398
+  - "simit"            # 0111399
+  - "mısır gevreği"    # 0111401
+  - "makarna"          # 0111501
+  - "şehriye"          # 0111502
 
-  # Yumurta
-  - "yumurta"
+  # ── 0112 Et ────────────────────────────────────────────────────────────────
+  - "dana eti"         # 0112214
+  - "kuzu eti"         # 0112230
+  - "tavuk"            # 0112246
+  - "sucuk"            # 0112311
+  - "salam"            # 0112312 / 0112392
+  - "sosis"            # 0112511
+  - "sakatat"          # 0112401
+  - "hazır tavuk"      # 0112590
+  - "hazır et"         # 0112593
 
-  # Ekmek & Unlu Mamuller
-  - "ekmek"
-  - "un"
-  - "bisküvi"
-  - "kraker"
+  # ── 0113 Balık ─────────────────────────────────────────────────────────────
+  - "somon"            # 0113121
+  - "palamut"          # 0113151
+  - "balık"            # 0113191
+  - "konserve balık"   # 0113315
 
-  # Temel Gıda
-  - "şeker"
-  - "tuz"
-  - "makarna"
-  - "pirinç"
-  - "bulgur"
-  - "mercimek"
-  - "nohut"
-  - "fasulye"
+  # ── 0114 Süt, süt ürünleri ve yumurta ──────────────────────────────────────
+  - "süt"              # 0114111 / 0114201
+  - "kaymak"           # 0114331
+  - "beyaz peynir"     # 0114501
+  - "kaşar peyniri"    # 0114502
+  - "tulum peyniri"    # 0114503
+  - "labne"            # 0114504
+  - "yoğurt"           # 0114601
+  - "ayran"            # 0114605
+  - "muhallebi"        # 0114701
+  - "çikolatalı süt"   # 0114703
+  - "yumurta"          # 0114811
 
-  # Yağlar
-  - "zeytinyağı"
-  - "ayçiçek yağı"
+  # ── 0115 Sıvı ve katı yağlar ────────────────────────────────────────────────
+  - "ayçiçek yağı"     # 0115112
+  - "zeytinyağı"       # 0115131
+  - "tereyağı"         # 0115211
+  - "margarin"         # 0115301
 
-  # Konserve & Hazır Gıda
-  - "konserve"
-  - "domates salça"
-  - "ketçap"
-  - "mayonez"
+  # ── 0116 Meyveler ve sert kabuklu meyveler ──────────────────────────────────
+  - "muz"              # 0116121
+  - "limon"            # 0116221
+  - "portakal"         # 0116231
+  - "mandalina"        # 0116241
+  - "elma"             # 0116311
+  - "armut"            # 0116321
+  - "şeftali"          # 0116351
+  - "çilek"            # 0116451
+  - "üzüm"             # 0116511
+  - "kivi"             # 0116521
+  - "kavun"            # 0116531
+  - "karpuz"           # 0116541
+  - "nar"              # 0116591
+  - "kuru üzüm"        # 0116711
+  - "kuru hurma"       # 0116791
+  - "kuru kayısı"      # 0116793
+  - "badem"            # 0116811
+  - "fındık"           # 0116843
+  - "antep fıstığı"    # 0116854
+  - "ceviz"            # 0116862
+  - "yer fıstığı"      # 0116886
+  - "kabak çekirdeği"  # 0116891
+  - "leblebi"          # 0116897
+  - "ay çekirdeği"     # 0116898
 
-  # Et & Et Ürünleri
-  - "et"
-  - "tavuk"
-  - "balık"
-  - "sucuk"
-  - "salam"
-  - "sosis"
+  # ── 0117 Sebzeler ───────────────────────────────────────────────────────────
+  - "lahana"           # 0117123
+  - "karnabahar"       # 0117131
+  - "marul"            # 0117141
+  - "ıspanak"          # 0117151
+  - "biber"            # 0117211 / 0117215
+  - "salatalık"        # 0117222
+  - "patlıcan"         # 0117234
+  - "domates"          # 0117241
+  - "kabak"            # 0117253
+  - "taze fasulye"     # 0117312
+  - "havuç"            # 0117410
+  - "turp"             # 0117416
+  - "sarımsak"         # 0117421
+  - "soğan"            # 0117431
+  - "pırasa"           # 0117445
+  - "mantar"           # 0117452
+  - "zeytin"           # 0117476
+  - "patates"          # 0117511
+  - "kuru fasulye"     # 0117611
+  - "nohut"            # 0117632
+  - "mercimek"         # 0117643
+  - "konserve sebze"   # 0117923
+  - "turşu"            # 0117992
+  - "salça"            # 0117995
+  - "cips"             # 0117998
 
-  # İçecekler
-  - "çay"
-  - "kahve"
-  - "su"
-  - "meyve suyu"
-  - "gazlı içecek"
-  - "enerji içeceği"
+  # ── 0118 Şeker, şekerlemeler ve tatlılar ────────────────────────────────────
+  - "toz şeker"        # 0118121
+  - "bal"              # 0118313
+  - "reçel"            # 0118391
+  - "pekmez"           # 0118397
+  - "fındık ezmesi"    # 0118401
+  - "tahin"            # 0118408
+  - "çikolata"         # 0118512
+  - "dondurma"         # 0118601
+  - "tahin helvası"    # 0118916
+  - "lokum"            # 0118991
+  - "sakız"            # 0118994
 
-  # Atıştırmalık & Çikolata
-  - "çikolata"
-  - "gofret"
-  - "cips"
-  - "kuruyemiş"
+  # ── 0119 Hazır gıdalar ve diğer ─────────────────────────────────────────────
+  - "hazır pizza"      # 0119145
+  - "hazır çorba"      # 0119161
+  - "hazır börek"      # 0119192
+  - "bebek sütü"       # 0119212
+  - "tuz"              # 0119311
+  - "sirke"            # 0119393
+  - "ketçap"           # 0119396
+  - "mayonez"          # 0119397
+  - "baharat"          # 0119401 / 0119402
 
-  # Kişisel Bakım
-  - "diş macunu"
-  - "şampuan"
-  - "sabun"
-  - "deodorant"
-  - "el kremi"
-
-  # Bebek
-  - "bebek bezi"
-  - "bebek maması"
-  - "ıslak mendil"
+  # ── 012 Alkolsüz içecekler ──────────────────────────────────────────────────
+  - "meyve suyu"       # 0121001
+  - "kahve"            # 0122011 / 0122012
+  - "çay"              # 0123021
+  - "soğuk çay"        # 0123034
+  - "su"               # 0125001
+  - "maden suyu"       # 0125002
+  - "gazoz"            # 0126002
+  - "kola"             # 0126003

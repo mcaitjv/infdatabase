@@ -1,0 +1,73 @@
+label: "Rutin Ev Bakımı İçin Mal ve Hizmetler"
+
+# Kaynak: marketfiyati.org.tr (TÜBİTAK API) — M01 ile aynı API, keyword-bazlı arama
+# Her kategori için keywords listesi; MarketFiyatiScraper bu keyword'lerle arama yapar.
+
+categories:
+  camasir_temizlik:
+    label: Çamaşır İçin Temizlik ve Bakım Ürünleri
+    tuik_code: "0561101"
+    keywords:
+      - çamaşır deterjanı
+      - çamaşır suyu
+      - çamaşır yumuşatıcı
+      - leke çıkarıcı
+
+  bulasik_temizlik:
+    label: Bulaşık İçin Temizlik ve Bakım Ürünleri
+    tuik_code: "0561102"
+    keywords:
+      - bulaşık deterjanı
+      - bulaşık makinesi tableti
+      - bulaşık sıvısı
+
+  zemin_temizlik:
+    label: Hijyenik Zeminler İçin Temizlik ve Bakım Ürünleri
+    tuik_code: "0561103"
+    keywords:
+      - yer temizleyici
+      - yer deterjanı
+      - banyo temizleyici
+      - wc temizleyici
+
+  temizlik_bezi:
+    label: Temizlik Bezleri
+    tuik_code: "0561106"
+    keywords:
+      - temizlik bezi
+      - bez havlu
+      - kağıt havlu
+
+  yuzey_temizlik:
+    label: Yüzey Temizlik Havlusu
+    tuik_code: "0561198"
+    keywords:
+      - ıslak mendil
+      - yüzey temizleme havlusu
+      - pratik temizleme havlusu
+
+  saklama_malzeme:
+    label: Saklama ve Muhafaza Malzemeleri
+    tuik_code: "0561902"
+    keywords:
+      - streç film
+      - alüminyum folyo
+      - buzdolabı torbası
+      - gıda torbası
+
+  kagit_sofra:
+    label: Kağıt Sofra Malzemeleri
+    tuik_code: "0561903"
+    keywords:
+      - kağıt havlu
+      - kağıt peçete
+      - sofra peçetesi
+
+  diger_ev_esya:
+    label: Diğer Dayanıklı Olmayan Ev Eşyaları
+    tuik_code: "0561915"
+    keywords:
+      - çöp torbası
+      - mutfak eldiveni
+      - bulaşık süngeri
+      - ovma pedi

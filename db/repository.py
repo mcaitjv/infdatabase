@@ -723,6 +723,103 @@ async def batch_upsert_ferry_prices(conn, records: list[FerryPriceRecord]) -> in
     return inserted
 
 
+# ── M05 Ev Bakımı (COICOP 056) ───────────────────────────────────────────────
+
+async def batch_upsert_evbakim_snapshots(
+    conn,
+    tuik_records: dict[str, list],  # {tuik_code: [PriceRecord]}
+) -> int:
+    """
+    m05_evbakim_products → upsert, ardından m05_evbakim_snapshots → insert.
+    Döndürür: eklenen snapshot sayısı.
+    """
+    if not tuik_records:
+        return 0
+
+    is_sqlite = hasattr(conn, "_c")
+
+    sku_to_id: dict[tuple[str, str], int] = {}
+    seen: set[tuple[str, str]] = set()
+
+    for records in tuik_records.values():
+        for r in records:
+            key = (r.market, r.market_sku)
+            if key in seen:
+                continue
+            seen.add(key)
+            if is_sqlite:
+                await conn.execute(
+                    """
+                    INSERT INTO m05_evbakim_products (market, market_sku, market_name, brand, volume)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT (market, market_sku)
+                    DO UPDATE SET market_name = excluded.market_name,
+                                  brand       = excluded.brand,
+                                  volume      = excluded.volume
+                    """,
+                    r.market, r.market_sku, r.market_name, r.brand, r.volume,
+                )
+                await conn.commit()
+                row = await conn.execute(
+                    "SELECT id FROM m05_evbakim_products WHERE market=? AND market_sku=?",
+                    (r.market, r.market_sku),
+                )
+                fetched = await row.fetchone()
+                sku_to_id[key] = fetched[0]
+            else:
+                row = await conn.fetchrow(
+                    """
+                    INSERT INTO m05_evbakim_products (market, market_sku, market_name, brand, volume)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (market, market_sku)
+                    DO UPDATE SET market_name = EXCLUDED.market_name,
+                                  brand       = EXCLUDED.brand,
+                                  volume      = EXCLUDED.volume
+                    RETURNING id
+                    """,
+                    r.market, r.market_sku, r.market_name, r.brand, r.volume,
+                )
+                sku_to_id[key] = row["id"]
+
+    inserted = 0
+    for tuik_code, records in tuik_records.items():
+        for r in records:
+            key = (r.market, r.market_sku)
+            prod_id = sku_to_id.get(key)
+            if prod_id is None:
+                continue
+            snap_date = (
+                r.snapshot_date
+                if isinstance(r.snapshot_date, date)
+                else date.fromisoformat(str(r.snapshot_date))
+            )
+            if is_sqlite:
+                result = await conn.execute(
+                    """
+                    INSERT INTO m05_evbakim_snapshots (product_id, snapshot_date, price, is_available, location)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT (product_id, snapshot_date, location) DO NOTHING
+                    """,
+                    prod_id, str(snap_date), float(r.price), r.is_available, r.location,
+                )
+                await conn.commit()
+                if result.rowcount:
+                    inserted += 1
+            else:
+                result = await conn.execute(
+                    """
+                    INSERT INTO m05_evbakim_snapshots (product_id, snapshot_date, price, is_available, location)
+                    VALUES ($1, $2::date, $3::numeric, $4::boolean, $5::varchar)
+                    ON CONFLICT (product_id, snapshot_date, location) DO NOTHING
+                    """,
+                    prod_id, snap_date, float(r.price), r.is_available, r.location,
+                )
+                if result == "INSERT 0 1":
+                    inserted += 1
+
+    return inserted
+
+
 # ── Sorgular ─────────────────────────────────────────────────────────────────
 
 async def get_last_prices(

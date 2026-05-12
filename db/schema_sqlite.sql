@@ -40,6 +40,32 @@ CREATE TABLE IF NOT EXISTS m01_price_snapshots (
     UNIQUE(market_product_id, snapshot_date, location)
 );
 
+CREATE TABLE IF NOT EXISTS m05_evbakim_products (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    market      TEXT NOT NULL,
+    market_sku  TEXT,
+    market_name TEXT NOT NULL,
+    brand       TEXT,
+    volume      TEXT,
+    is_active   INTEGER DEFAULT 1,
+    UNIQUE(market, market_sku)
+);
+
+CREATE TABLE IF NOT EXISTS m05_evbakim_snapshots (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id    INTEGER NOT NULL REFERENCES m05_evbakim_products(id) ON DELETE CASCADE,
+    snapshot_date TEXT NOT NULL,
+    price         REAL NOT NULL,
+    is_available  INTEGER DEFAULT 1,
+    location      TEXT,
+    scraped_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(product_id, snapshot_date, location)
+);
+
+CREATE INDEX IF NOT EXISTS idx_evb_date   ON m05_evbakim_snapshots(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_evb_prod   ON m05_evbakim_snapshots(product_id, snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_evb_market ON m05_evbakim_products(market);
+
 CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     market           TEXT NOT NULL,

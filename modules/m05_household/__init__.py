@@ -22,7 +22,7 @@ from pathlib import Path
 import yaml
 
 from db.models import AppliancePriceRecord, ScrapeRun
-from db.repository import batch_upsert_appliance_prices, get_connection, upsert_scrape_run
+from db.repository import batch_upsert_appliance_prices, batch_upsert_evbakim_snapshots, get_connection, upsert_scrape_run
 from modules.base import BaseModule
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,15 @@ class HouseholdModule(BaseModule):
     name = "Mobilya, Mefruşat ve Ev Bakım"
     weight = 7.92
 
-    PART_SCHEDULE = {"main": 4}   # ayın 5, 10, 15, 20
+    PART_SCHEDULE = {
+        "main":    0,   # her gün — beyaz eşya, mobilya
+        "evbakim": 0,   # her gün — COICOP 056 market ürünleri
+    }
+
+    PART_DISPLAY: dict[str, str] = {
+        "main":    "Beyaz Eşya & Mobilya",
+        "evbakim": "Ev Bakımı (COICOP 056)",
+    }
 
     async def setup_schema(self, conn) -> None:
         from db.repository import apply_schema
@@ -256,12 +264,61 @@ class HouseholdModule(BaseModule):
 
         return runs, all_valid
 
+    # ── Ev Bakımı (COICOP 056) ────────────────────────────────────────────────
+
+    async def _run_evbakim(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """evbakim.yaml keyword'leriyle marketfiyati.org.tr API'sini çağırır."""
+        from modules.m05_household.scrapers.evbakim_marketfiyati import EvbakimScraper
+
+        run = ScrapeRun(
+            market="m05:evbakim",
+            run_date=date.today(),
+            started_at=datetime.now(),
+        )
+        try:
+            async with EvbakimScraper() as s:
+                records = await s.scrape()  # dict[tuik_code, list[PriceRecord]]
+
+            total = sum(len(v) for v in records.values())
+            run.products_scraped = total
+
+            if dry_run:
+                logger.info("[m05:evbakim] Dry-run — %d kayıt", total)
+                for tuik_code, recs in records.items():
+                    for r in recs[:2]:
+                        print(f"  [{tuik_code}] [{r.market}] {r.market_name[:45]} | {r.price} TL")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_evbakim_snapshots(conn, records)
+                    logger.info("[m05:evbakim] %d kayıt işlendi, %d yeni snapshot", total, inserted)
+
+            run.status = "success"
+        except Exception as exc:
+            logger.error("[m05:evbakim] hata: %s", exc, exc_info=True)
+            run.status = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
+        logger.info("[m05:evbakim] %s — %.1fs", run.status,
+                    (run.finished_at - run.started_at).total_seconds())
+        return [run]
+
     # ── Ana run ───────────────────────────────────────────────────────────────
 
     async def run(self, dry_run: bool = False, parts: list[str] | None = None) -> list[ScrapeRun]:
-        if parts is None and not self._should_run("main"):
-            logger.info("[m05] Bugün çalışma günü değil (5, 10, 15, 20 değil) — atlanıyor.")
+        run_main    = (parts is None and self._should_run("main"))    or (parts is not None and "main"    in parts)
+        run_evbakim = (parts is None and self._should_run("evbakim")) or (parts is not None and "evbakim" in parts)
+
+        if not run_main and not run_evbakim:
+            logger.info("[m05] Hiçbir part bu gün için planlanmamış — atlanıyor.")
             return []
+
+        if not run_main:
+            # Sadece evbakim çalışacak — marka scraperlarını atla
+            return await self._run_evbakim(dry_run)
 
         from modules.m05_household.scrapers.vestel import VestelScraper
         from modules.m05_household.scrapers.samsung import SamsungScraper
@@ -337,6 +394,11 @@ class HouseholdModule(BaseModule):
         # Yataş (httpx OCC API) — yatak kategorisi; tracked_skus dolmadan atlanır
         async with YatasScraper() as yatas:
             r, _ = await self._scrape_source("yatas", yatas, categories, dry_run)
+            runs.extend(r)
+
+        # Ev Bakımı (COICOP 056) — main çalışma günüyle çakışırsa da ekle
+        if run_evbakim:
+            r = await self._run_evbakim(dry_run)
             runs.extend(r)
 
         return runs
