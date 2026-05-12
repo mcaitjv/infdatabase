@@ -63,11 +63,18 @@ categories:
     label: Tur / Adventure
     sources:
       honda:
-        # 2026 sayfasındaki tüm touring modeller: GL1800 Gold Wing Bagger + GL1800 Gold Wing
         path: "/motosiklet/motosiklet-fiyat-listesi"
         tracked_skus:
           - "GL1800 Gold Wing Bagger"
           - "GL1800 Gold Wing"
+          - "NT1100"
+          - "NC750X"
+          - "X-ADV"
+          - "Africa Twin"
+          - "Africa Twin Adventure Sports"
+          - "CRF250 Rally"
+          - "NX500"
+          - "XL750 Transalp"
       yamaha:
         path: "/fiyat-listesi/road-price-list.html"
         tracked_skus:
@@ -93,12 +100,13 @@ categories:
     label: Scooter
     sources:
       honda:
-        # 2026 sayfasındaki tüm scooter modeller: SH125i + Forza 250 (3 varyant) + ADV350 (2 varyant)
         path: "/motosiklet/motosiklet-fiyat-listesi"
         tracked_skus:
+          - "PCX125 DLX"
           - "SH125i"
           - "Forza 250"
           - "ADV350"
+          - "Forza 750"
       yamaha:
         path: "/fiyat-listesi/road-price-list.html"
         tracked_skus:

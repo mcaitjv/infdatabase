@@ -5,7 +5,8 @@ Honda, Yamaha, BMW Motorrad ve Kuba Motor fiyat listelerinden
 model/varyant/segment/fiyat verisini çeker.
 
 Honda  : https://www.honda.com.tr  (httpx, Qwik SSR)
-         2026 sayfasında: SCOOTER, BIG SCOOTER, TOURING (8 model/varyant)
+         Mevcut yıl + önceki yıl birlikte çekilir; önceki yılın
+         variant'ına " (YYYY)" eklenir (DB unique kısıtı).
 Yamaha : https://tr-yamaha-motor.com  (httpx, div.table + div.table-row)
 BMW    : https://www.bmw-motorrad.com.tr  (Playwright, Borusan portal)
          Model başına 1 varyant (en ucuz) alınır.
@@ -45,6 +46,9 @@ _HONDA_CAT_TO_SEGMENT: dict[str, str] = {
     "scooter":     "scooter",
     "big-scooter": "scooter",
     "touring":     "touring",
+    "naked":       "standart",
+    "adventure":   "touring",
+    "supersport":  "spor",
 }
 
 # Yamaha: <h2>Category</h2> → segment
@@ -301,29 +305,42 @@ class MotorsikletBrandScraper:
     async def _scrape_honda(self, segment: str, path: str) -> list[CarPriceRecord]:
         """
         Honda fiyat listesi URL'i yıllık değişir (motosiklet-fiyat-listesi-2026 → 2027…).
-        Mevcut yılı dener; 404 gelirse önceki yıla düşer.
+        Mevcut yıl ve önceki yıl birlikte çekilir; önceki yılın variant'ına
+        " (YYYY)" eklenerek DB unique kısıtı sağlanır.
         YAML'daki path yıl suffix'i olmadan tanımlanmalı:
           /motosiklet/motosiklet-fiyat-listesi
         """
         if self._honda_cache is None:
-            base_path = re.sub(r"-\d{4}$", "", path)  # strip trailing year if present
+            base_path = re.sub(r"-\d{4}$", "", path)
             current_year = date.today().year
-            fetched = False
+            all_records: list[CarPriceRecord] = []
+
             for year in (current_year, current_year - 1):
                 url = f"{_HONDA_BASE}{base_path}-{year}"
                 try:
                     r = await self._client.get(url)
-                    if r.status_code == 200:
-                        self._honda_cache = _parse_honda_page(
-                            BeautifulSoup(r.text, "html.parser")
-                        )
-                        logger.info("[motorsiklet] honda: %s kullanıldı (%d kayıt)", url, len(self._honda_cache))
-                        fetched = True
-                        break
+                    if r.status_code != 200:
+                        logger.debug("[motorsiklet] honda %d: %d döndü — atlanıyor", year, r.status_code)
+                        continue
+                    year_records = _parse_honda_page(BeautifulSoup(r.text, "html.parser"))
+                    if year < current_year:
+                        year_records = [
+                            CarPriceRecord(
+                                brand=rec.brand,
+                                model=rec.model,
+                                variant=f"{rec.variant} ({year})",
+                                segment=rec.segment,
+                                price=rec.price,
+                                date=rec.date,
+                            )
+                            for rec in year_records
+                        ]
+                    all_records.extend(year_records)
+                    logger.info("[motorsiklet] honda %d: %s — %d kayıt", year, url, len(year_records))
                 except httpx.HTTPError as exc:
                     logger.debug("[motorsiklet] honda %d URL hata: %s", year, exc)
-            if not fetched:
-                self._honda_cache = []
+
+            self._honda_cache = all_records
 
         return [rec for rec in self._honda_cache if rec.segment == segment]
 
