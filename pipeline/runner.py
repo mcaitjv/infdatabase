@@ -30,6 +30,7 @@ from modules import get_modules
 from modules.m01_food import FoodModule
 from modules.m05_household import HouseholdModule
 from modules.m07_fuel import FuelModule
+from modules.m13_kisisel_bakim import KisiselBakimModule
 
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(

@@ -66,6 +66,40 @@ CREATE INDEX IF NOT EXISTS idx_evb_date   ON m05_evbakim_snapshots(snapshot_date
 CREATE INDEX IF NOT EXISTS idx_evb_prod   ON m05_evbakim_snapshots(product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_evb_market ON m05_evbakim_products(market);
 
+-- Kişisel bakım ürün kataloğu (Modül 13 — COICOP 1312)
+CREATE TABLE IF NOT EXISTS m13_market_products (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    market      TEXT    NOT NULL,
+    market_sku  TEXT,
+    market_name TEXT    NOT NULL,
+    brand       TEXT,
+    volume      TEXT,
+    is_active   INTEGER DEFAULT 1,
+    UNIQUE(market, market_sku)
+);
+
+CREATE TABLE IF NOT EXISTS m13_price_snapshots (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    market_product_id INTEGER NOT NULL REFERENCES m13_market_products(id) ON DELETE CASCADE,
+    snapshot_date     TEXT    NOT NULL,
+    price             REAL    NOT NULL,
+    discounted_price  REAL,
+    is_available      INTEGER DEFAULT 1,
+    location          TEXT,
+    scraped_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date, location)
+    WHERE location IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_no_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date)
+    WHERE location IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_m13_ps_date         ON m13_price_snapshots(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_m13_ps_product_date ON m13_price_snapshots(market_product_id, snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_m13_mp_market       ON m13_market_products(market);
+
 CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     market           TEXT NOT NULL,

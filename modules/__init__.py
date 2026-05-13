@@ -10,11 +10,13 @@ from modules.base import BaseModule
 from modules.m01_food import FoodModule
 from modules.m05_household import HouseholdModule
 from modules.m07_fuel import FuelModule
+from modules.m13_kisisel_bakim import KisiselBakimModule
 
 ALL_MODULES: dict[str, type[BaseModule]] = {
     "01": FoodModule,
     "05": HouseholdModule,
     "07": FuelModule,
+    "13": KisiselBakimModule,
 }
 
 
