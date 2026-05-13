@@ -1,0 +1,56 @@
+# Modül 13 — Kişisel Bakım Ürünleri
+# COICOP 1312: Kişisel bakıma yönelik diğer aletler, malzemeler ve ürünler
+#
+# Her kategori bir keyword listesi içerir.
+# marketfiyati.org.tr (TÜBİTAK API) bu keyword'lerle taranır.
+#
+# Güncelleme: keyword ekleyip pipeline'ı yeniden çalıştır — SKU takibi yok.
+
+categories:
+  # COICOP 1312001 — Tıraş
+  - tıraş bıçağı
+  - tıraş köpüğü
+  - jilet
+
+  # COICOP 1312002 — Diş bakımı
+  - diş fırçası
+  - diş macunu
+  - ağız gargarası
+
+  # COICOP 1312017-18 — Sabun
+  - el sabunu
+  - sıvı sabun
+  - banyo sabunu
+
+  # COICOP 1312019 — Parfüm & koku
+  - parfüm
+  - deodorant
+  - roll-on deodorant
+
+  # COICOP 1312021 — Kolonya
+  - kolonya
+
+  # COICOP 1312023 — Makyaj
+  - ruj
+  - fondöten
+  - maskara
+  - rimel
+
+  # COICOP 1312024 — Güneş kremi
+  - güneş kremi
+  - güneş losyonu
+
+  # COICOP 1312025 — Saç bakım
+  - şampuan
+  - saç kremi
+  - saç bakım yağı
+
+  # COICOP 1312026-27 — Kağıt ürünleri
+  - tuvalet kağıdı
+  - kağıt havlu
+  - peçete
+
+  # COICOP 1312030 — Hijyenik kadın bağı
+  - hijyenik ped
+  - tampon
+  - menstrüel kap

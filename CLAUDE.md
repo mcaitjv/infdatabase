@@ -122,6 +122,7 @@ infdatabase/
 | 01 | Gıda ve Alkolsüz İçecekler | %24.44 | A | marketfiyati.org.tr (TÜBİTAK API), hal.gov.tr (toptan hal) |
 | 05 | Mobilya, Mefruşat ve Ev Bakım | %7.92 | B | Arçelik, Beko, BSH, Samsung, Vestel, IKEA, Trendyol, Vivense |
 | 07 | Ulaştırma — Akaryakıt | %16.62 | C | Petrol Ofisi, Opet/Aygaz, Shell (Playwright) |
+| 13 | Kişisel Bakım Ürünleri | %4.4935 | A | marketfiyati.org.tr (TÜBİTAK API) |
 
 **M05 Parts:**
 - `appliances.yaml` — beyaz eşya & küçük ev aleti (5 marka sitesi)

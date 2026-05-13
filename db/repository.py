@@ -822,6 +822,119 @@ async def batch_upsert_evbakim_snapshots(
 
 # ── Sorgular ─────────────────────────────────────────────────────────────────
 
+# ── Modül 13 — Kişisel Bakım ürünleri ───────────────────────────────────────
+
+async def upsert_m13_market_product(
+    conn,
+    market: str,
+    sku: str,
+    name: str,
+    brand: str | None = None,
+    volume: str | None = None,
+) -> int:
+    """m13_market_products'a ürün ekler/günceller. Döndürür: market_product_id."""
+    if isinstance(conn, _SqliteConn):
+        await conn.execute(
+            """
+            INSERT INTO m13_market_products (market, market_sku, market_name, brand, volume)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT (market, market_sku)
+            DO UPDATE SET market_name = excluded.market_name,
+                          brand       = excluded.brand,
+                          volume      = excluded.volume
+            """,
+            market, sku, name, brand, volume,
+        )
+        row = await conn.fetchrow(
+            "SELECT id FROM m13_market_products WHERE market=? AND market_sku=?",
+            market, sku,
+        )
+        return row[0]
+    else:
+        row = await conn.fetchrow(
+            """
+            INSERT INTO m13_market_products (market, market_sku, market_name, brand, volume)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (market, market_sku)
+            DO UPDATE SET market_name = EXCLUDED.market_name,
+                          brand       = EXCLUDED.brand,
+                          volume      = EXCLUDED.volume
+            RETURNING id
+            """,
+            market, sku, name, brand, volume,
+        )
+        return row["id"]
+
+
+async def batch_upsert_m13_products_and_snapshots(
+    conn,
+    records: list[PriceRecord],
+) -> int:
+    """
+    Her unique (market, sku) için m13_market_products'ı upsert eder,
+    ardından m13_price_snapshots'a günlük snapshot ekler.
+    Döndürür: eklenen snapshot sayısı.
+    """
+    if not records:
+        return 0
+
+    sku_to_id: dict[tuple[str, str], int] = {}
+    seen: set[tuple[str, str]] = set()
+    for r in records:
+        key = (r.market, r.market_sku)
+        if key not in seen:
+            seen.add(key)
+            mp_id = await upsert_m13_market_product(
+                conn, r.market, r.market_sku, r.market_name, r.brand, r.volume
+            )
+            sku_to_id[key] = mp_id
+
+    inserted = 0
+    for r in records:
+        key = (r.market, r.market_sku)
+        if key not in sku_to_id:
+            continue
+        snap_date = (
+            r.snapshot_date
+            if isinstance(r.snapshot_date, date)
+            else date.fromisoformat(str(r.snapshot_date))
+        )
+        if isinstance(conn, _SqliteConn):
+            result = await conn.execute(
+                """
+                INSERT INTO m13_price_snapshots
+                    (market_product_id, snapshot_date, price, islem_hacmi, is_available, location)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
+                """,
+                sku_to_id[key],
+                str(snap_date),
+                float(r.price),
+                float(r.islem_hacmi) if r.islem_hacmi else None,
+                r.is_available,
+                r.location,
+            )
+        else:
+            result = await conn.execute(
+                """
+                INSERT INTO m13_price_snapshots
+                    (market_product_id, snapshot_date, price, islem_hacmi, is_available, location)
+                VALUES ($1, $2::date, $3::numeric, $4::numeric, $5::boolean, $6::varchar)
+                ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
+                """,
+                sku_to_id[key],
+                snap_date,
+                float(r.price),
+                float(r.islem_hacmi) if r.islem_hacmi else None,
+                r.is_available,
+                r.location,
+            )
+        if result == "INSERT 0 1":
+            inserted += 1
+
+    return inserted
+
+
 async def get_last_prices(
     conn,
     market: str,
