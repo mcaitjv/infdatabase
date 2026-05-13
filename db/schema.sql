@@ -89,12 +89,20 @@ CREATE TABLE IF NOT EXISTS m13_price_snapshots (
     market_product_id BIGINT        NOT NULL REFERENCES m13_market_products(id) ON DELETE CASCADE,
     snapshot_date     DATE          NOT NULL,
     price             NUMERIC(10,2) NOT NULL,
-    islem_hacmi       NUMERIC(10,2),
+    discounted_price  NUMERIC(10,2),
     is_available      BOOLEAN       DEFAULT TRUE,
     location          VARCHAR(100),
-    scraped_at        TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(market_product_id, snapshot_date, location)
+    scraped_at        TIMESTAMP     DEFAULT NOW()
 );
+
+-- NULL location (online mağazalar) ve non-NULL location (şehir bazlı) için ayrı unique index
+-- PostgreSQL'de UNIQUE(... , location) NULL değerleri eşit saymaz, bu yüzden partial index gerekli
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date, location)
+    WHERE location IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_no_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date)
+    WHERE location IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_m13_ps_date         ON m13_price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_m13_ps_product_date ON m13_price_snapshots(market_product_id, snapshot_date);

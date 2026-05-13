@@ -221,8 +221,6 @@ class KisiselBakimModule(BaseModule):
                     async with get_connection() as conn:
                         inserted = await batch_upsert_m13_products_and_snapshots(conn, valid)
                         logger.info("[m13] %s: %d ürün, %d snapshot eklendi", source, len(valid), inserted)
-                    async with get_connection() as conn:
-                        await upsert_scrape_run(conn, run)
 
                 run.status = "success" if run.errors_count == 0 else "partial"
 
@@ -235,5 +233,8 @@ class KisiselBakimModule(BaseModule):
             duration = (run.finished_at - run.started_at).total_seconds()
             logger.info("[m13] %s tamamlandı — %s, %.1fs", source, run.status, duration)
             runs.append(run)
+            if not dry_run:
+                async with get_connection() as conn:
+                    await upsert_scrape_run(conn, run)
 
         return runs

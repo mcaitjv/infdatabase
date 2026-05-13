@@ -26,7 +26,8 @@ from db.models import PriceRecord
 
 logger = logging.getLogger(__name__)
 
-_SEARCH_URL = "https://www.gratis.com/search?q={keyword}&perpage=5"
+_SEARCH_URL = "https://www.gratis.com/search?q={keyword}"
+_MAX_RESULTS = 5
 _PRICE_RE = re.compile(r"(\d{1,3}(?:\.\d{3})*),(\d{2})\s*TL")
 _SKU_RE = re.compile(r"p-(\d+)(?:/|$)")
 
@@ -134,7 +135,7 @@ class GratisScraper:
             await page.goto(url, wait_until="networkidle", timeout=30000)
             await page.wait_for_timeout(3000)
 
-            items = await self._extract_products(page)
+            items = (await self._extract_products(page))[:_MAX_RESULTS]
 
             for item in items:
                 sku = item.get("sku", "")
@@ -145,17 +146,15 @@ class GratisScraper:
                     continue
 
                 normal_price, gratis_price = _extract_from_card_text(card_text)
-                # Gratis Kart fiyatı yoksa normal fiyatı kullan
-                effective_price = gratis_price or normal_price
-                if effective_price is None:
+                if normal_price is None:
                     continue
 
                 records.append(PriceRecord(
                     market=self.market_name,
                     market_sku=sku,
                     market_name=name,
-                    price=effective_price,
-                    islem_hacmi=normal_price if gratis_price else None,
+                    price=normal_price,
+                    islem_hacmi=gratis_price,  # indirimli fiyat (Gratis Kart); yoksa None
                     is_available=True,
                     snapshot_date=today,
                     location=None,

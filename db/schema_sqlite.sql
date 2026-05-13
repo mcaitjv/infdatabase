@@ -83,12 +83,18 @@ CREATE TABLE IF NOT EXISTS m13_price_snapshots (
     market_product_id INTEGER NOT NULL REFERENCES m13_market_products(id) ON DELETE CASCADE,
     snapshot_date     TEXT    NOT NULL,
     price             REAL    NOT NULL,
-    islem_hacmi       REAL,
+    discounted_price  REAL,
     is_available      INTEGER DEFAULT 1,
     location          TEXT,
-    scraped_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(market_product_id, snapshot_date, location)
+    scraped_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date, location)
+    WHERE location IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_m13_ps_uniq_no_loc
+    ON m13_price_snapshots(market_product_id, snapshot_date)
+    WHERE location IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_m13_ps_date         ON m13_price_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_m13_ps_product_date ON m13_price_snapshots(market_product_id, snapshot_date);

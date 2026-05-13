@@ -458,6 +458,89 @@ async def check_new_categories(target_date: date) -> list[str]:
     return alerts
 
 
+async def check_m13_health(conn, target_date: date) -> ModuleHealthReport:
+    """M13: m13_price_snapshots bütünlük ve anomali kontrolü."""
+    yesterday = target_date - timedelta(days=1)
+    report = ModuleHealthReport(
+        module_code="13",
+        module_name="Kişisel Bakım Ürünleri (M13)",
+        date=target_date,
+    )
+
+    row_today = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_price_snapshots WHERE snapshot_date = $1",
+        target_date,
+    )
+    row_yest = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_price_snapshots WHERE snapshot_date = $1",
+        yesterday,
+    )
+    report.records_today     = int(row_today[0]) if row_today else 0
+    report.records_yesterday = int(row_yest[0])  if row_yest  else 0
+
+    if report.records_today == 0:
+        report.add_error("Bugün m13_price_snapshots tablosuna hiç kayıt yazılmamış")
+        return report
+
+    if report.records_yesterday > 0:
+        change = abs(report.records_today - report.records_yesterday) / report.records_yesterday
+        if change > 0.20:
+            report.add_warning(
+                f"Kayıt sayısı dünden %{change*100:.0f} farklı "
+                f"({report.records_yesterday} → {report.records_today})"
+            )
+
+    failed_runs = await conn.fetch(
+        """
+        SELECT market
+        FROM shared_scrape_runs
+        WHERE run_date = $1 AND market LIKE 'm13:%'
+        GROUP BY market
+        HAVING MAX(CASE WHEN status = 'success' THEN 1 ELSE 0 END) = 0
+        """,
+        target_date,
+    )
+    for row in failed_runs:
+        report.add_error(f"Başarısız run: {row[0]}")
+        report.missing.append(str(row[0]))
+
+    thr = _THRESHOLDS["market"]
+    anomalies = await conn.fetch(
+        """
+        SELECT mp.market, mp.market_name,
+               MAX(CAST(t.price AS REAL)) AS today_price,
+               MAX(CAST(y.price AS REAL)) AS yesterday_price
+        FROM m13_price_snapshots t
+        JOIN m13_price_snapshots y ON t.market_product_id = y.market_product_id
+        JOIN m13_market_products mp ON mp.id = t.market_product_id
+        WHERE t.snapshot_date = $1
+          AND y.snapshot_date = $2
+          AND y.price > 0
+          AND ABS(CAST(t.price AS REAL) - CAST(y.price AS REAL))
+              / CAST(y.price AS REAL) > $3
+        GROUP BY mp.market, mp.market_name
+        ORDER BY ABS(MAX(CAST(t.price AS REAL)) - MAX(CAST(y.price AS REAL)))
+                 / MAX(CAST(y.price AS REAL)) DESC
+        LIMIT 20
+        """,
+        target_date,
+        yesterday,
+        thr["warning"],
+    )
+    for row in anomalies:
+        today_p = float(row[2])
+        yest_p  = float(row[3])
+        pct     = (today_p - yest_p) / yest_p * 100
+        label   = f"{row[0]} / {str(row[1])[:40]}"
+        report.anomalies.append(PriceAnomaly(label, yest_p, today_p, round(pct, 1)))
+        if abs(pct) / 100 > thr["error"]:
+            report.add_error(f"Kritik fiyat değişimi: {label} {_pct_label(pct)}")
+        else:
+            report.add_warning(f"Fiyat değişimi: {label} {_pct_label(pct)}")
+
+    return report
+
+
 # ── Ana entry point ───────────────────────────────────────────────────────────
 
 
@@ -474,7 +557,7 @@ async def run_health_check(
 
     pipeline = PipelineHealthReport(date=target_date)
 
-    for check_fn in [check_market_health, check_appliance_health, check_m07_health]:
+    for check_fn in [check_market_health, check_appliance_health, check_m07_health, check_m13_health]:
         try:
             result = await check_fn(conn, target_date)
             if isinstance(result, list):

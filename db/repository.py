@@ -903,9 +903,9 @@ async def batch_upsert_m13_products_and_snapshots(
             result = await conn.execute(
                 """
                 INSERT INTO m13_price_snapshots
-                    (market_product_id, snapshot_date, price, islem_hacmi, is_available, location)
+                    (market_product_id, snapshot_date, price, discounted_price, is_available, location)
                 VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
+                ON CONFLICT DO NOTHING
                 """,
                 sku_to_id[key],
                 str(snap_date),
@@ -918,9 +918,9 @@ async def batch_upsert_m13_products_and_snapshots(
             result = await conn.execute(
                 """
                 INSERT INTO m13_price_snapshots
-                    (market_product_id, snapshot_date, price, islem_hacmi, is_available, location)
+                    (market_product_id, snapshot_date, price, discounted_price, is_available, location)
                 VALUES ($1, $2::date, $3::numeric, $4::numeric, $5::boolean, $6::varchar)
-                ON CONFLICT (market_product_id, snapshot_date, location) DO NOTHING
+                ON CONFLICT DO NOTHING
                 """,
                 sku_to_id[key],
                 snap_date,

@@ -42,7 +42,8 @@ def _parse_price(val) -> Decimal | None:
     if val is None:
         return None
     try:
-        d = Decimal(str(val))
+        # API bazı fiyatları "1,499.00" (binlik virgül) formatında döner
+        d = Decimal(str(val).replace(",", ""))
         return d if d > 0 else None
     except InvalidOperation:
         return None
@@ -85,9 +86,13 @@ class RossmannScraper(BaseScraper):
         if not sku or not title:
             return None
 
-        price = _parse_price(item.get("sale_price")) or _parse_price(item.get("price"))
+        normal_price = _parse_price(item.get("price"))
+        sale_price   = _parse_price(item.get("sale_price"))
+        # price = normal (etiket) fiyat; islem_hacmi = indirimli fiyat (varsa ve farklıysa)
+        price = normal_price or sale_price
         if price is None:
             return None
+        islem_hacmi = sale_price if (sale_price and sale_price != price) else None
 
         availability = str(item.get("availability", "")).lower()
 
@@ -96,6 +101,7 @@ class RossmannScraper(BaseScraper):
             market_sku=sku,
             market_name=title,
             price=price,
+            islem_hacmi=islem_hacmi,
             is_available=(availability == "in stock"),
             snapshot_date=date.today(),
             location=None,
