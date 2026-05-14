@@ -36,22 +36,6 @@ categories:
       brand: Samsung
       model: Bespoke AI 4 Kapılı Buzdolabı Triple Cooling™ 821L
       source: samsung
-    - sku: refrigerator-sbs-rs90f-basic-655l-black-doi-rs70f65qeftr
-      brand: Samsung
-      model: Bespoke AI Gardrop Tipi Buzdolabı Space Max™ 655L
-      source: samsung
-    - sku: rf9000d-rf9000dc-t-style-french-door-beverage-center-650l-silver-rf65dg90besltr
-      brand: Samsung
-      model: Bespoke AI 4 Kapılı Buzdolabı Triple Cooling™ 650L
-      source: samsung
-    - sku: rt7300d-smartthings-ai-energy-mode-top-mount-freezer-smartthings-ai-energy-mode-531l-silver-rt53dg7a14s9tr
-      brand: Samsung
-      model: Bespoke AI Üstten Donduruculu Buzdolabı Twin Cooling™ 530L
-      source: samsung
-    - sku: rt6300c-top-mount-freezer-bespoke-design-465l-white-rt47cg6636wwtr
-      brand: Samsung
-      model: Bespoke AI Üstten Donduruculu Buzdolabı Space Max™ 465L
-      source: samsung
     - sku: '7296526355'
       brand: Beko
       model: 683616 IEBI
@@ -72,30 +56,9 @@ categories:
       brand: Beko
       model: 670475 MB
       source: beko
-    - sku: '7202920203'
-      brand: Beko
-      model: 670475 EA
-      source: beko
-    - sku: '7281520232'
-      brand: Beko
-      model: 678551 EDI
-      source: beko
-    - sku: '7253620260'
-      brand: Beko
-      model: 970477 MB
-      source: beko
-    - sku: '7281820256'
-      brand: Beko
-      model: 974509 MI
-      source: beko
-    - sku: '7282140266'
-      brand: Beko
-      model: 678551 EBC AI Fit
-      source: beko
     - sku: KBN96ADD0
       brand: Bosch
-      model: Serie 6 Alttan Donduruculu Ankastre Buzdolabı 193.5 x 70.8 cm softClosing
-        Düz Menteşe
+      model: Serie 6 Alttan Donduruculu Ankastre Buzdolabı 193.5 x 70.8 cm softClosing Düz Menteşe
       source: bosch
     - sku: KFN96VPEA
       brand: Bosch
@@ -103,8 +66,7 @@ categories:
       source: bosch
     - sku: KGP86AXB0N
       brand: Bosch
-      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Parmak izi bırakmayan
-        siyah inoks
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Parmak izi bırakmayan siyah inoks
       source: bosch
     - sku: KGP86FIC0N
       brand: Bosch
@@ -113,26 +75,6 @@ categories:
     - sku: KGP86FWC0N
       brand: Bosch
       model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total No Frost
-      source: bosch
-    - sku: KDN86AID1N
-      brand: Bosch
-      model: Serie 6 Üstten Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
-      source: bosch
-    - sku: KGP76AIC0N
-      brand: Bosch
-      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
-      source: bosch
-    - sku: KGA76PIE0N
-      brand: Bosch
-      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
-      source: bosch
-    - sku: KGN86AID2N
-      brand: Bosch
-      model: Serie 6 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
-      source: bosch
-    - sku: KDN86AWE1N
-      brand: Bosch
-      model: Serie 6 Üstten Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total No Frost
       source: bosch
     - sku: KF96RSBEA
       brand: Siemens
@@ -154,26 +96,6 @@ categories:
       brand: Siemens
       model: iQ700 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
       source: siemens
-    - sku: KG86PFWC0N
-      brand: Siemens
-      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total noFrost
-      source: siemens
-    - sku: KD86NAID1N
-      brand: Siemens
-      model: iQ500 Üstten Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
-      source: siemens
-    - sku: KG76PAIC0N
-      brand: Siemens
-      model: iQ700 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
-      source: siemens
-    - sku: KG86NAID2N
-      brand: Siemens
-      model: iQ500 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
-      source: siemens
-    - sku: KD86NAWE1N
-      brand: Siemens
-      model: iQ500 Üstten Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total noFrost
-      source: siemens
     - sku: '20268312'
       brand: Vestel
       model: Vestel NF52111 451 Lt No-Frost Buzdolabı
@@ -193,26 +115,6 @@ categories:
     - sku: '20268308'
       brand: Vestel
       model: Vestel NF45011 402 Lt No-Frost Buzdolabı
-      source: vestel
-    - sku: '20268348'
-      brand: Vestel
-      model: Vestel NFK52112 E WIFI 471 Lt No-Frost Buzdolabı
-      source: vestel
-    - sku: '20269634'
-      brand: Vestel
-      model: Vestel NFK60011 TE 533 Lt No-Frost Buzdolabı
-      source: vestel
-    - sku: '20268346'
-      brand: Vestel
-      model: Vestel NFK52112 EX WIFI 471 Lt No-Frost Buzdolabı
-      source: vestel
-    - sku: '20268305'
-      brand: Vestel
-      model: Vestel NF48011 X 434 Lt No-Frost Buzdolabı
-      source: vestel
-    - sku: '20268345'
-      brand: Vestel
-      model: Vestel NFK48011 427 Lt No-Frost Buzdolabı
       source: vestel
     - sku: '7286520155'
       brand: ARÇELİK
@@ -234,30 +136,6 @@ categories:
       brand: ARÇELİK
       model: 278551 ESC AI Fit
       source: arcelik
-    - sku: '7282120137'
-      brand: ARÇELİK
-      model: 278551 ESC
-      source: arcelik
-    - sku: '7202920107'
-      brand: ARÇELİK
-      model: 270475 IEGC
-      source: arcelik
-    - sku: '7202920108'
-      brand: ARÇELİK
-      model: 270475 IEBC
-      source: arcelik
-    - sku: '7202920106'
-      brand: ARÇELİK
-      model: 270475 IESC
-      source: arcelik
-    - sku: '7281620118'
-      brand: ARÇELİK
-      model: 274532 EB
-      source: arcelik
-    - sku: rb6000d-458l-white-rb45dg600ewwtr
-      brand: Samsung
-      model: Bespoke AI Alttan Donduruculu Buzdolabı Space Max 458L
-      source: samsung
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
@@ -294,26 +172,6 @@ categories:
       brand: Beko
       model: 7682 NFB
       source: beko
-    - sku: '7294920115'
-      brand: Beko
-      model: 7053 NFB
-      source: beko
-    - sku: '7294920117'
-      brand: Beko
-      model: 7053 MB
-      source: beko
-    - sku: '7285920210'
-      brand: Beko
-      model: 7362 NFB
-      source: beko
-    - sku: '7217620112'
-      brand: Beko
-      model: 7032 MB
-      source: beko
-    - sku: '7254120210'
-      brand: Beko
-      model: 7072 MB
-      source: beko
     - sku: '7285920110'
       brand: ARÇELİK
       model: 2162 NFB
@@ -333,26 +191,6 @@ categories:
     - sku: '7294220194'
       brand: ARÇELİK
       model: 2175 JEI
-      source: arcelik
-    - sku: '7294920116'
-      brand: ARÇELİK
-      model: 2053 NFB
-      source: arcelik
-    - sku: '7284740110'
-      brand: ARÇELİK
-      model: 2071 NFB
-      source: arcelik
-    - sku: '7278420190'
-      brand: ARÇELİK
-      model: 2682 NFI
-      source: arcelik
-    - sku: '7278420010'
-      brand: ARÇELİK
-      model: 2682 NFB
-      source: arcelik
-    - sku: '7279720011'
-      brand: ARÇELİK
-      model: 2071 MNFB
       source: arcelik
     - sku: GSN36VIE0N
       brand: Bosch
@@ -406,26 +244,6 @@ categories:
       brand: Vestel
       model: Vestel SD50011 DuoMode  Sandık Tipi Derin Dondurucu
       source: vestel
-    - sku: '20265696'
-      brand: Vestel
-      model: VESTEL CDM701 X Dikey Derin Dondurucu
-      source: vestel
-    - sku: '20268444'
-      brand: Vestel
-      model: Vestel SD40211 DuoMode Sandık Tipi Derin Dondurucu
-      source: vestel
-    - sku: '20268713'
-      brand: Vestel
-      model: Vestel CDL601 Çekmeceli Dikey Derin Dondurucu
-      source: vestel
-    - sku: '20268376'
-      brand: Vestel
-      model: Vestel SD15011 DuoMode Sandık Tipi Derin Dondurucu
-      source: vestel
-    - sku: '20268401'
-      brand: Vestel
-      model: Vestel SD30111 DuoMode Sandık Tipi Derin Dondurucu
-      source: vestel
   bulasik_makinesi:
     label: Bulaşık Makinesi
     sources:
@@ -442,25 +260,9 @@ categories:
       arcelik:
         path: /bulasik-makinesi
     tracked_skus:
-    - sku: dw5500mm-13-place-settings-silver-dw60dg540fsrtr
-      brand: Samsung
-      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 4 program
-      source: samsung
-    - sku: dw5500mm-13-place-settings-white-dw60dg550fwqtr
-      brand: Samsung
-      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 5 program
-      source: samsung
-    - sku: dw5500mm-14-place-settings-silver-dw60dg560fsrtr
-      brand: Samsung
-      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 6 program
-      source: samsung
     - sku: dw5500mm-13-place-settings-white-dw60dg550b00tr
       brand: Samsung
       model: Ankastre Bulaşık Makinesi Otomatik Açılır Kapı 5 program
-      source: samsung
-    - sku: dw8500am-high-energy-efficiency-14-place-settings-silver-dw60a8050fs-tr
-      brand: Samsung
-      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 8 program
       source: samsung
     - sku: '7630910277'
       brand: Beko
@@ -482,26 +284,6 @@ categories:
       brand: Beko
       model: B 710 bc
       source: beko
-    - sku: '7638910277'
-      brand: Beko
-      model: B 710 b
-      source: beko
-    - sku: '7632810277'
-      brand: Beko
-      model: BM 4144 WF
-      source: beko
-    - sku: '7634410277'
-      brand: Beko
-      model: BM 6247 WF
-      source: beko
-    - sku: '7630010277'
-      brand: Beko
-      model: BM 4144
-      source: beko
-    - sku: '7629810277'
-      brand: Beko
-      model: BM 3143
-      source: beko
     - sku: '7631710177'
       brand: ARÇELİK
       model: 6444 OK
@@ -521,26 +303,6 @@ categories:
     - sku: '7629710177'
       brand: ARÇELİK
       model: '6433'
-      source: arcelik
-    - sku: '7630110177'
-      brand: ARÇELİK
-      model: '6444'
-      source: arcelik
-    - sku: '7631810177'
-      brand: ARÇELİK
-      model: 6444 OK I
-      source: arcelik
-    - sku: '7631910177'
-      brand: ARÇELİK
-      model: 6444 OK A
-      source: arcelik
-    - sku: '7632010177'
-      brand: ARÇELİK
-      model: 6688 DI
-      source: arcelik
-    - sku: '7632110177'
-      brand: ARÇELİK
-      model: 6455 WF I
       source: arcelik
     - sku: SMI8ZDS81T
       brand: Bosch
@@ -562,26 +324,6 @@ categories:
       brand: Bosch
       model: Serie 6 Solo Bulaşık Makinesi 60 cm
       source: bosch
-    - sku: SMS6ENW60T
-      brand: Bosch
-      model: Serie 6 Solo Bulaşık Makinesi 60 cm Beyaz
-      source: bosch
-    - sku: SMS6ENY60T
-      brand: Bosch
-      model: Serie 6 Solo Bulaşık Makinesi 60 cm
-      source: bosch
-    - sku: SMS6ENB60T
-      brand: Bosch
-      model: Serie 6 Solo Bulaşık Makinesi 60 cm Siyah
-      source: bosch
-    - sku: SMS6EMI63T
-      brand: Bosch
-      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
-      source: bosch
-    - sku: SMP6ENC60T
-      brand: Bosch
-      model: Serie 6 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Siyah Inox
-      source: bosch
     - sku: SN57ZS82DT
       brand: Siemens
       model: iQ700 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
@@ -594,10 +336,6 @@ categories:
       brand: Siemens
       model: iQ500 Yarı Ankastre Bulaşık Makinesi 60 cm Paslanmaz çelik
       source: siemens
-    - sku: SN25EI83CT
-      brand: Siemens
-      model: iQ500 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
-      source: siemens
     - sku: SN63HX62MT
       brand: Siemens
       model: iQ500 Tam Ankastre Bulaşık Makinesi 60 cm
@@ -605,22 +343,6 @@ categories:
     - sku: SN23HW62MT
       brand: Siemens
       model: iQ500 Solo Bulaşık Makinesi 60 cm Beyaz
-      source: siemens
-    - sku: SN23HY62MT
-      brand: Siemens
-      model: iQ500 Solo Bulaşık Makinesi 60 cm
-      source: siemens
-    - sku: SN45EB01NT
-      brand: Siemens
-      model: iQ500 Tezgah Altı Bulaşık Makinesi 60 cm Siyah
-      source: siemens
-    - sku: SN45EY01NT
-      brand: Siemens
-      model: iQ500 Tezgah Altı Bulaşık Makinesi 60 cm
-      source: siemens
-    - sku: SN25EI63MT
-      brand: Siemens
-      model: iQ500 Solo Bulaşık Makinesi 60 cm Kolay Temizlenebilir Inox
       source: siemens
     - sku: '20267367'
       brand: Vestel
@@ -630,29 +352,9 @@ categories:
       brand: Vestel
       model: Vestel BM 4212 X WIFI Bulaşık Makinesi
       source: vestel
-    - sku: '20350397'
-      brand: Vestel
-      model: Vestel BM 42012 WIFI Bulaşık Makinesi
-      source: vestel
-    - sku: '20264053'
-      brand: Vestel
-      model: Vestel BM 10502 X GI Pro WIFI 10 Programlı Bulaşık Makinesi
-      source: vestel
     - sku: '20263207'
       brand: Vestel
       model: Vestel BM 5001 RS 5 Programlı Bulaşık Makinesi
-      source: vestel
-    - sku: '20267373'
-      brand: Vestel
-      model: Vestel BM 6312 WIFI Bulaşık Makinesi
-      source: vestel
-    - sku: '20267375'
-      brand: Vestel
-      model: Vestel BM 8412 GI Pro WIFI Bulaşık Makinesi
-      source: vestel
-    - sku: '20267374'
-      brand: Vestel
-      model: Vestel BM 6312 X WIFI Bulaşık Makinesi
       source: vestel
     - sku: '20263203'
       brand: Vestel
@@ -696,26 +398,6 @@ categories:
       brand: Beko
       model: BFC 631 G
       source: beko
-    - sku: '7768270184'
-      brand: Beko
-      model: BFC 330 B
-      source: beko
-    - sku: '7768270191'
-      brand: Beko
-      model: BFC 330 S
-      source: beko
-    - sku: '7779420240'
-      brand: Beko
-      model: BFC 330 G
-      source: beko
-    - sku: '7779420221'
-      brand: Beko
-      model: BFM 310 B
-      source: beko
-    - sku: '7779420226'
-      brand: Beko
-      model: BFM 310 S
-      source: beko
     - sku: '7779420287'
       brand: ARÇELİK
       model: AFC 362 B
@@ -735,26 +417,6 @@ categories:
     - sku: '7768270185'
       brand: ARÇELİK
       model: AFC 330 B
-      source: arcelik
-    - sku: '7768270190'
-      brand: ARÇELİK
-      model: AFC 330 S
-      source: arcelik
-    - sku: '7768270204'
-      brand: ARÇELİK
-      model: AFC 330 G
-      source: arcelik
-    - sku: '7768270162'
-      brand: ARÇELİK
-      model: AFM 130 B
-      source: arcelik
-    - sku: '7768270165'
-      brand: ARÇELİK
-      model: AFM 130 S
-      source: arcelik
-    - sku: '7768270161'
-      brand: ARÇELİK
-      model: AFM 130 I
       source: arcelik
     - sku: HBG7764B1
       brand: Bosch
@@ -776,26 +438,6 @@ categories:
       brand: Bosch
       model: Serie 8 Ankastre Fırın 60 x 60 cm Beyaz
       source: bosch
-    - sku: HBG7341B1
-      brand: Bosch
-      model: Serie 8 Ankastre Fırın 60 x 60 cm Siyah
-      source: bosch
-    - sku: HBJ559EB6T
-      brand: Bosch
-      model: Serie 6 Ankastre Fırın 60 x 60 cm Siyah
-      source: bosch
-    - sku: HBJ559EH6T
-      brand: Bosch
-      model: Serie 6 Ankastre Fırın 60 x 60 cm
-      source: bosch
-    - sku: HBJ559EW6T
-      brand: Bosch
-      model: Serie 6 Ankastre Fırın 60 x 60 cm Beyaz
-      source: bosch
-    - sku: HJG852YB0T
-      brand: Bosch
-      model: Serie 6 Ankastre Fırın 60 x 60 cm Siyah
-      source: bosch
     - sku: HB776G1B1
       brand: Siemens
       model: iQ700 Ankastre Fırın 60 x 60 cm Siyah
@@ -816,26 +458,6 @@ categories:
       brand: Siemens
       model: iQ500 Ankastre Fırın 60 x 60 cm
       source: siemens
-    - sku: HJ852GYW0T
-      brand: Siemens
-      model: iQ500 Ankastre Fırın 60 x 60 cm Beyaz
-      source: siemens
-    - sku: HB012FBB1T
-      brand: Siemens
-      model: iQ100 Ankastre Fırın 60 x 60 cm Siyah
-      source: siemens
-    - sku: HB012FBH1T
-      brand: Siemens
-      model: iQ100 Ankastre Fırın 60 x 60 cm
-      source: siemens
-    - sku: HB012FBW1T
-      brand: Siemens
-      model: iQ100 Ankastre Fırın 60 x 60 cm Beyaz
-      source: siemens
-    - sku: HB011FBA1T
-      brand: Siemens
-      model: iQ100 Ankastre Fırın 60 x 60 cm Siyah
-      source: siemens
     - sku: '20263473'
       brand: Vestel
       model: Vestel MD-20 YMB Mikrodalga Fırın
@@ -855,26 +477,6 @@ categories:
     - sku: '20263000'
       brand: Vestel
       model: Vestel MD 20 YDS Mikrodalga Fırın
-      source: vestel
-    - sku: '20265467'
-      brand: Vestel
-      model: Vestel SF 8400 DG 4 Gözü Gazlı A Enerji Sınıfı Solo Fırın
-      source: vestel
-    - sku: '20263604'
-      brand: Vestel
-      model: Vestel MD 20 YDG Mikrodalga Fırın
-      source: vestel
-    - sku: '20265423'
-      brand: Vestel
-      model: Vestel MD 20 YMS Mikrodalga Fırın
-      source: vestel
-    - sku: '20265357'
-      brand: Vestel
-      model: Vestel MD 20 YD Retro Bordo Mikrodalga Fırın
-      source: vestel
-    - sku: '20269392'
-      brand: Vestel
-      model: Vestel SF 84011 DG 4 Gözü Gazlı A Enerji Sınıfı Solo Fırın
       source: vestel
   camasir_makinesi:
     label: Çamaşır Makinesi
@@ -900,14 +502,6 @@ categories:
       brand: Samsung
       model: Bespoke AI Kurutma Makinesi QuickDrive™ 10kg
       source: samsung
-    - sku: wd8000dk-combo-all-in-one-combo-super-speed-18kg-gray-wd18db8995bzah
-      brand: Samsung
-      model: Bespoke AI Kurutmalı Çamaşır Makinesi AI Home 18kg 11kg
-      source: samsung
-    - sku: wd8400d-11kg-plus-6kg-white-wd11db8b85ghah
-      brand: Samsung
-      model: Kurutmalı Çamaşır Makinesi AI Yıkama 11kg + 6kg
-      source: samsung
     - sku: ww7000d-front-loading-smartthings-ai-energy-made-a-20-percent-extra-energy-efficiency-ai-ecobubble-11kg-white-ww11db7b34geah
       brand: Samsung
       model: Bespoke AI Çamaşır Makinesi AI Ecobubble™ 11kg
@@ -919,14 +513,6 @@ categories:
     - sku: dv6000d-dryer-a-energy-efficiency-rating-ai-dry-plus-ai-control-10kg-white-dv10dg6440leah
       brand: Samsung
       model: Kurutma Makinesi AI Kurutma 10kg
-      source: samsung
-    - sku: wd5000d-11kg-plus-6kg-white-wd11dg5b15beah
-      brand: Samsung
-      model: Kurutmalı Çamaşır Makinesi AI Ecobubble™ 11kg + 6kg
-      source: samsung
-    - sku: wd5000t-front-loading-air-wash-drum-clean-bubble-soak-9kg-plus-6kg-white-wd90ta046be1ah
-      brand: Samsung
-      model: Kurutmalı Çamaşır Makinesi EcoBubble™ 9kg + 6kg
       source: samsung
     - sku: '457100000016'
       brand: Beko
@@ -948,26 +534,6 @@ categories:
       brand: Beko
       model: CMXD 9100
       source: beko
-    - sku: '457100000010'
-      brand: Beko
-      model: CMX 10120 S
-      source: beko
-    - sku: '457100000025'
-      brand: Beko
-      model: CMX 12140
-      source: beko
-    - sku: '7131970100'
-      brand: Beko
-      model: CMB 10120 OB
-      source: beko
-    - sku: '457100000021'
-      brand: Beko
-      model: CMX 11140
-      source: beko
-    - sku: '457100000009'
-      brand: Beko
-      model: CMX 8100
-      source: beko
     - sku: '457100000020'
       brand: ARÇELİK
       model: 9120 DMX
@@ -987,26 +553,6 @@ categories:
     - sku: '457100000019'
       brand: ARÇELİK
       model: 9120 DMXS
-      source: arcelik
-    - sku: '457100034700'
-      brand: ARÇELİK
-      model: 9120 TMX
-      source: arcelik
-    - sku: '457100007200'
-      brand: ARÇELİK
-      model: 9100 DMX
-      source: arcelik
-    - sku: '457100000015'
-      brand: ARÇELİK
-      model: 10120 MXS
-      source: arcelik
-    - sku: '7170520100'
-      brand: ARÇELİK
-      model: 10120 IMP
-      source: arcelik
-    - sku: '7115421400'
-      brand: ARÇELİK
-      model: 9120 MP O
       source: arcelik
     - sku: WGK264ZRTR
       brand: Bosch
@@ -1028,26 +574,6 @@ categories:
       brand: Bosch
       model: Serie 6 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
       source: bosch
-    - sku: WGK264Z0TR
-      brand: Bosch
-      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
-      source: bosch
-    - sku: WGA244Z1TR
-      brand: Bosch
-      model: Serie 4 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
-      source: bosch
-    - sku: WGK252Z0TR
-      brand: Bosch
-      model: Serie 6 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
-      source: bosch
-    - sku: WGK242ZXTR
-      brand: Bosch
-      model: Serie 6 Çamaşır Makinesi 9 kg maks. 1200 dev./dak., Gümüş
-      source: bosch
-    - sku: WGK244Z0TR
-      brand: Bosch
-      model: Serie 6 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
-      source: bosch
     - sku: WG44B2A0TR
       brand: Siemens
       model: iQ700 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
@@ -1068,26 +594,6 @@ categories:
       brand: Siemens
       model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
       source: siemens
-    - sku: WG54K2Y0TR
-      brand: Siemens
-      model: iQ500 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
-      source: siemens
-    - sku: WG64K2Z0TR
-      brand: Siemens
-      model: iQ500 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
-      source: siemens
-    - sku: WG44A2Z1TR
-      brand: Siemens
-      model: iQ300 Çamaşır Makinesi 9 kg maks. 1400 dev./dak.
-      source: siemens
-    - sku: WG52K2Z0TR
-      brand: Siemens
-      model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
-      source: siemens
-    - sku: WG52K2Z1TR
-      brand: Siemens
-      model: iQ500 Çamaşır Makinesi 10 kg maks. 1200 dev./dak.
-      source: siemens
     - sku: '20350198'
       brand: Vestel
       model: Vestel CMI 97402 WIFI 9 Kg 1000 Devir Çamaşır Makinesi
@@ -1104,34 +610,10 @@ categories:
       brand: Vestel
       model: Vestel CMI 108442 WIFI 10 Kg 1400 Devir Çamaşır Makinesi
       source: vestel
-    - sku: '20263223'
-      brand: Vestel
-      model: Vestel CMI 109242 KX WIFI 10 Kg 1400 Devir Çamaşır Makinesi
-      source: vestel
     - sku: '20350196'
       brand: Vestel
       model: Vestel CMI 97422 WIFI  9 Kg 1200 Devir Çamaşır Makinesi
       source: vestel
-    - sku: '20350199'
-      brand: Vestel
-      model: Vestel CMI 87402 WIFI 8 Kg 1000 Devir Çamaşır Makinesi
-      source: vestel
-    - sku: '20264688'
-      brand: Vestel
-      model: Vestel CMI 99342 KX WIFI 9 Kg 1400 Devir Çamaşır Makinesi
-      source: vestel
-    - sku: '20350197'
-      brand: Vestel
-      model: Vestel CMI 97402 G WIFI 9 Kg 1000 Devir Çamaşır Makinesi
-      source: vestel
-    - sku: '20350195'
-      brand: Vestel
-      model: Vestel CMI 97422 G WIFI 9 Kg 1200 Devir Çamaşır Makinesi
-      source: vestel
-    - sku: ww6000d-front-loading-smartthings-ai-energy-mode-a-10-percent-extra-energy-efficiency-9kg-white-ww90dg6u25leah
-      brand: Samsung
-      model: Çamaşır Makinesi AI EcoBubble 9kg
-      source: samsung
   kurutma_makinesi:
     label: Çamaşır Kurutma Makinesi
     sources:
@@ -1168,26 +650,6 @@ categories:
       brand: Beko
       model: KMB 901 IG
       source: beko
-    - sku: '7188220290'
-      brand: Beko
-      model: KMB 1001 HB
-      source: beko
-    - sku: '457000018100'
-      brand: Beko
-      model: CMB 1280 YKIG
-      source: beko
-    - sku: '7188270290'
-      brand: Beko
-      model: KMX 1001 S
-      source: beko
-    - sku: '7188870290'
-      brand: Beko
-      model: KMX 91
-      source: beko
-    - sku: '7184270220'
-      brand: Beko
-      model: KMB 1011 IG
-      source: beko
     - sku: '7188270150'
       brand: ARÇELİK
       model: 901 KMP I
@@ -1207,26 +669,6 @@ categories:
     - sku: '7184270100'
       brand: ARÇELİK
       model: 1101 KMX
-      source: arcelik
-    - sku: '7188270160'
-      brand: ARÇELİK
-      model: 901 KMX S
-      source: arcelik
-    - sku: '7184270190'
-      brand: ARÇELİK
-      model: 1002 KMP HA
-      source: arcelik
-    - sku: '7184270230'
-      brand: ARÇELİK
-      model: 1201 KMX
-      source: arcelik
-    - sku: '7184270150'
-      brand: ARÇELİK
-      model: 1011 KMP IG
-      source: arcelik
-    - sku: '7184170120'
-      brand: ARÇELİK
-      model: 802 KMX
       source: arcelik
     - sku: WQB245AXTR
       brand: Bosch
@@ -1248,26 +690,6 @@ categories:
       brand: Bosch
       model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
       source: bosch
-    - sku: WQK242C0TR
-      brand: Bosch
-      model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg
-      source: bosch
-    - sku: WQG25201TR
-      brand: Bosch
-      model: Serie 4 Isı Pompalı Kurutma Makinesi 10 kg
-      source: bosch
-    - sku: WQJ24200TR
-      brand: Bosch
-      model: Serie 6 Isı Pompalı Kurutma Makinesi 9 kg
-      source: bosch
-    - sku: WQA24201TR
-      brand: Bosch
-      model: Serie 4 Isı Pompalı Kurutma Makinesi 9 kg
-      source: bosch
-    - sku: WTH22202TR
-      brand: Bosch
-      model: Serie 4 Isı Pompalı Kurutma Makinesi 8 kg
-      source: bosch
     - sku: WQ45B2AXTR
       brand: Siemens
       model: iQ700 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
@@ -1287,26 +709,6 @@ categories:
     - sku: WQ42J20XTR
       brand: Siemens
       model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg Gümüş
-      source: siemens
-    - sku: WQ43J2C0TR
-      brand: Siemens
-      model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg
-      source: siemens
-    - sku: WQ42J200TR
-      brand: Siemens
-      model: iQ500 Isı Pompalı Kurutma Makinesi 9 kg
-      source: siemens
-    - sku: WQ52G201TR
-      brand: Siemens
-      model: iQ300 Isı Pompalı Kurutma Makinesi 10 kg
-      source: siemens
-    - sku: WQ42A201TR
-      brand: Siemens
-      model: iQ300 Isı Pompalı Kurutma Makinesi 9 kg
-      source: siemens
-    - sku: WT00H201TR
-      brand: Siemens
-      model: iQ300 Isı Pompalı Kurutma Makinesi 8 kg
       source: siemens
     - sku: '20350376'
       brand: Vestel
@@ -1328,26 +730,6 @@ categories:
       brand: Vestel
       model: Vestel  KMI 98402 G WIFI 9 Kg Kurutma Makinesi
       source: vestel
-    - sku: '20350375'
-      brand: Vestel
-      model: Vestel  KM 87402 WIFI 8 Kg Kurutma Makinesi
-      source: vestel
-    - sku: '20350383'
-      brand: Vestel
-      model: Vestel  KMI 108402 MS WIFI 10 Kg Kurutma Makinesi
-      source: vestel
-    - sku: '20350374'
-      brand: Vestel
-      model: Vestel  KM 77402 WIFI 7 Kg Kurutma Makinesi
-      source: vestel
-    - sku: '20350414'
-      brand: Vestel
-      model: Vestel  KMI 98402 S WIFI 9 Kg Kurutma Makinesi
-      source: vestel
-    - sku: '20350378'
-      brand: Vestel
-      model: Vestel  KM 98402 G GI Pro WIFI  9 Kg Kurutma Makinesi
-      source: vestel
   klima:
     label: Klima
     sources:
@@ -1364,28 +746,25 @@ categories:
       siemens:
         path: /tr/tr/category/klimalar
     tracked_skus:
-    - sku: ar5000hm-ar40f12c0bm-sk-wind-free-ar5000hm-ar40f24c0bm-sk
-      brand: Samsung
-      model: Duvar Tipi Split Klima AR40 Dijital Inverter 24.000 BTU
-      source: samsung
-    - sku: ar5000hm-ar40f12c0bm-sk-wind-free-ar5000hm-ar40f24c0am-sk
-      brand: Samsung
-      model: Duvar Tipi Split Klima AR40 Dijital Inverter 24.000 BTU
-      source: samsung
     - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar70f09c1db-sk
       brand: Samsung
-      model: Bespoke AI WindFree Premium Black Duvar Tipi Split Klima AI WindFree
-        9.000 BTU
+      model: Bespoke AI WindFree Premium Black Duvar Tipi Split Klima AI WindFree 9.000 BTU
       source: samsung
     - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f09caaw-sk
       brand: Samsung
-      model: Bespoke AI WindFree Premium Plus Duvar Tipi Split Klima AI WindFree 9.000
-        BTU
+      model: Bespoke AI WindFree Premium Plus Duvar Tipi Split Klima AI WindFree 9.000 BTU
       source: samsung
     - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar80f09caaw-sk
       brand: Samsung
-      model: Bespoke AI WindFree Elite PM 1.0 Duvar Tipi Split Klima AI WindFree 9.000
-        BTU
+      model: Bespoke AI WindFree Elite PM 1.0 Duvar Tipi Split Klima AI WindFree 9.000 BTU
+      source: samsung
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacw-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 9.000 BTU
+      source: samsung
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacb-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro Black Duvar Tipi Split Klima 9.000 BTU
       source: samsung
     - sku: '8505561200'
       brand: Beko
@@ -1407,50 +786,6 @@ categories:
       brand: Beko
       model: 32425 EKOLOJİK
       source: beko
-    - sku: '9209721200'
-      brand: Beko
-      model: 31525 S
-      source: beko
-    - sku: '9208011200'
-      brand: Beko
-      model: '61270'
-      source: beko
-    - sku: '9207931200'
-      brand: Beko
-      model: 71270 AL
-      source: beko
-    - sku: '9215521200'
-      brand: Beko
-      model: '32626'
-      source: beko
-    - sku: '9217341200'
-      brand: Beko
-      model: '75526'
-      source: beko
-    - sku: ASX18XB32N
-      brand: Bosch
-      model: Klima, Ev Tipi ,
-      source: bosch
-    - sku: ASI18XB32N
-      brand: Bosch
-      model: ', , ,'
-      source: bosch
-    - sku: ASI12XB32N
-      brand: Bosch
-      model: ', , ,'
-      source: bosch
-    - sku: ASI09VW32N
-      brand: Bosch
-      model: ', , ,'
-      source: bosch
-    - sku: ASI24VW32N
-      brand: Bosch
-      model: ', , ,'
-      source: bosch
-    - sku: ASI12VW32N
-      brand: Bosch
-      model: ', , ,'
-      source: bosch
     - sku: AS12XVW32N
       brand: Siemens
       model: Klima, Ev Tipi ,
@@ -1471,10 +806,6 @@ categories:
       brand: Siemens
       model: Klima, Ev Tipi ,
       source: siemens
-    - sku: AS18IXB32N
-      brand: Siemens
-      model: Klima, Ev Tipi ,
-      source: siemens
     - sku: '20235131'
       brand: Vestel
       model: Vestel Flora Doğa Inverter 126 A++ WIFI Klima
@@ -1491,29 +822,9 @@ categories:
       brand: Vestel
       model: Vestel Flora Doğa Inverter 246 A++ WIFI Klima
       source: vestel
-    - sku: '20235128'
-      brand: Vestel
-      model: Vestel Flora Doğa Inverter 096 A++ WIFI Klima
-      source: vestel
     - sku: '20234476'
       brand: Vestel
       model: Vestel Nova Inverter 122 GI Pro 12000 BTU WIFI Klima
-      source: vestel
-    - sku: '20235134'
-      brand: Vestel
-      model: Vestel Flora Doğa Inverter 156 A++ WIFI Klima
-      source: vestel
-    - sku: '20235125'
-      brand: Vestel
-      model: Vestel Flora Doğa Inverter 074 A++ WIFI Klima
-      source: vestel
-    - sku: '20234522'
-      brand: Vestel
-      model: Vestel Nova Inverter 182 GI Pro 18000 BTU WIFI Klima
-      source: vestel
-    - sku: '20234727'
-      brand: Vestel
-      model: Vestel NEFES INVERTER 122 GI Pro 12000 BTU WIFI Klima
       source: vestel
     - sku: '9209361100'
       brand: ARÇELİK
@@ -1535,46 +846,6 @@ categories:
       brand: ARÇELİK
       model: 12220 P
       source: arcelik
-    - sku: '8510851100'
-      brand: ARÇELİK
-      model: 34726 Monofaze Inverter Salon Tipi Klima
-      source: arcelik
-    - sku: '9205831100'
-      brand: ARÇELİK
-      model: 07325 A
-      source: arcelik
-    - sku: '8866631100'
-      brand: ARÇELİK
-      model: A18D30
-      source: arcelik
-    - sku: '8866251100'
-      brand: ARÇELİK
-      model: 24325 EKOLOJİK
-      source: arcelik
-    - sku: '8868301100'
-      brand: ARÇELİK
-      model: A24D30
-      source: arcelik
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 9.000 BTU
-      source: samsung
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacb-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Black Duvar Tipi Split Klima 9.000 BTU
-      source: samsung
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar80h09caaw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Pro Elite PM 1.0 Duvar Tipi Split Klima 9.000 BTU
-      source: samsung
-    - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f24c1kw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Duvar Tipi Split Klima 24.000 BTU
-      source: samsung
-    - sku: ajf600e-aj050txj2kh-ea-aj050txj2kh-ea
-      brand: Samsung
-      model: WindFree Multi Split Klima 9000 BTU + 12000 BTU
-      source: samsung
   elektrikli_supurge:
     label: Elektrikli Süpürge
     sources:
@@ -1611,26 +882,6 @@ categories:
       brand: Samsung
       model: Bespoke Jet Bot Combo™ AI Robot Süpürge Toz Torbası (5 adet)
       source: samsung
-    - sku: bespoke-jet-clean-station-dust-disposal-bag-5pcs-vca-adb952
-      brand: Samsung
-      model: Bespoke Jet™ Temizlik İstasyonu Toz Boşaltma Torbası (5 adet)
-      source: samsung
-    - sku: jet-75e-accessory-pet-tool-vca-pta95-vt
-      brand: Samsung
-      model: Evcil Hayvan Başlığı
-      source: samsung
-    - sku: jet-vc-renewal-accessory-battery2-vca-sapc97s-wa
-      brand: Samsung
-      model: Bespoke JET™ AI 250W BATARYA ve ŞARJ ADAPTÖRÜ
-      source: samsung
-    - sku: bespoke-jet-battery-vca-sbta95-vt
-      brand: Samsung
-      model: JET 85 BATARYA
-      source: samsung
-    - sku: vs6700-vs7000-battery-vca-sbta60-vt
-      brand: Samsung
-      model: JET 60 / JET 75 BATARYA
-      source: samsung
     - sku: '8835771200'
       brand: Beko
       model: BKS 2540 T
@@ -1650,26 +901,6 @@ categories:
     - sku: '8917511200'
       brand: Beko
       model: HydroTrio™  Pro VRW 90421 VD
-      source: beko
-    - sku: '8832671200'
-      brand: Beko
-      model: BKK 1194
-      source: beko
-    - sku: '8813081200'
-      brand: Beko
-      model: TRB 5986 B
-      source: beko
-    - sku: '8904520240'
-      brand: Beko
-      model: BKS 9118 Robotto
-      source: beko
-    - sku: '8913671200'
-      brand: Beko
-      model: UltraForce® TSZ 2282
-      source: beko
-    - sku: '8915681200'
-      brand: Beko
-      model: PowerClean® Pro 3.0 VRT 97325 VY
       source: beko
     - sku: '990427100088'
       brand: ARÇELİK
@@ -1691,26 +922,6 @@ categories:
       brand: ARÇELİK
       model: Imperium® Slim 1.0 SDI 3575
       source: arcelik
-    - sku: '8918411100'
-      brand: ARÇELİK
-      model: STSZ 9525
-      source: arcelik
-    - sku: '8919451100'
-      brand: ARÇELİK
-      model: RS 6121
-      source: arcelik
-    - sku: '8919461100'
-      brand: ARÇELİK
-      model: RS 6131
-      source: arcelik
-    - sku: '8813101100'
-      brand: ARÇELİK
-      model: Comfort-X™ 2.0 S 7564
-      source: arcelik
-    - sku: '8813081100'
-      brand: ARÇELİK
-      model: TRB 6986 B
-      source: arcelik
     - sku: BCRDW3BX
       brand: Bosch
       model: Robot Süpürge Spotless Max Cam
@@ -1730,22 +941,6 @@ categories:
     - sku: BCRC1W
       brand: Bosch
       model: Robot Süpürge Spotless
-      source: bosch
-    - sku: BCS71HYG1
-      brand: Bosch
-      model: 2'si 1 arada Süpürme ve Silme Unlimited 7 ProHygienic Aqua Beyaz
-      source: bosch
-    - sku: BBS71HYGTR
-      brand: Bosch
-      model: 2'si 1 arada Süpürme ve Silme Unlimited 7 ProHygienic Aqua Beyaz
-      source: bosch
-    - sku: BCS931WBA
-      brand: Bosch
-      model: Şarjlı Süpürge Unlimited 9 Beyaz
-      source: bosch
-    - sku: BGS7POW2
-      brand: Bosch
-      model: Serie 8 Toz torbasız Süpürge ProPower Siyah
       source: bosch
     - sku: VSM120HYG
       brand: Siemens
@@ -1767,26 +962,6 @@ categories:
       brand: Siemens
       model: Şarjlı Süpürge iQ500 Mavi
       source: siemens
-    - sku: VSP3AAAA
-      brand: Siemens
-      model: Toz torbalı Süpürge iQ300 Plus Limited Edition Kırmızı
-      source: siemens
-    - sku: VSX41XTRM
-      brand: Siemens
-      model: iQ500 Toz torbasız Süpürge Siyah
-      source: siemens
-    - sku: VSX21A320
-      brand: Siemens
-      model: iQ300 Toz torbasız Süpürge Mavi
-      source: siemens
-    - sku: VSX41A300
-      brand: Siemens
-      model: iQ500 Toz torbasız Süpürge Kırmızı
-      source: siemens
-    - sku: VSC3A330
-      brand: Siemens
-      model: iQ300 Toz torbalı Süpürge Mavi
-      source: siemens
     - sku: '20264754'
       brand: Vestel
       model: VESTEL H30 M Elektrikli Süpürge
@@ -1807,30 +982,6 @@ categories:
       brand: Vestel
       model: VESTEL V-BOT PRO S Robot Süpürge
       source: vestel
-    - sku: '20264760'
-      brand: Vestel
-      model: Vestel S35 K Şarjlı Süpürge
-      source: vestel
-    - sku: '20264747'
-      brand: Vestel
-      model: VESTEL T20 S Elektrikli Süpürge
-      source: vestel
-    - sku: '20264751'
-      brand: Vestel
-      model: VESTEL H60 M Elektrikli Süpürge
-      source: vestel
-    - sku: '20264752'
-      brand: Vestel
-      model: VESTEL H50 G Elektrikli Süpürge
-      source: vestel
-    - sku: '20264749'
-      brand: Vestel
-      model: VESTEL H70 T Elektrikli Süpürge
-      source: vestel
-    - sku: BGS7SIL1
-      brand: Bosch
-      model: Serie 8 Toz Torbasız Süpürge ProSilence Beyaz
-      source: bosch
   blender:
     label: Blender / Kesici Aletler
     sources:
@@ -1915,26 +1066,6 @@ categories:
       brand: Vestel
       model: Vestel Mix&Go Inox Blender
       source: vestel
-    - sku: '20244313'
-      brand: Vestel
-      model: Vestel Mix&Go Şarj Edilebilir Siyah Blender
-      source: vestel
-    - sku: '20244314'
-      brand: Vestel
-      model: Vestel Mix&Go Şarj Edilebilir Pembe Blender
-      source: vestel
-    - sku: '20244315'
-      brand: Vestel
-      model: Vestel Mix&Go Şarj Edilebilir Mavi Blender
-      source: vestel
-    - sku: '20242585'
-      brand: Vestel
-      model: Vestel Mix&Go Siyah Blender
-      source: vestel
-    - sku: '20242670'
-      brand: Vestel
-      model: Vestel Mix&Go Pembe Blender
-      source: vestel
   kucuk_ev_aleti:
     label: Elektrikli Küçük Ev Aletleri
     sources:
@@ -1947,14 +1078,6 @@ categories:
       bosch:
         path: /tr/category/mutfak-aletleri
     tracked_skus:
-    - sku: '7489470200'
-      brand: Beko
-      model: TKM 8961 K Yeni Keyf Türk Kahve Makinesi
-      source: beko
-    - sku: '7489770263'
-      brand: Beko
-      model: BKK 2300 Mini Keyf Rose Gold
-      source: beko
     - sku: '8813221200'
       brand: Beko
       model: BKK 2221 C Beko Dem® Çay Makinesi
@@ -1969,8 +1092,7 @@ categories:
       source: bosch
     - sku: MESM731M
       brand: Bosch
-      model: VitaExtract Yavaş Sıkım Katı Meyve Sıkacağı VitaExtract 150 W Siyah,
-        Paslanmaz çelik
+      model: VitaExtract Yavaş Sıkım Katı Meyve Sıkacağı VitaExtract 150 W Siyah, Paslanmaz çelik
       source: bosch
     - sku: MES4010
       brand: Bosch
@@ -1980,37 +1102,9 @@ categories:
       brand: Bosch
       model: Serie 4 Gıda Kıyma Makinesi MultiPower 1900 W Siyah, Siyah
       source: bosch
-    - sku: MMB6177S
-      brand: Bosch
-      model: Serie 4 Blender VitaPower 1200 W Gümüş
-      source: bosch
-    - sku: MSM6M974
-      brand: Bosch
-      model: Serie 6 El Blenderı ErgoMaster 1600 W Paslanmaz çelik
-      source: bosch
-    - sku: TCG4215
-      brand: Bosch
-      model: Tost Makinesi Gümüş
-      source: bosch
-    - sku: MSM4B674
-      brand: Bosch
-      model: Serie 4 El Blenderı ErgoMaster 1000 W Siyah, Antrasit
-      source: bosch
-    - sku: MSM4B654
-      brand: Bosch
-      model: Serie 4 El Blenderı ErgoMaster 1000 W Siyah, Antrasit
-      source: bosch
     - sku: '7489470102'
       brand: ARÇELİK
       model: TKM 9961 S Telve
-      source: arcelik
-    - sku: '7489770138'
-      brand: ARÇELİK
-      model: K 3300 CR
-      source: arcelik
-    - sku: '8834231100'
-      brand: ARÇELİK
-      model: S 6255 C Toz Torbası
       source: arcelik
     - sku: '8835771100'
       brand: ARÇELİK
@@ -2028,26 +1122,6 @@ categories:
       brand: ARÇELİK
       model: S 7610 Robotto
       source: arcelik
-    - sku: '8910401100'
-      brand: ARÇELİK
-      model: Imperium® TSZ 6083
-      source: arcelik
-    - sku: '8910861100'
-      brand: ARÇELİK
-      model: TRB 3174
-      source: arcelik
-    - sku: '8911061100'
-      brand: ARÇELİK
-      model: Aria™ MasterPro BKU 9130
-      source: arcelik
-    - sku: '7489770270'
-      brand: Beko
-      model: BKK 2300 LA
-      source: beko
-    - sku: '8810271200'
-      brand: Beko
-      model: BKK 2145
-      source: beko
   cay_makinesi:
     label: Elektrikli Çay Makinesi
     sources:
@@ -2080,22 +1154,6 @@ categories:
       brand: Beko
       model: CM 5964 R Floral
       source: beko
-    - sku: '8918041200'
-      brand: Beko
-      model: CM 5587 B
-      source: beko
-    - sku: '8818181200'
-      brand: Beko
-      model: CM 5964 Floral
-      source: beko
-    - sku: '8919961200'
-      brand: Beko
-      model: CM 2626 IC
-      source: beko
-    - sku: '8918781200'
-      brand: Beko
-      model: CM 5582 I
-      source: beko
     - sku: '8916531100'
       brand: ARÇELİK
       model: CM 6964 G
@@ -2116,26 +1174,6 @@ categories:
       brand: ARÇELİK
       model: CM 6582 I
       source: arcelik
-    - sku: '8919961100'
-      brand: ARÇELİK
-      model: CM 3626 IC
-      source: arcelik
-    - sku: '8818131100'
-      brand: ARÇELİK
-      model: CM 6964 Resital
-      source: arcelik
-    - sku: '8916341100'
-      brand: ARÇELİK
-      model: CM 6342 IN
-      source: arcelik
-    - sku: '8813221100'
-      brand: ARÇELİK
-      model: K 3281 C
-      source: arcelik
-    - sku: '8918041100'
-      brand: ARÇELİK
-      model: CM 6587 G
-      source: arcelik
     - sku: TTA5883
       brand: Bosch
       model: Çay Makinesi
@@ -2144,26 +1182,6 @@ categories:
       brand: Bosch
       model: Çay Makinesi
       source: bosch
-    - sku: '20244336'
-      brand: Vestel
-      model: VESTEL SEFA 5000 X ÇAY MAKİNESİ
-      source: vestel
-    - sku: '20242903'
-      brand: Vestel
-      model: Vestel Sefa 4000 X Çay Makinesi
-      source: vestel
-    - sku: '20244543'
-      brand: Vestel
-      model: VESTEL SEFA 4510 X Çay Makinesi
-      source: vestel
-    - sku: '20244545'
-      brand: Vestel
-      model: Vestel SEFA 4510 CX Çay Makinesi
-      source: vestel
-    - sku: '20244544'
-      brand: Vestel
-      model: Vestel SEFA 4510 C Çay Makinesi
-      source: vestel
     - sku: '20244336'
       brand: Vestel
       model: VESTEL SEFA 5000 X ÇAY MAKİNESİ
@@ -2214,26 +1232,6 @@ categories:
       brand: Beko
       model: STM 7122 B
       source: beko
-    - sku: '8918321200'
-      brand: Beko
-      model: BEU 5024
-      source: beko
-    - sku: '8918371200'
-      brand: Beko
-      model: SIM 4024 B
-      source: beko
-    - sku: '8910501200'
-      brand: Beko
-      model: BEU 4124
-      source: beko
-    - sku: '8817631200'
-      brand: Beko
-      model: BKG 5916
-      source: beko
-    - sku: '8817611200'
-      brand: Beko
-      model: ActiPress® Expert BEU 8030 M
-      source: beko
     - sku: '8817311100'
       brand: ARÇELİK
       model: Aria™ Expert BEU 9030 D
@@ -2254,26 +1252,6 @@ categories:
       brand: ARÇELİK
       model: Aria™ MasterPro BKU 9130
       source: arcelik
-    - sku: '8915951100'
-      brand: ARÇELİK
-      model: Aria™ Master BKU 6030
-      source: arcelik
-    - sku: '8917621100'
-      brand: ARÇELİK
-      model: Aria™ Master Station BIU 6324
-      source: arcelik
-    - sku: '8916871100'
-      brand: ARÇELİK
-      model: BSU 2110 S
-      source: arcelik
-    - sku: '8918351100'
-      brand: ARÇELİK
-      model: BKG 7122
-      source: arcelik
-    - sku: '8918371100'
-      brand: ARÇELİK
-      model: BEU 4024 M
-      source: arcelik
     - sku: '20242228'
       brand: Vestel
       model: V-Press Serisi 2000 Lila Buhar Jeneratorlu Ütü
@@ -2293,24 +1271,4 @@ categories:
     - sku: '20244276'
       brand: Vestel
       model: Vestel VBJU 7830 Buhar Jeneratörlü Ütü
-      source: vestel
-    - sku: '20244269'
-      brand: Vestel
-      model: Vestel ELMAS VBU 5031 Buharlı Ütü
-      source: vestel
-    - sku: '20244334'
-      brand: Vestel
-      model: Vestel VBJU 8026 Mor Buhar Jenaratörlü Ütü
-      source: vestel
-    - sku: '20244292'
-      brand: Vestel
-      model: Vestel VBJU 8026 Yeşil Buhar Jenaratörlü Ütü
-      source: vestel
-    - sku: '20244271'
-      brand: Vestel
-      model: Vestel VBU 4527 Mor Buharlı Ütü
-      source: vestel
-    - sku: '20244270'
-      brand: Vestel
-      model: Vestel VBU 4527 Kırmızı Buharlı Ütü
       source: vestel
