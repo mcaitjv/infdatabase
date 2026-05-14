@@ -364,6 +364,18 @@ categories:
       brand: Vestel
       model: Vestel BM 53122 WIFI Bulaşık Makinesi
       source: vestel
+    - sku: dw5500mm-13-place-settings-silver-dw60dg540fsrtr
+      brand: Samsung
+      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 4 program
+      source: samsung
+    - sku: dw5500mm-13-place-settings-white-dw60dg550fwqtr
+      brand: Samsung
+      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 5 program
+      source: samsung
+    - sku: dw5500mm-14-place-settings-silver-dw60dg560fsrtr
+      brand: Samsung
+      model: Solo Bulaşık Makinesi Otomatik Açılır Kapı 6 program
+      source: samsung
   firin_ocak:
     label: Fırın ve Ocaklar
     sources:
@@ -1122,6 +1134,22 @@ categories:
       brand: ARÇELİK
       model: S 7610 Robotto
       source: arcelik
+    - sku: '8919471200'
+      brand: Beko
+      model: Robo-X 2.2 VRR 52514 VB
+      source: beko
+    - sku: '7460020200'
+      brand: Beko
+      model: CFM 8449 I
+      source: beko
+    - sku: '7464000201'
+      brand: Beko
+      model: YM 2200
+      source: beko
+    - sku: '7489770267'
+      brand: Beko
+      model: BKK 2300 CB
+      source: beko
   cay_makinesi:
     label: Elektrikli Çay Makinesi
     sources:
