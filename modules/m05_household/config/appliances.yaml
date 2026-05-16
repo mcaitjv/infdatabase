@@ -116,9 +116,9 @@ categories:
       brand: Vestel
       model: Vestel NF45011 402 Lt No-Frost Buzdolabı
       source: vestel
-    - sku: '7286520155'
+    - sku: '7286520182'
       brand: ARÇELİK
-      model: 278551 EGC AI Fit
+      model: 278551 EBC AI Fit
       source: arcelik
     - sku: '7291620111'
       brand: ARÇELİK
@@ -127,6 +127,14 @@ categories:
     - sku: '7296520186'
       brand: ARÇELİK
       model: 283616 EI
+      source: arcelik
+    - sku: '7256120110'
+      brand: ARÇELİK
+      model: 570475 EB
+      source: arcelik
+    - sku: '7202920104'
+      brand: ARÇELİK
+      model: 270475 MB
       source: arcelik
   derin_dondurucu:
     label: Derin Dondurucu
@@ -409,6 +417,10 @@ categories:
     - sku: '7768270185'
       brand: ARÇELİK
       model: AFC 330 B
+      source: arcelik
+    - sku: '7768270204'
+      brand: ARÇELİK
+      model: AFC 330 G
       source: arcelik
     - sku: HBG7764B1
       brand: Bosch
@@ -1142,21 +1154,25 @@ categories:
       brand: Beko
       model: CM 5964 R Floral
       source: beko
-    - sku: '8916531100'
+    - sku: '8815551100'
       brand: ARÇELİK
-      model: CM 6964 G
+      model: CM 6964 K Resital
       source: arcelik
     - sku: '7460020100'
       brand: ARÇELİK
       model: CFM 9449 S
       source: arcelik
-    - sku: '8815551100'
-      brand: ARÇELİK
-      model: CM 6964 K Resital
-      source: arcelik
     - sku: '8918781100'
       brand: ARÇELİK
       model: CM 6582 I
+      source: arcelik
+    - sku: '8916341100'
+      brand: ARÇELİK
+      model: CM 6342 IN
+      source: arcelik
+    - sku: '8919961100'
+      brand: ARÇELİK
+      model: CM 3626 IC
       source: arcelik
     - sku: TTA5883
       brand: Bosch
