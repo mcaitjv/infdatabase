@@ -68,13 +68,13 @@ categories:
       brand: Bosch
       model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Parmak izi bırakmayan siyah inoks
       source: bosch
-    - sku: KGP86FIC0N
+    - sku: KGA76PIE0N
       brand: Bosch
-      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
+      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 75 cm Paslanmaz çelik
       source: bosch
-    - sku: KGP86FWC0N
+    - sku: KDN86AID1N
       brand: Bosch
-      model: Serie 8 Alttan Donduruculu Buzdolabı 186 x 86 cm Beyaz, Total No Frost
+      model: Serie 6 Üstten Donduruculu Buzdolabı 186 x 86 cm Paslanmaz çelik
       source: bosch
     - sku: KF96RSBEA
       brand: Siemens
@@ -128,14 +128,6 @@ categories:
       brand: ARÇELİK
       model: 283616 EI
       source: arcelik
-    - sku: '7286520182'
-      brand: ARÇELİK
-      model: 278551 EBC AI Fit
-      source: arcelik
-    - sku: '7291620136'
-      brand: ARÇELİK
-      model: 278551 ESC AI Fit
-      source: arcelik
   derin_dondurucu:
     label: Derin Dondurucu
     sources:
@@ -187,10 +179,6 @@ categories:
     - sku: '7294920110'
       brand: ARÇELİK
       model: 2053 MB
-      source: arcelik
-    - sku: '7294220194'
-      brand: ARÇELİK
-      model: 2175 JEI
       source: arcelik
     - sku: GSN36VIE0N
       brand: Bosch
@@ -280,9 +268,9 @@ categories:
       brand: Beko
       model: B 710 sc
       source: beko
-    - sku: '7640610277'
+    - sku: '7632410277'
       brand: Beko
-      model: B 710 bc
+      model: BM 5145 WF I
       source: beko
     - sku: '7631710177'
       brand: ARÇELİK
@@ -295,10 +283,6 @@ categories:
     - sku: '7639810177'
       brand: ARÇELİK
       model: A 710 sc
-      source: arcelik
-    - sku: '7640010177'
-      brand: ARÇELİK
-      model: A 710 bc
       source: arcelik
     - sku: '7629710177'
       brand: ARÇELİK
@@ -402,13 +386,13 @@ categories:
       brand: Beko
       model: BFC 631 B
       source: beko
-    - sku: '7779420233'
+    - sku: '7768270184'
       brand: Beko
-      model: BFC 631 S
+      model: BFC 330 B
       source: beko
-    - sku: '7779420234'
+    - sku: '7718186377'
       brand: Beko
-      model: BFC 631 G
+      model: BFC 450 A
       source: beko
     - sku: '7779420287'
       brand: ARÇELİK
@@ -421,10 +405,6 @@ categories:
     - sku: '7768270202'
       brand: ARÇELİK
       model: AFC 361 B
-      source: arcelik
-    - sku: '7768270201'
-      brand: ARÇELİK
-      model: AFC 361 S
       source: arcelik
     - sku: '7768270185'
       brand: ARÇELİK
@@ -562,17 +542,9 @@ categories:
       brand: ARÇELİK
       model: 8100 MX
       source: arcelik
-    - sku: '457100000019'
-      brand: ARÇELİK
-      model: 9120 DMXS
-      source: arcelik
     - sku: WGK264ZRTR
       brand: Bosch
       model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak., Antrasit
-      source: bosch
-    - sku: WGK264F0TR
-      brand: Bosch
-      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
       source: bosch
     - sku: WGK252ZXTR
       brand: Bosch
@@ -585,6 +557,10 @@ categories:
     - sku: WGK254Y0TR
       brand: Bosch
       model: Serie 6 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
+      source: bosch
+    - sku: WGA242ZXTR
+      brand: Bosch
+      model: Serie 4 Çamaşır Makinesi 9 kg maks. 1200 dev./dak., Gümüş
       source: bosch
     - sku: WG44B2A0TR
       brand: Siemens
@@ -669,14 +645,6 @@ categories:
     - sku: '7184270110'
       brand: ARÇELİK
       model: 1001 KMX
-      source: arcelik
-    - sku: '7188270180'
-      brand: ARÇELİK
-      model: 901 KMP IG
-      source: arcelik
-    - sku: '7188270170'
-      brand: ARÇELİK
-      model: 1001 KMX S
       source: arcelik
     - sku: '7184270100'
       brand: ARÇELİK
@@ -890,9 +858,9 @@ categories:
       brand: Samsung
       model: Jet 60 Turbo 150W Emiş Gücü
       source: samsung
-    - sku: jet-bot-accessory-vca-rdb95-vt
+    - sku: jet-95s-stick-vacuum-cleaner-phantom-green-vs70h28glt-tr
       brand: Samsung
-      model: Bespoke Jet Bot Combo™ AI Robot Süpürge Toz Torbası (5 adet)
+      model: Jet 95S Pet 280W Emiş Gücü
       source: samsung
     - sku: '8835771200'
       brand: Beko
@@ -1034,10 +1002,6 @@ categories:
       brand: ARÇELİK
       model: KB 6534 TT
       source: arcelik
-    - sku: '8919921100'
-      brand: ARÇELİK
-      model: KB 6534 TM
-      source: arcelik
     - sku: '8912221100'
       brand: ARÇELİK
       model: TB 9285 CI
@@ -1122,10 +1086,6 @@ categories:
       brand: ARÇELİK
       model: S 4540 T Toz Torbalı
       source: arcelik
-    - sku: '8837651100'
-      brand: ARÇELİK
-      model: K 3700 Telve Pro
-      source: arcelik
     - sku: '8839981100'
       brand: ARÇELİK
       model: K 1583 SMS
@@ -1194,10 +1154,6 @@ categories:
       brand: ARÇELİK
       model: CM 6964 K Resital
       source: arcelik
-    - sku: '8815561100'
-      brand: ARÇELİK
-      model: CM 6964 S Resital
-      source: arcelik
     - sku: '8918781100'
       brand: ARÇELİK
       model: CM 6582 I
@@ -1264,14 +1220,6 @@ categories:
       brand: ARÇELİK
       model: Aria™ Expert BEU 9030 D
       source: arcelik
-    - sku: '8817321100'
-      brand: ARÇELİK
-      model: Aria® Expert BEU 9030 M
-      source: arcelik
-    - sku: '8918321100'
-      brand: ARÇELİK
-      model: BEU 6024
-      source: arcelik
     - sku: '8817331100'
       brand: ARÇELİK
       model: Aria™ Expert BEU 6024 M
@@ -1280,9 +1228,9 @@ categories:
       brand: ARÇELİK
       model: Aria™ MasterPro BKU 9130
       source: arcelik
-    - sku: '20242228'
+    - sku: '20244975'
       brand: Vestel
-      model: V-Press Serisi 2000 Lila Buhar Jeneratorlu Ütü
+      model: Vestel VBU 4024 Buharlı Ütü
       source: vestel
     - sku: '20244214'
       brand: Vestel
