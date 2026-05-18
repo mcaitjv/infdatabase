@@ -11,64 +11,97 @@ Bugünkü (veya belirtilen tarihteki) pipeline çalışmasının durumunu özetl
 
 ## Talimatlar
 
-Kullanıcı `/status [TARİH]` dediğinde şu adımları izle. Tarih verilmezse bugünü (`date` komutu ile TR saatine göre) kullan.
+Kullanıcı `/status [TARİH]` dediğinde şu adımları izle. Tarih verilmezse bugünü kullan.
 
-### 1. Sağlık JSON'ını oku (küçük, yapısal)
+### 1. Sağlık JSON'ını oku
 
-```
-logs/health_YYYY-MM-DD.json
-```
+`logs/health_YYYY-MM-DD.json` — yoksa `logs/health_*.json` içinden en yeniyi al.
+Eğer hiç yoksa "bugün henüz health raporu üretilmemiş" uyarısı ver, log taramasına geç.
 
-Yoksa `logs/health_*.json` dosyalarından en yeniyi al. Bu dosya zaten özet bilgiyi içerir:
-- `run_metadata.status`, `run_metadata.duration_seconds`
-- Her modül için: `records_today`, `records_yesterday`, `status`, `anomalies`, `missing`
-- `anomalies` listesi (en yüksek 10)
+### 2. Log dosyasını Grep ile tara (Read KULLANMA)
 
-Eğer JSON yoksa "bugün henüz health raporu üretilmemiş" uyarısı ver ve log taramasına geç.
+`logs/YYYY-MM-DD.log` üzerinde şu pattern'leri ara:
 
-### 2. Log dosyasını Grep ile tara (tam okuma YAPMA)
-
-```
-logs/YYYY-MM-DD.log
-```
-
-Grep tool kullan, **Read KULLANMA**. Şu pattern'leri ara (`output_mode=content`, `-n=false`):
-
-- `\[runner\]` — modül başlangıç/bitiş satırları
-- `ERROR|Traceback|başarısız|failed` — hatalar
-- `tamamland` — tamamlanma bildirimleri
-- `Modül.*başlıyor` — modül transition'ları
-
-Her pattern için `head_limit=30` ile sınırla. Eğer hata satırları varsa bunların etrafında `-C 2` context al.
+- `\[runner\]` → modül geçişleri (`head_limit=30`)
+- `ERROR|Traceback|başarısız|failed` → hatalar, context=2 ile (`head_limit=20`)
+- Son aktif scraper için log dosyasının **son 3 satırını** PowerShell ile al:
+  ```
+  Get-Content logs/YYYY-MM-DD.log -Tail 3
+  ```
 
 ### 3. PID lock kontrol et
 
-`logs/pipeline.pid` dosyası var mı? Varsa pipeline hâlâ çalışıyor demektir — bunu belirt.
+`logs/pipeline.pid` varsa → PID'in yaşayıp yaşamadığını `Get-Process -Id <pid>` ile doğrula.
+- Process varsa: pipeline aktif
+- Process yoksa: stale lock, pipeline ölmüş
 
-### 4. Özet raporu yaz
+### 4. Durum bilgilerini derle
 
-Kullanıcıya şu formatta özet ver (Türkçe, kısa):
+Her modül için log'dan şunu çıkar:
+- `[runner] Modül XX başlıyor` var + `tamamlandı` yok → **running**
+- `[runner] Modül XX tamamlandı` var → **done** (health JSON'dan status al: ok/warning/error)
+- Hiç `başlıyor` kaydı yok → **waiting**
+
+### 5. Görsel raporu render et
+
+Aşağıdaki şablonu doldur ve kullanıcıya ver. Her modül için uygun sembol ve progress bar kullan:
+
+**Semboller:**
+- `✓` — tamamlandı, ok
+- `⚠` — tamamlandı, warning/error
+- `⟳` — şu an çalışıyor
+- `·` — bekliyor (henüz başlamadı)
+
+**Progress bar** (20 karakter):
+- done-ok:      `████████████████████`
+- done-warning: `████████████████████`
+- done-error:   `████████████████████`
+- running:      `██████████░░░░░░░░░░`
+- waiting:      `░░░░░░░░░░░░░░░░░░░░`
 
 ```
-Pipeline durumu — 2026-04-11
+Pipeline — YYYY-MM-DD  ·  [DURUM]  [başlangıç saati varsa]
 
-Durum: devam ediyor | tamamlandı | hatalı
-Süre: X dakika (tamamlandıysa)
+┌─ AKIŞ ─────────────────────────────────────────────┐
+│                                                     │
+│  [M01 ?] ──▶ [M05 ?] ──▶ [M07 ?] ──▶ [M13 ?]      │
+│   Gıda        Ev&Mob       Yakıt       Bakım        │
+│                                                     │
+└─────────────────────────────────────────────────────┘
 
-Modüller:
-  M01 Gıda     — 4521 kayıt, ok
-  M05 Ev Eş.   — 312 kayıt, warning (2 anomali)
-  M07 Yakıt    — 84 kayıt, ok
+  M01  Gıda & İçecekler   ████████████████████  ✓   X.XXX kayıt
+  M05  Ev & Mobilya       ██████████░░░░░░░░░░  ⟳   çalışıyor
+  M07  Ulaştırma          ░░░░░░░░░░░░░░░░░░░░  ·   bekliyor
+  M13  Kişisel Bakım      ░░░░░░░░░░░░░░░░░░░░  ·   bekliyor
 
-Anomaliler: N adet (en yüksek 3 tanesini listele)
-Hatalar:    N satır (varsa ilk 3 tanesini göster)
+  Son eylem: [m05:vestel] camasir_makinesi ✓  (HH:MM:SS)
+
+M05 Parts:          kayıt    beklenen   durum
+  appliances        266/269    ⚠  3 eksik SKU
+  mobilya           132/134    ⚠  2 Vivense eksik
+  züccaciye           0/ 90    ✗  HİÇ KAYIT YOK
+  evbakim             0/  0    ✓
+
+Anomaliler (N adet, en kritik 3):
+  kaynak / ürün adı   +X.X%  ⚠
+  kaynak / ürün adı   +X.X%  ⚠
+  kaynak / ürün adı   −X.X%  ⚠
+
+Hatalar (varsa):
+  ✗ açıklama
 ```
 
-### 5. Yapma!
+**Özel durumlar:**
+- M05 parts bilgisi sadece health JSON varsa göster; yoksa parts satırını atla.
+- Anomaliler yoksa o bölümü atla.
+- Pipeline tamamlandıysa "Son eylem" satırı yerine "Süre: X dk" yaz.
+- `[DURUM]` yerine: `⟳ DEVAM EDİYOR` / `✓ TAMAMLANDI` / `⚠ HATA İLE BİTTİ` / `✗ ÇÖKTÜ`
+
+### 6. Yapma!
 
 - Log dosyasını `Read` ile tam OKUMA — 2000+ satır, token israfı.
-- Gerekmedikçe DB sorgusu yapma — health JSON zaten sayıları içerir.
-- Uzun çıktı verme. Rapor 20 satırdan kısa olsun.
+- Gerekmedikçe DB sorgusu yapma.
+- Rapor 30 satırı geçmesin.
 
 ## Neden var?
 
