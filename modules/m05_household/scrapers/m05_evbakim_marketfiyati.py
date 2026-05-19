@@ -1,4 +1,4 @@
-"""
+﻿"""
 M05 Ev Bakımı — MarketFiyati Scraper Wrapper
 ---------------------------------------------------
 TÜBİTAK marketfiyati.org.tr API'sini COICOP 056 keyword'leriyle çağırır.
@@ -17,7 +17,7 @@ from pathlib import Path
 import yaml
 
 from db.models import PriceRecord
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper
 
 logger = logging.getLogger(__name__)
 

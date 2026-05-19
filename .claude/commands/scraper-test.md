@@ -1,4 +1,4 @@
-# /scraper-test — Tek-Keyword İzole Scraper Testi
+﻿# /scraper-test — Tek-Keyword İzole Scraper Testi
 
 Bir scraper'ı pipeline'ın tamamını çalıştırmadan tek bir keyword/lokasyon için dener. DB'ye yazmaz, ekrana basar.
 
@@ -28,7 +28,7 @@ Python heredoc ile scraper'ı doğrudan import et. Önce ilgili scraper dosyası
 ```python
 python -c "
 import asyncio
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper
 
 async def test():
     async with MarketFiyatiScraper() as s:
@@ -44,7 +44,7 @@ asyncio.run(test())
 ```python
 python -c "
 import asyncio
-from modules.m05_household.scrapers.ikea import IkeaScraper
+from modules.m05_household.scrapers.m05_ikea import IkeaScraper
 
 async def test():
     async with IkeaScraper() as s:
@@ -58,7 +58,7 @@ asyncio.run(test())
 ```python
 python -c "
 import asyncio
-from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
+from modules.m07_fuel.scrapers.m07_petrolofisi import PetrolOfisiScraper
 
 async def test():
     async with PetrolOfisiScraper() as s:

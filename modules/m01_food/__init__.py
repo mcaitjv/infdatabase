@@ -1,4 +1,4 @@
-"""
+﻿"""
 Modül 01 — Gıda ve Alkolsüz İçecekler
 COICOP 2018 kodu: 01  |  Ağırlık: %24.44
 
@@ -23,9 +23,9 @@ from db.repository import (
 )
 from modules.base import BaseModule
 from pipeline.validator import validate_batch
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
-from modules.m01_food.scrapers.marketfiyati import _MARKET_MAP as _MF_MARKET_MAP
-from modules.m01_food.scrapers.hal import HalScraper
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper
+from modules.m01_food.scrapers.m01_marketfiyati import _MARKET_MAP as _MF_MARKET_MAP
+from modules.m01_food.scrapers.m01_hal import HalScraper
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-"""
+﻿"""
 marketfiyati.org.tr scraper testleri.
 Gerçek API yanıt formatı kullanılır (03.04.2026 canlı testle doğrulandı).
 HTTP isteği yapılmaz.
@@ -10,7 +10,7 @@ from decimal import Decimal
 import pytest
 
 from db.models import PriceRecord
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper, _MARKET_MAP
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper, _MARKET_MAP
 
 
 def make_scraper() -> MarketFiyatiScraper:

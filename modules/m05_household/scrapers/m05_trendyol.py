@@ -75,82 +75,89 @@ _EXTRACT_JS = """
 class TrendyolScraper:
     market_name = "trendyol"
 
+    def __init__(self) -> None:
+        self._pw = None
+        self._browser = None
+
     async def __aenter__(self) -> "TrendyolScraper":
+        from playwright.async_api import async_playwright
+        self._pw = await async_playwright().start()
+        self._browser = await self._pw.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--disable-extensions",
+            ],
+        )
         return self
 
     async def __aexit__(self, *_) -> None:
-        pass
+        try:
+            if self._browser:
+                await self._browser.close()
+        finally:
+            if self._pw:
+                await self._pw.stop()
+            self._pw = None
+            self._browser = None
 
     async def _sleep(self, min_s: float = 3.0, max_s: float = 8.0) -> None:
         await asyncio.sleep(random.uniform(min_s, max_s))
 
     async def _fetch_products(self, path: str) -> list[dict]:
         """Playwright ile arama sayfasını render et, ürün kartlarını döndür."""
-        try:
-            from playwright.async_api import async_playwright
-        except ImportError:
-            raise RuntimeError("playwright gerekli — pip install playwright && playwright install chromium")
-
         url = f"{_BASE}{path}"
         logger.info("[trendyol] Sayfa yukleniyor: %s", url)
 
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
-                    "--no-sandbox",
-                    "--disable-extensions",
-                ],
-            )
-            ctx = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/124.0.0.0 Safari/537.36"
-                ),
-                viewport={"width": 1280, "height": 800},
-                locale="tr-TR",
-                timezone_id="Europe/Istanbul",
-                extra_http_headers={
-                    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-                    "Accept-Encoding": "gzip, deflate, br",
-                },
-            )
-            await ctx.add_init_script("""
-                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-                Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
-                Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
-                window.chrome = { runtime: {} };
-            """)
-            page = await ctx.new_page()
+        ctx = await self._browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1280, "height": 800},
+            locale="tr-TR",
+            timezone_id="Europe/Istanbul",
+            extra_http_headers={
+                "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+                "Accept-Encoding": "gzip, deflate, br",
+            },
+        )
+        await ctx.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+            Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
+            Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
+            window.chrome = { runtime: {} };
+        """)
+        page = await ctx.new_page()
+        try:
+            # Cookie warmup
+            await page.goto(_BASE + "/", wait_until="domcontentloaded", timeout=30000)
+            await page.wait_for_timeout(2000)
+
+            # Arama sayfası
+            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            await page.wait_for_timeout(6000)
+
+            # Scroll → lazy-load fiyatları tetikle
+            await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+            await page.wait_for_timeout(3000)
+
+            # Fiyat elementleri yüklenene kadar bekle (max 15s)
             try:
-                # Cookie warmup
-                await page.goto(_BASE + "/", wait_until="domcontentloaded", timeout=30000)
-                await page.wait_for_timeout(2000)
+                await page.wait_for_selector(
+                    ".sale-price, .price-value, [class*='prc-slg'], [class*='prc-org']",
+                    timeout=15000,
+                )
+            except Exception:
+                logger.warning("[trendyol] Fiyat elementi bulunamadi: %s", path)
 
-                # Arama sayfası
-                await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-                await page.wait_for_timeout(6000)
-
-                # Scroll → lazy-load fiyatları tetikle
-                await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
-                await page.wait_for_timeout(3000)
-
-                # Fiyat elementleri yüklenene kadar bekle (max 15s)
-                try:
-                    await page.wait_for_selector(
-                        ".sale-price, .price-value, [class*='prc-slg'], [class*='prc-org']",
-                        timeout=15000,
-                    )
-                except Exception:
-                    logger.warning("[trendyol] Fiyat elementi bulunamadi: %s", path)
-
-                products = await page.evaluate(_EXTRACT_JS)
-                return products
-            finally:
-                await browser.close()
+            products = await page.evaluate(_EXTRACT_JS)
+            return products
+        finally:
+            await ctx.close()
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=10, max=30))
     async def discover_category(self, path: str, category: str) -> list[dict]:

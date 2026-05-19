@@ -1,4 +1,4 @@
-"""
+﻿"""
 Modül 13 — Kişisel Bakım Ürünleri
 COICOP 2018 kodu: 13 (1312)  |  Ağırlık: %4.4935
 
@@ -92,7 +92,7 @@ class KisiselBakimModule(BaseModule):
     # ── Main part: marketfiyati ──────────────────────────────────────────────
 
     async def _run_main(self, dry_run: bool = False) -> list[ScrapeRun]:
-        from modules.m13_kisisel_bakim.scrapers.marketfiyati import MarketFiyatiScraper13
+        from modules.m13_kisisel_bakim.scrapers.m13_marketfiyati import MarketFiyatiScraper13
 
         locations  = _load_locations()
         categories = _load_categories()
@@ -184,8 +184,8 @@ class KisiselBakimModule(BaseModule):
     # ── Online part: Gratis + Rossmann ───────────────────────────────────────
 
     async def _run_online_stores(self, dry_run: bool = False) -> list[ScrapeRun]:
-        from modules.m13_kisisel_bakim.scrapers.gratis import GratisScraper
-        from modules.m13_kisisel_bakim.scrapers.rossmann import RossmannScraper
+        from modules.m13_kisisel_bakim.scrapers.m13_gratis import GratisScraper
+        from modules.m13_kisisel_bakim.scrapers.m13_rossmann import RossmannScraper
 
         keywords = _load_online_keywords()
         runs: list[ScrapeRun] = []

@@ -39,52 +39,59 @@ def _parse_price(raw: str) -> Decimal | None:
 class PasabahceScraper:
     market_name = "pasabahce"
 
+    def __init__(self) -> None:
+        self._pw = None
+        self._browser = None
+
     async def __aenter__(self) -> "PasabahceScraper":
+        from playwright.async_api import async_playwright
+        self._pw = await async_playwright().start()
+        self._browser = await self._pw.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+            ],
+        )
         return self
 
     async def __aexit__(self, *_) -> None:
-        pass
+        try:
+            if self._browser:
+                await self._browser.close()
+        finally:
+            if self._pw:
+                await self._pw.stop()
+            self._pw = None
+            self._browser = None
 
     async def _sleep(self, min_s: float = 2.0, max_s: float = 5.0) -> None:
         await asyncio.sleep(random.uniform(min_s, max_s))
 
     async def _render_page(self, url: str) -> str:
         """Playwright ile sayfayı render et, HTML döndür."""
+        ctx = await self._browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            locale="tr-TR",
+            timezone_id="Europe/Istanbul",
+        )
+        await ctx.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+        )
+        page = await ctx.new_page()
         try:
-            from playwright.async_api import async_playwright
-        except ImportError:
-            raise RuntimeError("playwright gerekli — pip install playwright && playwright install chromium")
-
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                ],
-            )
-            ctx = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-                ),
-                locale="tr-TR",
-                timezone_id="Europe/Istanbul",
-            )
-            await ctx.add_init_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
-            )
-            page = await ctx.new_page()
-            try:
-                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                await page.wait_for_timeout(3000)
-                for _ in range(4):
-                    await page.evaluate("window.scrollBy(0, 1500)")
-                    await page.wait_for_timeout(800)
-                return await page.content()
-            finally:
-                await browser.close()
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.wait_for_timeout(3000)
+            for _ in range(4):
+                await page.evaluate("window.scrollBy(0, 1500)")
+                await page.wait_for_timeout(800)
+            return await page.content()
+        finally:
+            await ctx.close()
 
     # ── Discovery ─────────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-# infdatabase — Türkiye Enflasyon Veritabanı
+﻿# infdatabase — Türkiye Enflasyon Veritabanı
 
 COICOP 2018 sınıflandırmasına göre Türkiye'deki 13 harcama grubunun günlük fiyat verilerini
 otomatik toplayarak enflasyon hesaplamasına temel oluşturan veri mühendisliği projesi.
@@ -204,7 +204,7 @@ python -m pipeline.runner --module 07 --dry-run
 # M01 scraper izole test
 python -c "
 import asyncio
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper
 async def test():
     async with MarketFiyatiScraper() as s:
         records = await s.scrape_keyword('sut', 41.0082, 28.9784, 'Istanbul', 10)

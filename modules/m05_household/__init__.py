@@ -1,4 +1,4 @@
-"""
+﻿"""
 Modül 05 — Mobilya, Mefruşat ve Ev Bakım  (COICOP 05, %7.92)
 
 Tip B: Discovery + Tracked
@@ -109,12 +109,12 @@ class HouseholdModule(BaseModule):
 
     async def discover(self) -> None:
         """Her kategori+kaynak için ürün keşfi yapar, tracked.yaml'a yazar."""
-        from modules.m05_household.scrapers.vestel import VestelScraper
-        from modules.m05_household.scrapers.samsung import SamsungScraper
-        from modules.m05_household.scrapers.beko import BekoScraper
-        from modules.m05_household.scrapers.arcelik import ArcelikScraper
-        from modules.m05_household.scrapers.bsh import BshScraper
-        from modules.m05_household.scrapers.ikea import IkeaScraper
+        from modules.m05_household.scrapers.m05_vestel import VestelScraper
+        from modules.m05_household.scrapers.m05_samsung import SamsungScraper
+        from modules.m05_household.scrapers.m05_beko import BekoScraper
+        from modules.m05_household.scrapers.m05_arcelik import ArcelikScraper
+        from modules.m05_household.scrapers.m05_bsh import BshScraper
+        from modules.m05_household.scrapers.m05_ikea import IkeaScraper
 
         categories, part_map = _load_tracked()
         total_skus = 0
@@ -168,43 +168,43 @@ class HouseholdModule(BaseModule):
                             prods = await trendyol_s.discover_category(src_cfg["path"], cat_key)
                             await trendyol_s._sleep(*sleep_s)
                     elif src_name == "vivense":
-                        from modules.m05_household.scrapers.vivense import VivenseScraper
+                        from modules.m05_household.scrapers.m05_vivense import VivenseScraper
                         async with VivenseScraper() as s:
                             prods = await s.discover_category(src_cfg["path"], cat_key)
                             await s._sleep(*sleep_s)
                     elif src_name == "dogtas":
-                        from modules.m05_household.scrapers.dogtas import DogtasScraper
+                        from modules.m05_household.scrapers.m05_dogtas import DogtasScraper
                         async with DogtasScraper() as s:
                             prods = await s.discover_category(src_cfg["path"], cat_key)
                             await s._sleep(*sleep_s)
                     elif src_name == "yatas":
-                        from modules.m05_household.scrapers.yatas import YatasScraper
+                        from modules.m05_household.scrapers.m05_yatas import YatasScraper
                         async with YatasScraper() as s:
                             prods = await s.discover_category(src_cfg["cat_code"], cat_key)
                             await s._sleep(*sleep_s)
                     elif src_name == "karaca":
-                        from modules.m05_household.scrapers.karaca import KaracaScraper
+                        from modules.m05_household.scrapers.m05_karaca import KaracaScraper
                         async with KaracaScraper() as s:
                             prods = []
                             for disc_path in _paths(src_cfg):
                                 prods.extend(await s.discover_category(disc_path, cat_key))
                                 await s._sleep(*sleep_s)
                     elif src_name == "korkmazstore":
-                        from modules.m05_household.scrapers.korkmazstore import KorkmazstoreScraper
+                        from modules.m05_household.scrapers.m05_korkmazstore import KorkmazstoreScraper
                         async with KorkmazstoreScraper() as s:
                             prods = []
                             for disc_path in _paths(src_cfg):
                                 prods.extend(await s.discover_category(disc_path, cat_key))
                                 await s._sleep(*sleep_s)
                     elif src_name == "pasabahce":
-                        from modules.m05_household.scrapers.pasabahce import PasabahceScraper
+                        from modules.m05_household.scrapers.m05_pasabahce import PasabahceScraper
                         async with PasabahceScraper() as s:
                             prods = []
                             for disc_path in _paths(src_cfg):
                                 prods.extend(await s.discover_category(disc_path, cat_key))
                                 await s._sleep(*sleep_s)
                     elif src_name == "emsan":
-                        from modules.m05_household.scrapers.emsan import EmsanScraper
+                        from modules.m05_household.scrapers.m05_emsan import EmsanScraper
                         async with EmsanScraper() as s:
                             prods = []
                             for disc_path in _paths(src_cfg):
@@ -308,7 +308,7 @@ class HouseholdModule(BaseModule):
 
     async def _run_evbakim(self, dry_run: bool = False) -> list[ScrapeRun]:
         """evbakim.yaml keyword'leriyle marketfiyati.org.tr API'sini çağırır."""
-        from modules.m05_household.scrapers.evbakim_marketfiyati import EvbakimScraper
+        from modules.m05_household.scrapers.m05_evbakim_marketfiyati import EvbakimScraper
 
         run = ScrapeRun(
             market="m05:evbakim",
@@ -360,20 +360,20 @@ class HouseholdModule(BaseModule):
             # Sadece evbakim çalışacak — marka scraperlarını atla
             return await self._run_evbakim(dry_run)
 
-        from modules.m05_household.scrapers.vestel import VestelScraper
-        from modules.m05_household.scrapers.samsung import SamsungScraper
-        from modules.m05_household.scrapers.beko import BekoScraper
-        from modules.m05_household.scrapers.arcelik import ArcelikScraper
-        from modules.m05_household.scrapers.bsh import BshScraper
-        from modules.m05_household.scrapers.ikea import IkeaScraper
-        from modules.m05_household.scrapers.trendyol import TrendyolScraper
-        from modules.m05_household.scrapers.vivense import VivenseScraper
-        from modules.m05_household.scrapers.dogtas import DogtasScraper
-        from modules.m05_household.scrapers.yatas import YatasScraper
-        from modules.m05_household.scrapers.karaca import KaracaScraper
-        from modules.m05_household.scrapers.korkmazstore import KorkmazstoreScraper
-        from modules.m05_household.scrapers.pasabahce import PasabahceScraper
-        from modules.m05_household.scrapers.emsan import EmsanScraper
+        from modules.m05_household.scrapers.m05_vestel import VestelScraper
+        from modules.m05_household.scrapers.m05_samsung import SamsungScraper
+        from modules.m05_household.scrapers.m05_beko import BekoScraper
+        from modules.m05_household.scrapers.m05_arcelik import ArcelikScraper
+        from modules.m05_household.scrapers.m05_bsh import BshScraper
+        from modules.m05_household.scrapers.m05_ikea import IkeaScraper
+        from modules.m05_household.scrapers.m05_trendyol import TrendyolScraper
+        from modules.m05_household.scrapers.m05_vivense import VivenseScraper
+        from modules.m05_household.scrapers.m05_dogtas import DogtasScraper
+        from modules.m05_household.scrapers.m05_yatas import YatasScraper
+        from modules.m05_household.scrapers.m05_karaca import KaracaScraper
+        from modules.m05_household.scrapers.m05_korkmazstore import KorkmazstoreScraper
+        from modules.m05_household.scrapers.m05_pasabahce import PasabahceScraper
+        from modules.m05_household.scrapers.m05_emsan import EmsanScraper
 
         categories, _ = _load_tracked()
         runs: list[ScrapeRun] = []

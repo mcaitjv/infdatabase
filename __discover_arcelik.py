@@ -1,10 +1,10 @@
-"""
+﻿"""
 Arcelik kategori sayfalarindan hedef urunleri bul.
 URL slug'indan model adini cikar, kategori listesinde eslestir.
 """
 import asyncio
 import re
-from modules.m05_household.scrapers.arcelik import ArcelikScraper
+from modules.m05_household.scrapers.m05_arcelik import ArcelikScraper
 
 # hedef: (kategori_yolu, beklenen_model_anahtar_kelimeler, aciklama)
 TARGETS = [

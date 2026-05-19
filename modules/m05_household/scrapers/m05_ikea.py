@@ -60,6 +60,11 @@ _EXTRACT_JS = """
 class IkeaScraper(BaseScraper):
     market_name = "ikea"
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._pw = None
+        self._browser = None
+
     async def __aenter__(self) -> "IkeaScraper":
         self._client = httpx.AsyncClient(
             base_url=_API_BASE,
@@ -75,7 +80,24 @@ class IkeaScraper(BaseScraper):
             follow_redirects=True,
             timeout=30.0,
         )
+        from playwright.async_api import async_playwright
+        self._pw = await async_playwright().start()
+        self._browser = await self._pw.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-dev-shm-usage"],
+        )
         return self
+
+    async def __aexit__(self, *args) -> None:
+        try:
+            if self._browser:
+                await self._browser.close()
+        finally:
+            if self._pw:
+                await self._pw.stop()
+            self._pw = None
+            self._browser = None
+        await super().__aexit__(*args)
 
     async def scrape_product(self, sku: str) -> None:
         raise NotImplementedError("discover_category / scrape_tracked kullanın")
@@ -84,37 +106,27 @@ class IkeaScraper(BaseScraper):
 
     async def _fetch_category_products(self, path: str) -> list[dict]:
         """Playwright ile /kategori/{slug} sayfasını render et, ürün kartlarını döndür."""
-        try:
-            from playwright.async_api import async_playwright
-        except ImportError:
-            raise RuntimeError("playwright gerekli — pip install playwright && playwright install chromium")
-
         url = f"{_SITE_BASE}{path}"
         logger.info("[ikea] Kategori yukleniyor: %s", url)
 
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-dev-shm-usage"],
-            )
-            ctx = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-                ),
-                locale="tr-TR",
-                timezone_id="Europe/Istanbul",
-            )
-            page = await ctx.new_page()
-            try:
-                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                await page.wait_for_timeout(3000)
-                for _ in range(4):
-                    await page.evaluate("window.scrollBy(0, 1500)")
-                    await page.wait_for_timeout(1000)
-                return await page.evaluate(_EXTRACT_JS)
-            finally:
-                await browser.close()
+        ctx = await self._browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            locale="tr-TR",
+            timezone_id="Europe/Istanbul",
+        )
+        page = await ctx.new_page()
+        try:
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.wait_for_timeout(3000)
+            for _ in range(4):
+                await page.evaluate("window.scrollBy(0, 1500)")
+                await page.wait_for_timeout(1000)
+            return await page.evaluate(_EXTRACT_JS)
+        finally:
+            await ctx.close()
 
     async def discover_category(self, path: str, category: str) -> list[dict]:
         """Kategori sayfasından ürün keşfi. path = mobilya.yaml'daki ikea.path (/kategori/...)."""

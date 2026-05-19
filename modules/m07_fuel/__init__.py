@@ -1,4 +1,4 @@
-"""
+﻿"""
 Modül 07 — Ulaştırma: Akaryakıt Fiyatları
 COICOP 2018 kodu: 07  |  Ağırlık: %16.62
 
@@ -17,22 +17,22 @@ import yaml
 from db.models import ScrapeRun
 from db.repository import batch_upsert_car_prices, batch_upsert_ferry_prices, batch_upsert_flight_prices, batch_upsert_fuel_prices, batch_upsert_intercity_bus_prices, batch_upsert_motorsiklet_prices, batch_upsert_taxi_prices, batch_upsert_train_prices, batch_upsert_transport_prices, get_connection, upsert_scrape_run
 from modules.base import BaseModule
-from modules.m07_fuel.scrapers.amadeus import AmadeusScraper
-from modules.m07_fuel.scrapers.aygaz import AygazScraper
-from modules.m07_fuel.scrapers.obilet_flight import ObiletFlightScraper
-from modules.m07_fuel.scrapers.biletall import BiletallScraper
-from modules.m07_fuel.scrapers.ego import EgoScraper
-from modules.m07_fuel.scrapers.iett import IettScraper
-from modules.m07_fuel.scrapers.izmirimkart import IzmirimkartScraper
-from modules.m07_fuel.scrapers.obilet import ObiletScraper
-from modules.m07_fuel.scrapers.opet import OpetScraper
-from modules.m07_fuel.scrapers.petrolofisi import PetrolOfisiScraper
-from modules.m07_fuel.scrapers.shell import ShellScraper
-from modules.m07_fuel.scrapers.budo import BudoScraper
-from modules.m07_fuel.scrapers.google_news import GoogleNewsScraper
-from modules.m07_fuel.scrapers.ido import IdoScraper
-from modules.m07_fuel.scrapers.sehirhatlari import SehirHatlariScraper
-from modules.m07_fuel.scrapers.tcddbilet import TcddbiletScraper
+from modules.m07_fuel.scrapers.m07_amadeus import AmadeusScraper
+from modules.m07_fuel.scrapers.m07_aygaz import AygazScraper
+from modules.m07_fuel.scrapers.m07_obilet_flight import ObiletFlightScraper
+from modules.m07_fuel.scrapers.m07_biletall import BiletallScraper
+from modules.m07_fuel.scrapers.m07_ego import EgoScraper
+from modules.m07_fuel.scrapers.m07_iett import IettScraper
+from modules.m07_fuel.scrapers.m07_izmirimkart import IzmirimkartScraper
+from modules.m07_fuel.scrapers.m07_obilet import ObiletScraper
+from modules.m07_fuel.scrapers.m07_opet import OpetScraper
+from modules.m07_fuel.scrapers.m07_petrolofisi import PetrolOfisiScraper
+from modules.m07_fuel.scrapers.m07_shell import ShellScraper
+from modules.m07_fuel.scrapers.m07_budo import BudoScraper
+from modules.m07_fuel.scrapers.m07_google_news import GoogleNewsScraper
+from modules.m07_fuel.scrapers.m07_ido import IdoScraper
+from modules.m07_fuel.scrapers.m07_sehirhatlari import SehirHatlariScraper
+from modules.m07_fuel.scrapers.m07_tcddbilet import TcddbiletScraper
 
 logger = logging.getLogger(__name__)
 
@@ -826,7 +826,7 @@ class FuelModule(BaseModule):
 
     async def _run_car_prices(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Sıfır araç fiyat listelerini marka sitelerinden çeker."""
-        from modules.m07_fuel.scrapers.car_brands import CarBrandScraper
+        from modules.m07_fuel.scrapers.m07_car_brands import CarBrandScraper
 
         car_cats, _ = _load_car_config()
         run = ScrapeRun(
@@ -881,7 +881,7 @@ class FuelModule(BaseModule):
 
     async def _run_motorsiklet_prices(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Motosiklet satış fiyatlarını marka sitelerinden çeker."""
-        from modules.m07_fuel.scrapers.motorsiklet_brands import MotorsikletBrandScraper
+        from modules.m07_fuel.scrapers.m07_motorsiklet_brands import MotorsikletBrandScraper
 
         moto_cats = _load_motorsiklet_config()
         run = ScrapeRun(

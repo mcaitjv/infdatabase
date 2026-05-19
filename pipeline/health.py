@@ -1,4 +1,4 @@
-"""
+﻿"""
 pipeline/health.py — Pipeline Sağlık Kontrol Sistemi
 ------------------------------------------------------
 Her günlük çalışma sonrasında (veya bağımsız olarak) veri kalitesini kontrol eder:
@@ -85,14 +85,18 @@ class PipelineHealthReport:
 
 
 def _load_m05_parts() -> list[tuple[str, str, dict]]:
-    """config/*.yaml dosyalarından (label, code_suffix, categories_dict) tuples döner."""
+    """config/*.yaml dosyalarından (label, code_suffix, categories_dict) tuples döner.
+    tracked_skus kullanmayan YAML'lar (evbakim gibi keyword-bazlı) atlanır."""
     config_dir = Path("modules") / "m05_household" / "config"
     parts = []
     for path in sorted(config_dir.glob("*.yaml")):
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         label = data.get("label", path.stem.replace("_", " ").title())
         cats = data.get("categories", {})
-        if cats:
+        has_tracked = any(
+            cat_data.get("tracked_skus") for cat_data in cats.values()
+        )
+        if cats and has_tracked:
             parts.append((label, path.stem, cats))
     return parts
 
@@ -316,6 +320,32 @@ async def check_appliance_health(conn, target_date: date) -> list[ModuleHealthRe
     return reports
 
 
+async def check_m05_evbakim_health(conn, target_date: date) -> ModuleHealthReport:
+    """M05 evbakim: m05_evbakim_snapshots tablosundan bugünkü kayıt sayısını kontrol eder."""
+    yesterday = target_date - timedelta(days=1)
+    report = ModuleHealthReport(
+        module_code="05-evbakim",
+        module_name="Rutin Ev Bakımı İçin Mal ve Hizmetler (M05)",
+        date=target_date,
+    )
+
+    row_today = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m05_evbakim_snapshots WHERE snapshot_date = $1",
+        target_date,
+    )
+    row_yest = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m05_evbakim_snapshots WHERE snapshot_date = $1",
+        yesterday,
+    )
+    report.records_today = int(row_today[0]) if row_today else 0
+    report.records_yesterday = int(row_yest[0]) if row_yest else 0
+
+    if report.records_today == 0:
+        report.add_error("Bugün evbakim için hiç kayıt yazılmamış")
+
+    return report
+
+
 async def check_m07_health(conn, target_date: date) -> list[ModuleHealthReport]:
     """M07: sadece bugün çalışması gereken part'lar için birer ModuleHealthReport döner.
     Part listesi FuelModule.PART_SCHEDULE + PART_META'dan otomatik okunur."""
@@ -434,8 +464,8 @@ async def check_new_categories(target_date: date) -> list[str]:
         if (brand, cat) in tracked:
             continue
         try:
-            from modules.m05_household.scrapers.bsh import BshScraper
-            from modules.m05_household.scrapers.samsung import SamsungScraper
+            from modules.m05_household.scrapers.m05_bsh import BshScraper
+            from modules.m05_household.scrapers.m05_samsung import SamsungScraper
 
             if brand in ("bosch", "siemens"):
                 async with BshScraper(brand=brand) as s:
@@ -557,7 +587,7 @@ async def run_health_check(
 
     pipeline = PipelineHealthReport(date=target_date)
 
-    for check_fn in [check_market_health, check_appliance_health, check_m07_health, check_m13_health]:
+    for check_fn in [check_market_health, check_appliance_health, check_m05_evbakim_health, check_m07_health, check_m13_health]:
         try:
             result = await check_fn(conn, target_date)
             if isinstance(result, list):

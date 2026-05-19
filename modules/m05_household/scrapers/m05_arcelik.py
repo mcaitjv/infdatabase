@@ -21,77 +21,84 @@ _BUNDLE_PATTERNS = re.compile(r"\bset\b|hediyeli|\+.*birlikte|kampanya.*paket", 
 class ArcelikScraper:
     market_name = "arcelik"
 
+    def __init__(self) -> None:
+        self._pw = None
+        self._browser = None
+
     async def __aenter__(self) -> "ArcelikScraper":
+        from playwright.async_api import async_playwright
+        self._pw = await async_playwright().start()
+        self._browser = await self._pw.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+            ],
+        )
         return self
 
     async def __aexit__(self, *_) -> None:
-        pass
+        try:
+            if self._browser:
+                await self._browser.close()
+        finally:
+            if self._pw:
+                await self._pw.stop()
+            self._pw = None
+            self._browser = None
 
     async def _fetch_page_html(self, path: str) -> str:
-        try:
-            from playwright.async_api import async_playwright
-        except ImportError:
-            raise RuntimeError("playwright gerekli — pip install playwright && playwright install chromium")
-
         url = f"{_BASE}{path}"
         logger.info("[arcelik] Sayfa yukleniyor: %s", url)
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
-                    "--no-sandbox",
-                ],
-            )
-            ctx = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Linux; Android 13; SM-S918B) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/131.0.0.0 Mobile Safari/537.36"
-                ),
-                viewport={"width": 412, "height": 915},
-                device_scale_factor=2.625,
-                is_mobile=True,
-                has_touch=True,
-                locale="tr-TR",
-                timezone_id="Europe/Istanbul",
-                extra_http_headers={
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-                    "Accept-Encoding": "gzip, deflate, br",
-                    "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not=A?Brand";v="24"',
-                    "Sec-Ch-Ua-Mobile": "?1",
-                    "Sec-Ch-Ua-Platform": '"Android"',
-                    "Sec-Fetch-Dest": "document",
-                    "Sec-Fetch-Mode": "navigate",
-                    "Sec-Fetch-Site": "none",
-                    "Upgrade-Insecure-Requests": "1",
-                    "DNT": "1",
-                },
-            )
-            await ctx.add_init_script(
-                """
-                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-                Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
-                Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
-                window.chrome = { runtime: {} };
-                """
-            )
-            page = await ctx.new_page()
-            try:
-                # Cookie warmup: önce anasayfa (Akamai cookie set etsin)
-                await page.goto(_BASE + "/", wait_until="networkidle", timeout=60000)
-                await page.wait_for_timeout(4000)
+        ctx = await self._browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Linux; Android 13; SM-S918B) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Mobile Safari/537.36"
+            ),
+            viewport={"width": 412, "height": 915},
+            device_scale_factor=2.625,
+            is_mobile=True,
+            has_touch=True,
+            locale="tr-TR",
+            timezone_id="Europe/Istanbul",
+            extra_http_headers={
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not=A?Brand";v="24"',
+                "Sec-Ch-Ua-Mobile": "?1",
+                "Sec-Ch-Ua-Platform": '"Android"',
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Upgrade-Insecure-Requests": "1",
+                "DNT": "1",
+            },
+        )
+        await ctx.add_init_script(
+            """
+            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+            Object.defineProperty(navigator, 'plugins',   {get: () => [1,2,3,4,5]});
+            Object.defineProperty(navigator, 'languages', {get: () => ['tr-TR','tr','en']});
+            window.chrome = { runtime: {} };
+            """
+        )
+        page = await ctx.new_page()
+        try:
+            # Cookie warmup: önce anasayfa (Akamai cookie set etsin)
+            await page.goto(_BASE + "/", wait_until="networkidle", timeout=60000)
+            await page.wait_for_timeout(4000)
 
-                # Hedef kategori
-                await page.goto(url, wait_until="networkidle", timeout=45000)
-                await page.wait_for_timeout(3000)
-                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                await page.wait_for_timeout(2000)
-                html = await page.content()
-            finally:
-                await browser.close()
+            # Hedef kategori
+            await page.goto(url, wait_until="networkidle", timeout=45000)
+            await page.wait_for_timeout(3000)
+            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            await page.wait_for_timeout(2000)
+            html = await page.content()
+        finally:
+            await ctx.close()
         return html
 
     def _parse_products(self, html: str, category: str) -> list[dict]:

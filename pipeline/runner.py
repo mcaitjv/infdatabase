@@ -12,10 +12,12 @@ Kullanım:
   python -m pipeline.runner --discover-branches                 # Gıda modülü şube keşfi
   python -m pipeline.runner --health-check                      # Sağlık raporu (bugün)
   python -m pipeline.runner --health-check --date 2026-04-09   # Belirli tarih
+  python -m pipeline.runner --resume                            # Bugün yarım kalan yerden devam
 """
 
 import argparse
 import asyncio
+import json
 import logging
 import os
 from datetime import date
@@ -47,6 +49,38 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 _LOCK_FILE = os.path.join("logs", "pipeline.pid")
+
+
+def _checkpoint_path() -> str:
+    return os.path.join("logs", f"pipeline_checkpoint_{date.today()}.json")
+
+
+def _load_checkpoint() -> set[str]:
+    path = _checkpoint_path()
+    if not os.path.exists(path):
+        return set()
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return set(data.get("completed", []))
+    except (OSError, json.JSONDecodeError):
+        return set()
+
+
+def _mark_checkpoint(code: str, started_at: str) -> None:
+    path = _checkpoint_path()
+    completed = _load_checkpoint()
+    completed.add(code)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"completed": sorted(completed), "started_at": started_at}, f, ensure_ascii=False)
+
+
+def _clear_checkpoint() -> None:
+    path = _checkpoint_path()
+    try:
+        os.remove(path)
+    except OSError:
+        pass
 
 
 def _acquire_lock() -> bool:
@@ -95,6 +129,7 @@ async def main(
     do_health_check: bool,
     health_date: date | None,
     parts: list[str] | None = None,
+    resume: bool = False,
 ) -> None:
     if do_discover:
         await FoodModule().discover_branches()
@@ -119,7 +154,7 @@ async def main(
         return
 
     try:
-        await _run_modules(module_codes, dry_run, setup_schema, parts)
+        await _run_modules(module_codes, dry_run, setup_schema, parts, resume=resume)
     finally:
         _release_lock()
 
@@ -129,6 +164,7 @@ async def _run_modules(
     dry_run: bool,
     setup_schema: bool,
     parts: list[str] | None = None,
+    resume: bool = False,
 ) -> None:
     # branches.yaml boşsa uyar
     _branches_path = os.path.join("config", "branches.yaml")
@@ -152,7 +188,17 @@ async def _run_modules(
         logger.info("[runner] Tüm şemalar uygulandı.")
         return
 
+    completed = _load_checkpoint() if resume else set()
+    if resume and completed:
+        logger.info("[runner] Checkpoint bulundu — tamamlanan modüller atlanıyor: %s", sorted(completed))
+
+    started_at = date.today().isoformat()
+
     for mod in modules:
+        if mod.coicop_code in completed:
+            logger.info("[runner] Modül %s zaten tamamlanmış, atlanıyor.", mod.coicop_code)
+            continue
+
         logger.info(
             "[runner] Modül %s başlıyor: %s (ağırlık: %.2f%%)",
             mod.coicop_code, mod.name, mod.weight,
@@ -164,9 +210,12 @@ async def _run_modules(
             "[runner] Modül %s tamamlandı — %d başarılı, %d başarısız",
             mod.coicop_code, success, failed,
         )
+        if not dry_run:
+            _mark_checkpoint(mod.coicop_code, started_at)
 
     # Dry-run değilse otomatik sağlık raporu bas ve mail gönder
     if not dry_run:
+        _clear_checkpoint()
         try:
             from pipeline.health import format_report, run_health_check, save_report
             from pipeline.notifier import send_health_email
@@ -214,6 +263,11 @@ if __name__ == "__main__":
         default=None,
         help="Sağlık raporu için tarih (YYYY-MM-DD). Varsayılan: bugün.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Bugün yarım kalan pipeline'ı checkpoint'ten devam ettir.",
+    )
     args = parser.parse_args()
 
     codes = [c.strip() for c in args.module.split(",")] if args.module else None
@@ -229,4 +283,5 @@ if __name__ == "__main__":
         do_health_check  = args.health_check,
         health_date      = hdate,
         parts            = parts,
+        resume           = args.resume,
     ))

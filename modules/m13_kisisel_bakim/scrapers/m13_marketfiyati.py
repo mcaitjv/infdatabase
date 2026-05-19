@@ -1,4 +1,4 @@
-"""
+﻿"""
 M13 — marketfiyati.org.tr scraper (TÜBİTAK API)
 
 M01'deki MarketFiyatiScraper'ı genişletir; kişisel bakım keyword'leri için
@@ -6,7 +6,7 @@ aynı endpoint'i kullanır. Yeni bir sınıf yerine ince bir wrapper — kaynak 
 m01_food/scrapers/marketfiyati.py'de ortak kalır.
 """
 
-from modules.m01_food.scrapers.marketfiyati import MarketFiyatiScraper
+from modules.m01_food.scrapers.m01_marketfiyati import MarketFiyatiScraper
 
 
 class MarketFiyatiScraper13(MarketFiyatiScraper):
