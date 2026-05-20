@@ -188,6 +188,23 @@ class PasabahceScraper:
 
         return None
 
+    async def _restart_browser(self) -> None:
+        """Bellek birikimini önlemek için browser'ı yeniden başlat."""
+        if self._browser:
+            try:
+                await self._browser.close()
+            except Exception:
+                pass
+        self._browser = await self._pw.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+            ],
+        )
+        logger.info("[pasabahce] browser yeniden baslatildi")
+
     async def scrape_tracked(
         self, tracked_skus: list[dict], category: str, path: str
     ) -> list[AppliancePriceRecord]:
@@ -197,7 +214,9 @@ class PasabahceScraper:
         today = date.today()
         records: list[AppliancePriceRecord] = []
 
-        for entry in tracked_skus:
+        for i, entry in enumerate(tracked_skus):
+            if i > 0 and i % 8 == 0:
+                await self._restart_browser()
             slug = entry["sku"]
             model = entry.get("model", slug)
             try:
