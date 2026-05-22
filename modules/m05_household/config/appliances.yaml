@@ -570,9 +570,9 @@ categories:
       brand: Bosch
       model: Serie 6 Çamaşır Makinesi 10 kg maks. 1400 dev./dak.
       source: bosch
-    - sku: WGA242ZXTR
+    - sku: WGK264F0TR
       brand: Bosch
-      model: Serie 4 Çamaşır Makinesi 9 kg maks. 1200 dev./dak., Gümüş
+      model: Serie 6 Çamaşır Makinesi 11 kg maks. 1400 dev./dak.
       source: bosch
     - sku: WG44B2A0TR
       brand: Siemens
@@ -742,17 +742,17 @@ categories:
       brand: Samsung
       model: Bespoke AI WindFree Premium Black Duvar Tipi Split Klima AI WindFree 9.000 BTU
       source: samsung
-    - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar60f09caaw-sk
-      brand: Samsung
-      model: Bespoke AI WindFree Premium Plus Duvar Tipi Split Klima AI WindFree 9.000 BTU
-      source: samsung
     - sku: ar9500t-ar70f12caawneu-ai-fast---comfort-cooling--ai-fast---comfort-cooling--comfort-drying-for-cold-free-dehumidification-ar80f09caaw-sk
       brand: Samsung
       model: Bespoke AI WindFree Elite PM 1.0 Duvar Tipi Split Klima AI WindFree 9.000 BTU
       source: samsung
-    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacw-sk
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h24cacw-sk
       brand: Samsung
-      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 9.000 BTU
+      model: Bespoke AI WindFree Pro Duvar Tipi Split Klima 24.000 BTU
+      source: samsung
+    - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar80h09caaw-sk
+      brand: Samsung
+      model: Bespoke AI WindFree Pro PM 1.0 Duvar Tipi Split Klima 9.000 BTU
       source: samsung
     - sku: ar80h-ar80h-ai-motion-wind-ai-fast-comfort-cooling-ar70h09cacb-sk
       brand: Samsung
@@ -1094,21 +1094,21 @@ categories:
       brand: ARÇELİK
       model: TKM 9961 S Telve
       source: arcelik
-    - sku: '8835771100'
+    - sku: '990427100088'
       brand: ARÇELİK
-      model: S 4540 T Toz Torbalı
+      model: Imperium® Slim 3.0 SDI 9524
       source: arcelik
-    - sku: '8839981100'
+    - sku: '7489470103'
       brand: ARÇELİK
-      model: K 1583 SMS
+      model: TKM 9961 Bio
       source: arcelik
     - sku: '8904520100'
       brand: ARÇELİK
       model: S 7610 Robotto
       source: arcelik
-    - sku: '8919471200'
+    - sku: '8810271200'
       brand: Beko
-      model: Robo-X 2.2 VRR 52514 VB
+      model: BKK 2145
       source: beko
     - sku: '7460020200'
       brand: Beko
