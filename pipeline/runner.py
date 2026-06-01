@@ -126,6 +126,7 @@ async def main(
     setup_schema: bool,
     do_discover: bool,
     do_discover_m05: bool,
+    do_discover_saat: bool,
     do_health_check: bool,
     health_date: date | None,
     parts: list[str] | None = None,
@@ -137,6 +138,10 @@ async def main(
 
     if do_discover_m05:
         await HouseholdModule().discover()
+        return
+
+    if do_discover_saat:
+        await KisiselBakimModule().discover_saat_altin()
         return
 
     if do_health_check:
@@ -254,6 +259,11 @@ if __name__ == "__main__":
         help="Modül 05 SKU keşfi (tracked.yaml tracked_skus doldurur)",
     )
     parser.add_argument(
+        "--discover-saat",
+        action="store_true",
+        help="Modül 13 saat_altin keşfi (saatvesaat.com.tr + Trendyol, saat_altin.yaml günceller)",
+    )
+    parser.add_argument(
         "--health-check",
         action="store_true",
         help="Sağlık raporu — DB verisi bütünlük ve anomali kontrolü",
@@ -275,13 +285,14 @@ if __name__ == "__main__":
     parts = [p.strip() for p in args.part.split(",")] if args.part else None
 
     asyncio.run(main(
-        module_codes     = codes,
-        dry_run          = args.dry_run,
-        setup_schema     = args.setup_schema,
-        do_discover      = args.discover_branches,
-        do_discover_m05  = args.discover_m05,
-        do_health_check  = args.health_check,
-        health_date      = hdate,
-        parts            = parts,
-        resume           = args.resume,
+        module_codes       = codes,
+        dry_run            = args.dry_run,
+        setup_schema       = args.setup_schema,
+        do_discover        = args.discover_branches,
+        do_discover_m05    = args.discover_m05,
+        do_discover_saat   = args.discover_saat,
+        do_health_check    = args.health_check,
+        health_date        = hdate,
+        parts              = parts,
+        resume             = args.resume,
     ))

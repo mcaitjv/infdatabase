@@ -1,0 +1,32 @@
+# Modül 13 — Saat & Altın part (Discovery + Tracked)
+# Kaynaklar: saatvesaat.com.tr (discovery + tracked), Trendyol (tracked)
+#
+# Kullanım:
+#   python -m pipeline.runner --discover-saat   → tracked_skus'u doldurur
+#   python -m pipeline.runner --module 13        → günlük fiyat takibi
+#
+# UYARI: tracked_skus alanları elle düzenleme — --discover-saat komutu yazar.
+
+label: "Saat & Altın"
+top_n: 4   # marka başına kaç saat alınacak
+
+brands:
+  seiko:
+    label: Seiko
+    saatvesaat_path: /seiko-saat/
+    tracked_skus: []
+
+  tissot:
+    label: Tissot
+    saatvesaat_path: /tissot-saat/
+    tracked_skus: []
+
+  fossil:
+    label: Fossil
+    saatvesaat_path: /fossil-saat/
+    tracked_skus: []
+
+  tommy_hilfiger:
+    label: Tommy Hilfiger
+    saatvesaat_path: /tommy-hilfiger-saat/
+    tracked_skus: []
