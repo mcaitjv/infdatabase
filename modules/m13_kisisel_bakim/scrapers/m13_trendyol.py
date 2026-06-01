@@ -23,9 +23,7 @@ from db.models import PriceRecord
 
 logger = logging.getLogger(__name__)
 
-_SEARCH_URL = (
-    "https://public.trendyol.com/discovery-web-searchgw-service/api/filter/search/v2"
-)
+_SEARCH_URL = "https://apigw.trendyol.com/discovery-web-searchgw-service/api/filter/search/v2"
 
 _HEADERS = {
     "User-Agent": (
@@ -105,6 +103,9 @@ class TrendyolM13Scraper:
 
     market_name = "trendyol"
 
+    def __init__(self) -> None:
+        self._blocked = False  # 403 alınınca True → sonraki istekleri atla
+
     async def __aenter__(self) -> "TrendyolM13Scraper":
         self._client = httpx.AsyncClient(headers=_HEADERS, timeout=30, follow_redirects=True)
         return self
@@ -113,7 +114,9 @@ class TrendyolM13Scraper:
         await self._client.aclose()
 
     async def _search(self, query: str, page: int = 1) -> list[dict]:
-        """Ham ürün dict listesi döner."""
+        """Ham ürün dict listesi döner. 403 alınınca kalıcı olarak devre dışı bırakır."""
+        if self._blocked:
+            return []
         params = {
             "q": query,
             "pi": page,
@@ -125,6 +128,10 @@ class TrendyolM13Scraper:
         }
         try:
             resp = await self._client.get(_SEARCH_URL, params=params)
+            if resp.status_code == 403:
+                self._blocked = True
+                logger.warning("[trendyol-m13] API erişimi engellendi (403) — Trendyol kaynağı devre dışı")
+                return []
             resp.raise_for_status()
             return _extract_products(resp.json())
         except Exception as exc:

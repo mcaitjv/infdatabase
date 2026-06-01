@@ -148,9 +148,9 @@ class KisiselBakimModule(BaseModule):
                         "source":      "saatvesaat",
                     })
 
-                    # 2. Aynı modeli Trendyol'da ara
+                    # 2. Aynı modeli Trendyol'da ara (API erişimi açıksa)
                     brand_model = prod.get("brand_model", "")
-                    if brand_model:
+                    if brand_model and not trendyol._blocked:
                         await asyncio.sleep(2)
                         match = await trendyol.find_by_model(brand_model, brand_label)
                         if match:
@@ -168,7 +168,7 @@ class KisiselBakimModule(BaseModule):
                         else:
                             logger.info("[m13:discover] %s %s → Trendyol'da bulunamadı", brand_label, brand_model)
 
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(1)  # saatvesaat throttle
 
                 brand_data["tracked_skus"] = tracked
                 total_skus += len(tracked)

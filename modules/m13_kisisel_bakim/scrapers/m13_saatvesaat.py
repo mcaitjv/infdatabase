@@ -30,30 +30,41 @@ _PRICE_RE = re.compile(r"([\d]+(?:[.\d]{4})*)[,\.](\d{2})\s*TL", re.IGNORECASE)
 _MODEL_CODE_RE = re.compile(r"\b([A-Z0-9]{5,15})\b")
 
 # Ürün kartlarından {sku, href, name, priceText} listesi çıkarır.
-# saatvesaat.com.tr React SPA — ürün kartları data-testid veya class'a göre bulunur.
-# Fiyat içeren kartları tarar; href'ten SKU alır.
+# brandSlug parametresi ile yalnızca o markaya ait ürünler filtrelenir
+# (sponsored/reklam ürünleri dışlanır).
 _DISCOVER_JS = """
-() => {
+(brandSlug) => {
     const results = [];
     const seen = new Set();
     const pricePattern = /[\\d]+[.,][\\d,.]* ?TL/i;
+    const skipPaths = ['/customer/', '/cart/', '/checkout/', '/search/', '/wishlist/', '/compare/', '/catalogsearch/'];
 
-    // Tüm <a> linklerini tara, ürün sayfasına giden linkleri bul
     const links = Array.from(document.querySelectorAll('a[href]'));
     for (const link of links) {
         const href = link.getAttribute('href') || '';
-        // Ürün URL'leri genellikle -p- veya birden fazla segment içerir
-        if (!href || href === '/' || href.startsWith('#')) continue;
+        if (!href || href === '/' || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) continue;
+        if (skipPaths.some(p => href.includes(p))) continue;
 
         const fullHref = href.startsWith('http') ? href : window.location.origin + href;
 
-        // Kart container'ı bul (en fazla 8 seviye yukarı)
+        const pathOnly = fullHref.replace(/^https?:\\/\\/[^\\/]+/, '');
+        const pathParts = pathOnly.split('/').filter(Boolean);
+        if (pathParts.length === 0) continue;
+        const slug = pathParts[pathParts.length - 1];
+        if (!slug || slug.length < 15 || !slug.includes('-')) continue;
+
+        // Yalnızca hedef markaya ait ürünleri al — sponsored ürünleri dışla
+        if (brandSlug && !slug.includes(brandSlug)) continue;
+
+        if (seen.has(slug)) continue;
+        seen.add(slug);
+
+        // Kart container'ı bul (en fazla 6 seviye yukarı)
         let card = link;
         let priceEl = null;
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 6; i++) {
             card = card.parentElement;
             if (!card) break;
-            // Fiyat içeren element ara
             const candidate = card.querySelector('[class*="price"]')
                            || card.querySelector('[class*="fiyat"]')
                            || card.querySelector('[class*="Price"]');
@@ -64,15 +75,9 @@ _DISCOVER_JS = """
         }
         if (!priceEl) continue;
 
-        // Ürün adı
         const nameEl = card.querySelector('h2, h3, [class*="name"], [class*="title"], [class*="model"]');
         const name = nameEl ? nameEl.innerText.trim() : link.innerText.trim();
         if (!name || name.length < 4) continue;
-
-        // SKU = URL'nin son segmenti
-        const slug = href.split('/').filter(Boolean).pop() || '';
-        if (!slug || seen.has(slug)) continue;
-        seen.add(slug);
 
         results.push({
             sku: slug,
@@ -201,12 +206,18 @@ class SaatVeSaatScraper:
         url = _BASE + path
         page = await self._new_page()
         results: list[dict] = []
+        # /catalogsearch/result/?q=tommy+hilfiger → "tommy-hilfiger"
+        # /catalogsearch/result/?q=seiko          → "seiko"
+        import urllib.parse as _up
+        qs = _up.parse_qs(_up.urlparse(path).query)
+        brand_slug = qs.get("q", [""])[0].replace("+", "-").replace(" ", "-").lower()
+
         try:
-            logger.info("[saatvesaat] discover: %s", url)
+            logger.info("[saatvesaat] discover: %s (brand_slug=%s)", url, brand_slug)
             await page.goto(url, wait_until="networkidle", timeout=45000)
             await page.wait_for_timeout(3000)
 
-            items = await page.evaluate(_DISCOVER_JS)
+            items = await page.evaluate(_DISCOVER_JS, brand_slug)
             logger.debug("[saatvesaat] %s: %d kart bulundu", path, len(items))
 
             for item in items[:top_n]:
