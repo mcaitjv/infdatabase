@@ -42,6 +42,7 @@ class PasabahceScraper:
     def __init__(self) -> None:
         self._pw = None
         self._browser = None
+        self._renders_since_restart = 0
 
     async def __aenter__(self) -> "PasabahceScraper":
         from playwright.async_api import async_playwright
@@ -52,6 +53,8 @@ class PasabahceScraper:
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
                 "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--js-flags=--max-old-space-size=256",
             ],
         )
         return self
@@ -89,7 +92,9 @@ class PasabahceScraper:
             for _ in range(4):
                 await page.evaluate("window.scrollBy(0, 1500)")
                 await page.wait_for_timeout(800)
-            return await page.content()
+            html = await page.content()
+            self._renders_since_restart += 1
+            return html
         finally:
             await ctx.close()
 
@@ -155,8 +160,18 @@ class PasabahceScraper:
         try:
             html = await self._render_page(url)
         except Exception as exc:
-            logger.warning("[pasabahce] render hata %s: %s", slug, exc)
-            return None
+            err_str = str(exc).lower()
+            if any(k in err_str for k in ("closed", "target", "browser", "crash")):
+                logger.warning("[pasabahce] browser capti, yeniden baslatiliyor: %s", exc)
+                try:
+                    await self._restart_browser()
+                    html = await self._render_page(url)
+                except Exception as retry_exc:
+                    logger.warning("[pasabahce] render hata %s: %s", slug, retry_exc)
+                    return None
+            else:
+                logger.warning("[pasabahce] render hata %s: %s", slug, exc)
+                return None
 
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
@@ -201,8 +216,12 @@ class PasabahceScraper:
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
                 "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--js-flags=--max-old-space-size=256",
             ],
         )
+        self._renders_since_restart = 0
+        await asyncio.sleep(2.0)  # Chromium process stabilleşsin, new_context() erken çağrılmasın
         logger.info("[pasabahce] browser yeniden baslatildi")
 
     async def scrape_tracked(
@@ -214,8 +233,8 @@ class PasabahceScraper:
         today = date.today()
         records: list[AppliancePriceRecord] = []
 
-        for i, entry in enumerate(tracked_skus):
-            if i > 0 and i % 8 == 0:
+        for entry in tracked_skus:
+            if self._renders_since_restart >= 5:
                 await self._restart_browser()
             slug = entry["sku"]
             model = entry.get("model", slug)

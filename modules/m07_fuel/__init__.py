@@ -284,8 +284,11 @@ class FuelModule(BaseModule):
 
                 run.finished_at = datetime.now()
                 if not dry_run:
-                    async with get_connection() as conn:
-                        await upsert_scrape_run(conn, run)
+                    try:
+                        async with get_connection() as conn:
+                            await upsert_scrape_run(conn, run)
+                    except Exception as db_exc:
+                        logger.warning("[m07] scrape_run kaydedilemedi (%s): %s", provider, db_exc)
 
                 duration = (run.finished_at - run.started_at).total_seconds()
                 logger.info("[m07] %s tamamlandı — %s, %.1fs", provider, run.status, duration)

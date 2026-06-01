@@ -168,6 +168,9 @@ class OpetScraper:
 
             if not prices:
                 logger.warning("[opet] %s için hiç fiyat bulunamadı", city)
+                # İlk 20 satırı logla — sayfa yapısı değişmişse teşhis için
+                preview = "\n".join(page_text.splitlines()[:20])
+                logger.debug("[opet] %s sayfa önizleme:\n%s", city, preview)
                 continue
 
             for fuel_type, price in prices.items():

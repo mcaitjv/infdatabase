@@ -17,9 +17,6 @@ categories:
         - /surahi/
         - /kaseler/
     tracked_skus:
-    - sku: /korkmaz-palm-12-parca-cay-bardak-seti
-      model: Korkmaz Palm 12 Parça Çay Bardak Seti A8997-3
-      source: korkmazstore
     - sku: /korkmaz-manolya-2li-su-bardagi-a9515-4
       model: Korkmaz Manolya 2li Su Bardağı A9515-4
       source: korkmazstore
@@ -103,17 +100,11 @@ categories:
     - sku: electrum-seramik-mini-tabak-su-yesili-p-000000000010020397
       model: Electrum Seramik Mini Tabak Su Yesili
       source: pasabahce
-    - sku: /korkmaz-hasbahce-kumru-ak-12-parca-cay-bardak-seti
-      model: Korkmaz Hasbahçe Kumru Ak 12 Parça Çay Bardak Seti A9509-3
-      source: korkmazstore
     - sku: /korkmaz-eva-4-parca-kahve-fincan-takimi-9791
       model: Korkmaz Eva 4 Parça Kahve Fincan Takımı A8648-6
       source: korkmazstore
     - sku: /korkmaz-kappa-4-parca-cizgi-desen-kahve-fincan-takimi
       model: Korkmaz Kappa 4 Parça Çizgi Desen Kahve Fincan Takımı A8699-2
-      source: korkmazstore
-    - sku: /korkmaz-angela-4-parca-beyaz-kahve-fincan-takimi
-      model: Korkmaz Angela 4 Parça Beyaz Kahve Fincan Takımı A8779-1
       source: korkmazstore
     - sku: /korkmaz-orient-4-parca-kahve-fincan-takimi-9784
       model: Korkmaz Orient 4 Parça Kahve Fincan Takımı A8644-4
@@ -149,9 +140,6 @@ categories:
       source: korkmazstore
     - sku: /korkmaz-rona-24-parca-catal-kasik-bicak-seti
       model: Korkmaz Rona 24 Parça Çatal Kaşık Bıçak Seti A2501
-      source: korkmazstore
-    - sku: /korkmaz-talia-72-parca-catal-kasik-bicak-seti
-      model: Korkmaz Talia 72 Parça Çatal Kaşık Bıçak Seti A2486
       source: korkmazstore
     - sku: /korkmaz-felisa-84-parca-catal-kasik-bicak-seti
       model: Korkmaz Felisa 84 Parça Çatal Kaşık Bıçak Seti A2518
