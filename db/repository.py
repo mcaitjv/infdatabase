@@ -8,7 +8,7 @@ from typing import Any
 
 import aiosqlite
 
-from db.models import AppliancePriceRecord, CarPriceRecord, FerryPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, ScrapeRun, TaxiPriceRecord, TrainRecord, TransportPriceRecord
+from db.models import AppliancePriceRecord, CarPriceRecord, FerryPriceRecord, FlightPriceRecord, FuelPriceRecord, IntercityBusRecord, PriceRecord, SaatAltinRecord, ScrapeRun, TaxiPriceRecord, TrainRecord, TransportPriceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -932,6 +932,41 @@ async def batch_upsert_m13_products_and_snapshots(
         if result == "INSERT 0 1":
             inserted += 1
 
+    return inserted
+
+
+async def batch_upsert_saat_altin_prices(
+    conn,
+    records: list[SaatAltinRecord],
+) -> int:
+    """m13_saat_altin_prices tablosuna saat & altın fiyatlarını ekler/günceller."""
+    if not records:
+        return 0
+    inserted = 0
+    for r in records:
+        snap_date = r.snapshot_date if isinstance(r.snapshot_date, date) else date.fromisoformat(str(r.snapshot_date))
+        if isinstance(conn, _SqliteConn):
+            result = await conn.execute(
+                """
+                INSERT INTO m13_saat_altin_prices
+                    (snapshot_date, brand, model, tur, kaynak_sku, kaynak, price)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (kaynak_sku, snapshot_date) DO UPDATE SET price = excluded.price
+                """,
+                str(snap_date), r.brand, r.model, r.tur, r.kaynak_sku, r.kaynak, float(r.price),
+            )
+        else:
+            result = await conn.execute(
+                """
+                INSERT INTO m13_saat_altin_prices
+                    (snapshot_date, brand, model, tur, kaynak_sku, kaynak, price)
+                VALUES ($1::date, $2, $3, $4, $5, $6, $7::numeric)
+                ON CONFLICT (kaynak_sku, snapshot_date) DO UPDATE SET price = EXCLUDED.price
+                """,
+                snap_date, r.brand, r.model, r.tur, r.kaynak_sku, r.kaynak, float(r.price),
+            )
+        if result == "INSERT 0 1":
+            inserted += 1
     return inserted
 
 

@@ -6,6 +6,10 @@ from db.models import PriceRecord
 logger = logging.getLogger(__name__)
 
 _MAX_PRICE = Decimal("10000")
+_MAX_PRICE_OVERRIDES: dict[str, Decimal] = {
+    "saatvesaat": Decimal("200000"),  # saatler 10k-150k TL aralığında
+    "trendyol":   Decimal("200000"),
+}
 _ANOMALY_THRESHOLD = 0.50  # %50 değişim anomali sayılır
 
 
@@ -19,7 +23,8 @@ def validate(record: PriceRecord) -> list[str]:
     if record.price <= 0:
         errors.append(f"Sıfır/negatif fiyat: {record.price}")
 
-    if record.price > _MAX_PRICE:
+    max_price = _MAX_PRICE_OVERRIDES.get(record.market, _MAX_PRICE)
+    if record.price > max_price:
         errors.append(f"Anormal yüksek fiyat: {record.price}")
 
     if record.islem_hacmi is not None:

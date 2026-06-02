@@ -100,6 +100,23 @@ CREATE INDEX IF NOT EXISTS idx_m13_ps_date         ON m13_price_snapshots(snapsh
 CREATE INDEX IF NOT EXISTS idx_m13_ps_product_date ON m13_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_m13_mp_market       ON m13_market_products(market);
 
+-- Saat & Altın fiyat tablosu (Modül 13 — COICOP 1313)
+CREATE TABLE IF NOT EXISTS m13_saat_altin_prices (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    snapshot_date TEXT    NOT NULL,
+    brand         TEXT    NOT NULL,
+    model         TEXT    NOT NULL,
+    tur           TEXT    NOT NULL DEFAULT 'saat',
+    kaynak_sku    TEXT    NOT NULL,
+    kaynak        TEXT    NOT NULL,
+    price         REAL    NOT NULL,
+    scraped_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(kaynak_sku, snapshot_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_m13_saat_altin_date  ON m13_saat_altin_prices(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_m13_saat_altin_brand ON m13_saat_altin_prices(brand, tur);
+
 CREATE TABLE IF NOT EXISTS shared_scrape_runs (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     market           TEXT NOT NULL,

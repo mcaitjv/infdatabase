@@ -1,0 +1,143 @@
+label: Saat & Altın
+top_n: 4
+brands:
+  seiko:
+    label: Seiko
+    saatvesaat_path: /catalogsearch/result/?q=seiko
+    tracked_skus:
+    - sku: seiko-kadin-kol-saati-p-seiwr091p
+      href: https://www.saatvesaat.com.tr/seiko-kadin-kol-saati-p-seiwr091p
+      model: SEIWR091P Kadın Kol Saati
+      brand_model: SEIWR091P
+      brand: Seiko
+      source: saatvesaat
+    - sku: seiko-kadin-kol-saati-p-seiur573p
+      href: https://www.saatvesaat.com.tr/seiko-kadin-kol-saati-p-seiur573p
+      model: SEIUR573P Kadın Kol Saati
+      brand_model: SEIUR573P
+      brand: Seiko
+      source: saatvesaat
+    - sku: seiko-kadin-kol-saati-p-seiur578p
+      href: https://www.saatvesaat.com.tr/seiko-kadin-kol-saati-p-seiur578p
+      model: SEIUR578P Kadın Kol Saati
+      brand_model: SEIUR578P
+      brand: Seiko
+      source: saatvesaat
+    - sku: seiko-kadin-kol-saati-p-seiwr093p
+      href: https://www.saatvesaat.com.tr/seiko-kadin-kol-saati-p-seiwr093p
+      model: SEIWR093P Kadın Kol Saati
+      brand_model: SEIWR093P
+      brand: Seiko
+      source: saatvesaat
+  emporio_armani:
+    label: Emporio Armani
+    saatvesaat_path: /catalogsearch/result/?q=emporio+armani
+    tracked_skus:
+    - sku: emporio-armani-erkek-kol-saati-p-ar11736
+      href: https://www.saatvesaat.com.tr/emporio-armani-erkek-kol-saati-p-ar11736
+      model: AR11736 Erkek Kol Saati
+      brand_model: AR11736
+      brand: Emporio Armani
+      source: saatvesaat
+    - sku: emporio-armani-erkek-kol-saati-p-ar11731
+      href: https://www.saatvesaat.com.tr/emporio-armani-erkek-kol-saati-p-ar11731
+      model: AR11731 Erkek Kol Saati
+      brand_model: AR11731
+      brand: Emporio Armani
+      source: saatvesaat
+    - sku: emporio-armani-erkek-kol-saati-p-ar11561
+      href: https://www.saatvesaat.com.tr/emporio-armani-erkek-kol-saati-p-ar11561
+      model: AR11561 Erkek Kol Saati
+      brand_model: AR11561
+      brand: Emporio Armani
+      source: saatvesaat
+    - sku: emporio-armani-erkek-kol-saati-p-ar11539
+      href: https://www.saatvesaat.com.tr/emporio-armani-erkek-kol-saati-p-ar11539
+      model: AR11539 Erkek Kol Saati
+      brand_model: AR11539
+      brand: Emporio Armani
+      source: saatvesaat
+  fossil:
+    label: Fossil
+    saatvesaat_path: /catalogsearch/result/?q=fossil
+    tracked_skus:
+    - sku: fossil-erkek-kol-saati-p-fme3262
+      href: https://www.saatvesaat.com.tr/fossil-erkek-kol-saati-p-fme3262
+      model: FME3262 Erkek Kol Saati
+      brand_model: FME3262
+      brand: Fossil
+      source: saatvesaat
+    - sku: fossil-erkek-kol-saati-p-fme3264
+      href: https://www.saatvesaat.com.tr/fossil-erkek-kol-saati-p-fme3264
+      model: FME3264 Erkek Kol Saati
+      brand_model: FME3264
+      brand: Fossil
+      source: saatvesaat
+    - sku: fossil-erkek-kol-saati-p-fme3279
+      href: https://www.saatvesaat.com.tr/fossil-erkek-kol-saati-p-fme3279
+      model: FME3279 Erkek Kol Saati
+      brand_model: FME3279
+      brand: Fossil
+      source: saatvesaat
+    - sku: fossil-erkek-kol-saati-p-ffs6092
+      href: https://www.saatvesaat.com.tr/fossil-erkek-kol-saati-p-ffs6092
+      model: FFS6092 Erkek Kol Saati
+      brand_model: FFS6092
+      brand: Fossil
+      source: saatvesaat
+  guess:
+    label: Guess
+    saatvesaat_path: /catalogsearch/result/?q=guess
+    tracked_skus:
+    - sku: guess-erkek-kol-saati-p-guu1487g3m
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-guu1487g3m
+      model: GUU1487G3M Erkek Kol Saati
+      brand_model: GUU1487G3M
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-kadin-kol-saati-p-gugw0305l1
+      href: https://www.saatvesaat.com.tr/guess-kadin-kol-saati-p-gugw0305l1
+      model: GUGW0305L1 Kadın Kol Saati
+      brand_model: GUGW0305L1
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-erkek-kol-saati-p-gugw1063g2
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-gugw1063g2
+      model: GUGW1063G2 Erkek Kol Saati
+      brand_model: GUGW1063G2
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-erkek-kol-saati-p-gugw1063g1
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-gugw1063g1
+      model: GUGW1063G1 Erkek Kol Saati
+      brand_model: GUGW1063G1
+      brand: Guess
+      source: saatvesaat
+  tommy_hilfiger:
+    label: Tommy Hilfiger
+    saatvesaat_path: /catalogsearch/result/?q=tommy+hilfiger
+    tracked_skus:
+    - sku: tommy-hilfiger-erkek-kol-saati-p-th1792257
+      href: https://www.saatvesaat.com.tr/tommy-hilfiger-erkek-kol-saati-p-th1792257
+      model: TH1792257 Erkek Kol Saati
+      brand_model: TH1792257
+      brand: Tommy Hilfiger
+      source: saatvesaat
+    - sku: tommy-hilfiger-kadin-kol-saati-p-th1782688
+      href: https://www.saatvesaat.com.tr/tommy-hilfiger-kadin-kol-saati-p-th1782688
+      model: TH1782688 Kadın Kol Saati
+      brand_model: TH1782688
+      brand: Tommy Hilfiger
+      source: saatvesaat
+    - sku: tommy-hilfiger-erkek-kol-saati-p-th1710439
+      href: https://www.saatvesaat.com.tr/tommy-hilfiger-erkek-kol-saati-p-th1710439
+      model: TH1710439 Erkek Kol Saati
+      brand_model: TH1710439
+      brand: Tommy Hilfiger
+      source: saatvesaat
+    - sku: tommy-hilfiger-erkek-kol-saati-p-th1710739
+      href: https://www.saatvesaat.com.tr/tommy-hilfiger-erkek-kol-saati-p-th1710739
+      model: TH1710739 Erkek Kol Saati
+      brand_model: TH1710739
+      brand: Tommy Hilfiger
+      source: saatvesaat
