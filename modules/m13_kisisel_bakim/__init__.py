@@ -107,6 +107,7 @@ class KisiselBakimModule(BaseModule):
 
         if run_saat_altin:
             runs.extend(await self._run_saat_altin(dry_run=dry_run))
+            runs.extend(await self._run_altin(dry_run=dry_run))
 
         return runs
 
@@ -252,6 +253,57 @@ class KisiselBakimModule(BaseModule):
 
             run.finished_at = datetime.now()
             logger.info("[m13] %s — %s, %.1fs", source_key, run.status, (run.finished_at - run.started_at).total_seconds())
+            runs.append(run)
+            if not dry_run:
+                async with get_connection() as conn:
+                    await upsert_scrape_run(conn, run)
+
+        return runs
+
+    # ── Altın part: altin.in + altinkaynak ──────────────────────────────────
+
+    async def _run_altin(self, dry_run: bool = False) -> list[ScrapeRun]:
+        """Günlük gram altın fiyatını iki kaynaktan çeker, m13_saat_altin_prices'a yazar."""
+        from modules.m13_kisisel_bakim.scrapers.m13_altin import AltinInScraper, AltinkayakScraper
+
+        runs: list[ScrapeRun] = []
+
+        for ScraperCls in (AltinInScraper, AltinkayakScraper):
+            run = ScrapeRun(
+                market=f"m13:{ScraperCls.market_name}",
+                run_date=date.today(),
+                started_at=datetime.now(),
+            )
+            try:
+                async with ScraperCls() as scraper:
+                    records = await scraper.scrape()
+
+                valid = [r for r in records if r.price > 0]
+                run.products_scraped = len(valid)
+
+                if dry_run:
+                    logger.info("[m13] Dry-run %s: %d kayıt", ScraperCls.market_name, len(valid))
+                    for r in valid:
+                        print(f"  [{r.kaynak}] {r.model} | {r.price} TL")
+                else:
+                    async with get_connection() as conn:
+                        inserted = await batch_upsert_saat_altin_prices(conn, valid)
+                        logger.info("[m13] %s: %d kayıt eklendi", ScraperCls.market_name, inserted)
+
+                run.status = "success"
+
+            except Exception as exc:
+                logger.error("[m13] %s hata: %s", ScraperCls.market_name, exc, exc_info=True)
+                run.status = "failed"
+                run.error_details = str(exc)
+
+            run.finished_at = datetime.now()
+            logger.info(
+                "[m13] %s — %s, %.1fs",
+                ScraperCls.market_name,
+                run.status,
+                (run.finished_at - run.started_at).total_seconds(),
+            )
             runs.append(run)
             if not dry_run:
                 async with get_connection() as conn:
