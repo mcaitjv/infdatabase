@@ -107,11 +107,11 @@ CREATE TABLE IF NOT EXISTS m13_saat_altin_prices (
     brand         TEXT    NOT NULL,
     model         TEXT    NOT NULL,
     tur           TEXT    NOT NULL DEFAULT 'saat',
-    market_sku    TEXT    NOT NULL,
+    kaynak_sku    TEXT    NOT NULL,
     kaynak        TEXT    NOT NULL,
     price         REAL    NOT NULL,
     scraped_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(market_sku, snapshot_date)
+    UNIQUE(kaynak_sku, snapshot_date)
 );
 
 CREATE INDEX IF NOT EXISTS idx_m13_saat_altin_date  ON m13_saat_altin_prices(snapshot_date);

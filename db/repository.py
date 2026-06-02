@@ -949,21 +949,21 @@ async def batch_upsert_saat_altin_prices(
             result = await conn.execute(
                 """
                 INSERT INTO m13_saat_altin_prices
-                    (snapshot_date, brand, model, tur, market_sku, kaynak, price)
+                    (snapshot_date, brand, model, tur, kaynak_sku, kaynak, price)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT (market_sku, snapshot_date) DO UPDATE SET price = excluded.price
+                ON CONFLICT (kaynak_sku, snapshot_date) DO UPDATE SET price = excluded.price
                 """,
-                str(snap_date), r.brand, r.model, r.tur, r.market_sku, r.kaynak, float(r.price),
+                str(snap_date), r.brand, r.model, r.tur, r.kaynak_sku, r.kaynak, float(r.price),
             )
         else:
             result = await conn.execute(
                 """
                 INSERT INTO m13_saat_altin_prices
-                    (snapshot_date, brand, model, tur, market_sku, kaynak, price)
+                    (snapshot_date, brand, model, tur, kaynak_sku, kaynak, price)
                 VALUES ($1::date, $2, $3, $4, $5, $6, $7::numeric)
-                ON CONFLICT (market_sku, snapshot_date) DO UPDATE SET price = EXCLUDED.price
+                ON CONFLICT (kaynak_sku, snapshot_date) DO UPDATE SET price = EXCLUDED.price
                 """,
-                snap_date, r.brand, r.model, r.tur, r.market_sku, r.kaynak, float(r.price),
+                snap_date, r.brand, r.model, r.tur, r.kaynak_sku, r.kaynak, float(r.price),
             )
         if result == "INSERT 0 1":
             inserted += 1

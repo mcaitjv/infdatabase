@@ -214,7 +214,7 @@ class SaatAltinRecord(BaseModel):
     brand:     str
     model:     str
     tur:       str = "saat"   # 'saat' | 'altin'
-    market_sku: str
+    kaynak_sku: str
     kaynak:    str             # 'saatvesaat' | 'trendyol'
     price:     Decimal
 

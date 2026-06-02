@@ -227,7 +227,7 @@ class KisiselBakimModule(BaseModule):
                         brand=meta.get("brand") or r.brand or "",
                         model=meta.get("model") or r.market_name,
                         tur="saat",
-                        market_sku=r.market_sku,
+                        kaynak_sku=r.market_sku,
                         kaynak=source_key,
                         price=r.price,
                     ))
