@@ -19,10 +19,11 @@ from datetime import date, datetime
 
 import yaml
 
-from db.models import ScrapeRun
+from db.models import SaatAltinRecord, ScrapeRun
 from db.repository import (
     apply_schema,
     batch_upsert_m13_products_and_snapshots,
+    batch_upsert_saat_altin_prices,
     export_and_cleanup,
     get_connection,
     upsert_scrape_run,
@@ -199,60 +200,58 @@ class KisiselBakimModule(BaseModule):
         runs: list[ScrapeRun] = []
 
         # saatvesaat
-        saatvesaat_skus = [s for s in all_tracked if s.get("source") == "saatvesaat"]
-        if saatvesaat_skus:
-            run = ScrapeRun(market="m13:saatvesaat", run_date=date.today(), started_at=datetime.now())
-            try:
-                async with SaatVeSaatScraper() as scraper:
-                    records = await scraper.scrape_tracked(saatvesaat_skus)
-                valid = validate_batch(records)
-                run.products_scraped = len(valid)
-                run.errors_count = len(records) - len(valid)
-                if dry_run:
-                    logger.info("[m13] Dry-run saatvesaat: %d ürün", len(valid))
-                    for r in valid[:3]:
-                        print(f"  [saatvesaat] {r.market_name} | {r.price} TL")
-                else:
-                    async with get_connection() as conn:
-                        inserted = await batch_upsert_m13_products_and_snapshots(conn, valid)
-                        logger.info("[m13] saatvesaat: %d ürün, %d snapshot", len(valid), inserted)
-                run.status = "success" if run.errors_count == 0 else "partial"
-            except Exception as exc:
-                logger.error("[m13] saatvesaat hata: %s", exc, exc_info=True)
-                run.status = "failed"
-                run.error_details = str(exc)
-            run.finished_at = datetime.now()
-            logger.info("[m13] saatvesaat — %s, %.1fs", run.status, (run.finished_at - run.started_at).total_seconds())
-            runs.append(run)
-            if not dry_run:
-                async with get_connection() as conn:
-                    await upsert_scrape_run(conn, run)
+        for source_key in ("saatvesaat", "trendyol"):
+            source_skus = [s for s in all_tracked if s.get("source") == source_key]
+            if not source_skus:
+                continue
 
-        # trendyol
-        trendyol_skus = [s for s in all_tracked if s.get("source") == "trendyol"]
-        if trendyol_skus:
-            run = ScrapeRun(market="m13:trendyol", run_date=date.today(), started_at=datetime.now())
+            run = ScrapeRun(market=f"m13:{source_key}", run_date=date.today(), started_at=datetime.now())
             try:
-                async with TrendyolM13Scraper() as scraper:
-                    records = await scraper.scrape_tracked(trendyol_skus)
-                valid = validate_batch(records)
-                run.products_scraped = len(valid)
-                run.errors_count = len(records) - len(valid)
+                if source_key == "saatvesaat":
+                    async with SaatVeSaatScraper() as scraper:
+                        price_records = await scraper.scrape_tracked(source_skus)
+                else:
+                    async with TrendyolM13Scraper() as scraper:
+                        price_records = await scraper.scrape_tracked(source_skus)
+
+                valid_price = validate_batch(price_records)
+
+                # PriceRecord → SaatAltinRecord dönüşümü
+                # source_skus'tan brand/model bilgisini eşleştir
+                sku_meta = {s["sku"]: s for s in source_skus}
+                saat_records: list[SaatAltinRecord] = []
+                for r in valid_price:
+                    meta = sku_meta.get(r.market_sku, {})
+                    saat_records.append(SaatAltinRecord(
+                        snapshot_date=r.snapshot_date,
+                        brand=meta.get("brand") or r.brand or "",
+                        model=meta.get("model") or r.market_name,
+                        tur="saat",
+                        market_sku=r.market_sku,
+                        kaynak=source_key,
+                        price=r.price,
+                    ))
+
+                run.products_scraped = len(saat_records)
+                run.errors_count = len(price_records) - len(valid_price)
+
                 if dry_run:
-                    logger.info("[m13] Dry-run trendyol: %d ürün", len(valid))
-                    for r in valid[:3]:
-                        print(f"  [trendyol] {r.market_name} | {r.price} TL")
+                    logger.info("[m13] Dry-run %s: %d ürün", source_key, len(saat_records))
+                    for r in saat_records[:3]:
+                        print(f"  [{source_key}] {r.model} | {r.price} TL")
                 else:
                     async with get_connection() as conn:
-                        inserted = await batch_upsert_m13_products_and_snapshots(conn, valid)
-                        logger.info("[m13] trendyol: %d ürün, %d snapshot", len(valid), inserted)
+                        inserted = await batch_upsert_saat_altin_prices(conn, saat_records)
+                        logger.info("[m13] %s: %d ürün, %d kayıt", source_key, len(saat_records), inserted)
+
                 run.status = "success" if run.errors_count == 0 else "partial"
             except Exception as exc:
-                logger.error("[m13] trendyol hata: %s", exc, exc_info=True)
+                logger.error("[m13] %s hata: %s", source_key, exc, exc_info=True)
                 run.status = "failed"
                 run.error_details = str(exc)
+
             run.finished_at = datetime.now()
-            logger.info("[m13] trendyol — %s, %.1fs", run.status, (run.finished_at - run.started_at).total_seconds())
+            logger.info("[m13] %s — %s, %.1fs", source_key, run.status, (run.finished_at - run.started_at).total_seconds())
             runs.append(run)
             if not dry_run:
                 async with get_connection() as conn:

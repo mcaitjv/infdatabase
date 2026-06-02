@@ -208,6 +208,24 @@ class TaxiPriceRecord(BaseModel):
         return v
 
 
+class SaatAltinRecord(BaseModel):
+    """Modül 13 — Saat & Altın fiyat kaydı (m13_saat_altin_prices tablosu)."""
+    snapshot_date: date
+    brand:     str
+    model:     str
+    tur:       str = "saat"   # 'saat' | 'altin'
+    market_sku: str
+    kaynak:    str             # 'saatvesaat' | 'trendyol'
+    price:     Decimal
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Fiyat sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class ScrapeRun(BaseModel):
     """Bir scraper çalışmasının log kaydı."""
     market: str
