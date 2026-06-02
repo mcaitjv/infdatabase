@@ -85,6 +85,34 @@ brands:
       brand_model: FFS6092
       brand: Fossil
       source: saatvesaat
+  guess:
+    label: Guess
+    saatvesaat_path: /catalogsearch/result/?q=guess
+    tracked_skus:
+    - sku: guess-erkek-kol-saati-p-guu1487g3m
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-guu1487g3m
+      model: GUU1487G3M Erkek Kol Saati
+      brand_model: GUU1487G3M
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-kadin-kol-saati-p-gugw0305l1
+      href: https://www.saatvesaat.com.tr/guess-kadin-kol-saati-p-gugw0305l1
+      model: GUGW0305L1 Kadın Kol Saati
+      brand_model: GUGW0305L1
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-erkek-kol-saati-p-gugw1063g2
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-gugw1063g2
+      model: GUGW1063G2 Erkek Kol Saati
+      brand_model: GUGW1063G2
+      brand: Guess
+      source: saatvesaat
+    - sku: guess-erkek-kol-saati-p-gugw1063g1
+      href: https://www.saatvesaat.com.tr/guess-erkek-kol-saati-p-gugw1063g1
+      model: GUGW1063G1 Erkek Kol Saati
+      brand_model: GUGW1063G1
+      brand: Guess
+      source: saatvesaat
   tommy_hilfiger:
     label: Tommy Hilfiger
     saatvesaat_path: /catalogsearch/result/?q=tommy+hilfiger
