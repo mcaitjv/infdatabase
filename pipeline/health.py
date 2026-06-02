@@ -488,6 +488,110 @@ async def check_new_categories(target_date: date) -> list[str]:
     return alerts
 
 
+def _load_saat_altin_brands() -> dict:
+    """saat_altin.yaml'dan brands dict döner (health check için)."""
+    path = Path("modules") / "m13_kisisel_bakim" / "config" / "saat_altin.yaml"
+    if not path.exists():
+        return {}
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("brands", {})
+
+
+async def check_m13_saat_altin_health(conn, target_date: date) -> ModuleHealthReport:
+    """M13 saat_altin: m13_saat_altin_prices bütünlük ve anomali kontrolü."""
+    yesterday = target_date - timedelta(days=1)
+    report = ModuleHealthReport(
+        module_code="13-saat_altin",
+        module_name="Saat & Altın (M13)",
+        date=target_date,
+    )
+
+    row_today = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_saat_altin_prices WHERE snapshot_date = $1",
+        target_date,
+    )
+    row_yest = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_saat_altin_prices WHERE snapshot_date = $1",
+        yesterday,
+    )
+    report.records_today     = int(row_today[0]) if row_today else 0
+    report.records_yesterday = int(row_yest[0])  if row_yest  else 0
+
+    # Beklenen: tracked saatler + 2 altın kaydı (altin_in + altinkaynak)
+    brands = _load_saat_altin_brands()
+    saat_expected = sum(
+        len(b.get("tracked_skus", []))
+        for b in brands.values()
+    )
+    report.expected = saat_expected + 2
+
+    if report.records_today == 0:
+        report.add_error("Bugün m13_saat_altin_prices tablosuna hiç kayıt yazılmamış")
+        return report
+
+    # Altın kaynakları kontrolü
+    altin_row = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_saat_altin_prices WHERE snapshot_date = $1 AND tur = 'gram_altin'",
+        target_date,
+    )
+    altin_count = int(altin_row[0]) if altin_row else 0
+    if altin_count < 2:
+        report.add_warning(
+            f"Altın kaydı eksik: {altin_count}/2 (beklenen: altin_in + altinkaynak)"
+        )
+        for kaynak in ("altin_in", "altinkaynak"):
+            k_row = await conn.fetchrow(
+                "SELECT COUNT(*) FROM m13_saat_altin_prices "
+                "WHERE snapshot_date = $1 AND kaynak = $2 AND tur = 'gram_altin'",
+                target_date, kaynak,
+            )
+            if not k_row or int(k_row[0]) == 0:
+                report.missing.append(f"gram_altin / {kaynak}")
+
+    # Saat sayısı kontrolü
+    saat_row = await conn.fetchrow(
+        "SELECT COUNT(*) FROM m13_saat_altin_prices WHERE snapshot_date = $1 AND tur = 'saat'",
+        target_date,
+    )
+    saat_count = int(saat_row[0]) if saat_row else 0
+    if saat_expected > 0 and saat_count < saat_expected:
+        report.add_warning(f"Saat kaydı eksik: {saat_count}/{saat_expected}")
+
+    # Fiyat anomalisi (gün içi saat fiyat değişimi)
+    thr = _THRESHOLDS["appliance"]
+    anomalies = await conn.fetch(
+        """
+        SELECT t.kaynak, t.model,
+               CAST(t.price AS REAL) AS today_price,
+               CAST(y.price AS REAL) AS yesterday_price
+        FROM m13_saat_altin_prices t
+        JOIN m13_saat_altin_prices y
+            ON t.kaynak_sku = y.kaynak_sku
+        WHERE t.snapshot_date = $1
+          AND y.snapshot_date = $2
+          AND y.price > 0
+          AND ABS(CAST(t.price AS REAL) - CAST(y.price AS REAL))
+              / CAST(y.price AS REAL) > $3
+        ORDER BY ABS(CAST(t.price AS REAL) - CAST(y.price AS REAL))
+                 / CAST(y.price AS REAL) DESC
+        LIMIT 10
+        """,
+        target_date, yesterday, thr["warning"],
+    )
+    for row in anomalies:
+        today_p = float(row[2])
+        yest_p  = float(row[3])
+        pct     = (today_p - yest_p) / yest_p * 100
+        lbl     = f"{row[0]} / {str(row[1])[:40]}"
+        report.anomalies.append(PriceAnomaly(lbl, yest_p, today_p, round(pct, 1)))
+        if abs(pct) / 100 > thr["error"]:
+            report.add_error(f"Kritik fiyat değişimi: {lbl} {_pct_label(pct)}")
+        else:
+            report.add_warning(f"Fiyat değişimi: {lbl} {_pct_label(pct)}")
+
+    return report
+
+
 async def check_m13_health(conn, target_date: date) -> ModuleHealthReport:
     """M13: m13_price_snapshots bütünlük ve anomali kontrolü."""
     yesterday = target_date - timedelta(days=1)
@@ -587,7 +691,7 @@ async def run_health_check(
 
     pipeline = PipelineHealthReport(date=target_date)
 
-    for check_fn in [check_market_health, check_appliance_health, check_m05_evbakim_health, check_m07_health, check_m13_health]:
+    for check_fn in [check_market_health, check_appliance_health, check_m05_evbakim_health, check_m07_health, check_m13_health, check_m13_saat_altin_health]:
         try:
             result = await check_fn(conn, target_date)
             if isinstance(result, list):
