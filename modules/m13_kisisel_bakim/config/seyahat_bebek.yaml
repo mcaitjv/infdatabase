@@ -9,14 +9,34 @@
 keywords:
   # 1329101 — Seyahat eşyaları
   - seyahat bavul
-  # 1329104 — Kadın çantası
-  - kadın el çantası
+  # 1329104 — Kadın çantası (tracked sepet ortalaması ile izleniyor)
   # 1329106 — Okul çantası
   - okul çantası
   # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
   # 1329129 — Bebek bezi (tracked SKU ile izleniyor, keyword araması yok)
-  # Bebek maması
-  - bebek maması
+
+# ── Kadın çantası — sepet ortalaması (1329104) ───────────────────────────────
+# discover_kadin_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar
+# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="kadin_cantasi")
+kadin_cantasi:
+  label: Kadın Çantası
+  top_n: 5
+  brands:
+    - brand: Stradivarius
+      search_query: Stradivarius kadın çanta
+      top_skus: []
+    - brand: Bagmori
+      search_query: Bagmori kadın çanta
+      top_skus: []
+    - brand: Mango
+      search_query: Mango kadın çanta
+      top_skus: []
+    - brand: Vakko
+      search_query: Vakko kadın çanta
+      top_skus: []
+    - brand: David Jones
+      search_query: David Jones kadın çanta
+      top_skus: []
 
 # ── Bebek bezi — tracked SKU (1329129) ───────────────────────────────────────
 # discover_bebek_bezi() → trendyol_sku alanlarını doldurur

@@ -247,6 +247,46 @@ class KisiselBakimModule(BaseModule):
         _write_seyahat_bebek_config(config)
         logger.info("[m13:discover-gunes] tamamlandı — %d/%d model bulundu", found, len(models))
 
+    async def discover_kadin_cantasi(self) -> None:
+        """
+        Her marka için Trendyol'da search_query ile arama yapar,
+        ilk top_n ürünün SKU + adını YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-kadin-cantasi
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        kc     = config.get("kadin_cantasi", {})
+        brands = kc.get("brands", [])
+        top_n  = int(kc.get("top_n", 5))
+
+        if not brands:
+            logger.warning("[m13:discover-kadin-cantasi] kadin_cantasi.brands boş — YAML'ı kontrol et")
+            return
+
+        total = 0
+        async with TrendyolM13Scraper() as scraper:
+            for b in brands:
+                query = b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(query, max_pages=1)
+
+                top = results[:top_n]
+                b["top_skus"] = [
+                    {"sku": r.market_sku, "name": r.market_name}
+                    for r in top
+                ]
+                total += len(top)
+                logger.info(
+                    "[m13:discover-kadin-cantasi] %s → %d ürün (query: %s)",
+                    b["brand"], len(top), query,
+                )
+                await _asyncio.sleep(3)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-kadin-cantasi] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
+
     async def discover_bebek_bezi(self) -> None:
         """
         bebek_bezi.models listesindeki her model için Trendyol'da arama yapar,
@@ -639,6 +679,45 @@ class KisiselBakimModule(BaseModule):
                         except Exception:
                             errors += 1
                     await asyncio.sleep(2)
+
+                # ── Kadın çantası sepet ortalaması ───────────────────────
+                kc_cfg    = cfg.get("kadin_cantasi", {})
+                kc_brands = kc_cfg.get("brands", [])
+                kc_skus = [
+                    s["sku"]
+                    for b in kc_brands
+                    for s in b.get("top_skus", [])
+                    if s.get("sku")
+                ]
+                if kc_skus:
+                    kc_tracked = [
+                        {"sku": sku, "brand_model": sku, "brand": "", "source": "trendyol"}
+                        for sku in kc_skus
+                    ]
+                    kc_prices = await scraper.scrape_tracked(kc_tracked)
+                    valid_prices = [r.price for r in kc_prices if r.price > 0]
+                    if valid_prices:
+                        from decimal import Decimal as _D
+                        avg_price = sum(valid_prices) / _D(len(valid_prices))
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=date.today(),
+                                keyword="kadin_cantasi",
+                                market_sku="kadin_cantasi_sepet",
+                                market_name=f"Kadın Çantası Ortalama ({len(valid_prices)} ürün)",
+                                brand="",
+                                price=avg_price,
+                            ))
+                        except Exception:
+                            errors += 1
+                        logger.info(
+                            "[m13:seyahat_bebek] kadın çantası: %d/%d ürün fiyatlandı, ort=%.2f TL",
+                            len(valid_prices), len(kc_skus), float(avg_price),
+                        )
+                    else:
+                        logger.warning("[m13:seyahat_bebek] kadın çantası: hiçbir ürün fiyatı alınamadı")
+                elif kc_brands:
+                    logger.warning("[m13:seyahat_bebek] kadın çantası SKU'ları boş — önce --discover-kadin-cantasi çalıştır")
 
                 # ── Tracked SKU araması (güneş gözlüğü) ──────────────────
                 gg_models = cfg.get("gunes_gozlugu", {}).get("models", [])
