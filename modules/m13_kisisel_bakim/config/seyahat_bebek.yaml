@@ -7,12 +7,34 @@
 
 # ── Keyword araması ──────────────────────────────────────────────────────────
 keywords:
-  # 1329101 — Seyahat eşyaları
-  - seyahat bavul
+  # 1329101 — Seyahat eşyaları (tracked sepet ortalaması ile izleniyor)
   # 1329104 — Kadın çantası (tracked sepet ortalaması ile izleniyor)
   # 1329106 — Okul çantası (tracked sepet ortalaması ile izleniyor)
   # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
   # 1329129 — Bebek bezi (tracked SKU ile izleniyor, keyword araması yok)
+
+# ── Valiz & Bavul — sepet ortalaması (1329101) ───────────────────────────────
+# discover_valiz_bavul() → her markanın en çok satan 5 ürününü top_skus'a yazar
+# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="valiz_bavul")
+valiz_bavul:
+  label: Valiz & Bavul
+  top_n: 5
+  brands:
+    - brand: Samsonite
+      search_query: Samsonite valiz
+      top_skus: []
+    - brand: IT Luggage
+      search_query: IT Luggage valiz
+      top_skus: []
+    - brand: Pierre Cardin
+      search_query: Pierre Cardin valiz
+      top_skus: []
+    - brand: My Valice
+      search_query: My Valice valiz
+      top_skus: []
+    - brand: Benetton
+      search_query: Benetton valiz
+      top_skus: []
 
 # ── Okul çantası — sepet ortalaması (1329106) ────────────────────────────────
 # discover_okul_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar

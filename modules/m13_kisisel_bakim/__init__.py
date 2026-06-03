@@ -247,6 +247,42 @@ class KisiselBakimModule(BaseModule):
         _write_seyahat_bebek_config(config)
         logger.info("[m13:discover-gunes] tamamlandı — %d/%d model bulundu", found, len(models))
 
+    async def discover_valiz_bavul(self) -> None:
+        """
+        Her marka için Trendyol'da search_query ile arama yapar,
+        ilk top_n ürünün SKU + adını YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-valiz-bavul
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        vb     = config.get("valiz_bavul", {})
+        brands = vb.get("brands", [])
+        top_n  = int(vb.get("top_n", 5))
+
+        if not brands:
+            logger.warning("[m13:discover-valiz-bavul] valiz_bavul.brands boş — YAML'ı kontrol et")
+            return
+
+        total = 0
+        async with TrendyolM13Scraper() as scraper:
+            for b in brands:
+                query   = b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(query, max_pages=1)
+                top     = results[:top_n]
+                b["top_skus"] = [{"sku": r.market_sku, "name": r.market_name} for r in top]
+                total += len(top)
+                logger.info(
+                    "[m13:discover-valiz-bavul] %s → %d ürün (query: %s)",
+                    b["brand"], len(top), query,
+                )
+                await _asyncio.sleep(3)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-valiz-bavul] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
+
     async def discover_okul_cantasi(self) -> None:
         """
         Her marka için Trendyol'da search_query ile arama yapar,
@@ -715,6 +751,45 @@ class KisiselBakimModule(BaseModule):
                         except Exception:
                             errors += 1
                     await asyncio.sleep(2)
+
+                # ── Valiz & Bavul sepet ortalaması ───────────────────────
+                vb_cfg    = cfg.get("valiz_bavul", {})
+                vb_brands = vb_cfg.get("brands", [])
+                vb_skus = [
+                    s["sku"]
+                    for b in vb_brands
+                    for s in b.get("top_skus", [])
+                    if s.get("sku")
+                ]
+                if vb_skus:
+                    vb_tracked = [
+                        {"sku": sku, "brand_model": sku, "brand": "", "source": "trendyol"}
+                        for sku in vb_skus
+                    ]
+                    vb_prices = await scraper.scrape_tracked(vb_tracked)
+                    valid_vb  = [r.price for r in vb_prices if r.price > 0]
+                    if valid_vb:
+                        from decimal import Decimal as _D
+                        avg_vb = sum(valid_vb) / _D(len(valid_vb))
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=date.today(),
+                                keyword="valiz_bavul",
+                                market_sku="valiz_bavul_sepet",
+                                market_name=f"Valiz & Bavul Ortalama ({len(valid_vb)} ürün)",
+                                brand="",
+                                price=avg_vb,
+                            ))
+                        except Exception:
+                            errors += 1
+                        logger.info(
+                            "[m13:seyahat_bebek] valiz & bavul: %d/%d ürün fiyatlandı, ort=%.2f TL",
+                            len(valid_vb), len(vb_skus), float(avg_vb),
+                        )
+                    else:
+                        logger.warning("[m13:seyahat_bebek] valiz & bavul: hiçbir ürün fiyatı alınamadı")
+                elif vb_brands:
+                    logger.warning("[m13:seyahat_bebek] valiz & bavul SKU'ları boş — önce --discover-valiz-bavul çalıştır")
 
                 # ── Okul çantası sepet ortalaması ────────────────────────
                 oc_cfg    = cfg.get("okul_cantasi", {})
