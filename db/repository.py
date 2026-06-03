@@ -935,6 +935,41 @@ async def batch_upsert_m13_products_and_snapshots(
     return inserted
 
 
+async def batch_insert_seyahat_bebek_prices(
+    conn,
+    records: list,
+) -> int:
+    """m13_seyahat_bebek_prices tablosuna Trendyol fiyatlarını ekler."""
+    if not records:
+        return 0
+    inserted = 0
+    for r in records:
+        snap_date = r.snapshot_date if isinstance(r.snapshot_date, date) else date.fromisoformat(str(r.snapshot_date))
+        disc = float(r.discounted_price) if r.discounted_price is not None else None
+        if isinstance(conn, _SqliteConn):
+            await conn.execute(
+                """
+                INSERT INTO m13_seyahat_bebek_prices
+                    (snapshot_date, keyword, market_sku, market_name, brand, price, discounted_price)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                str(snap_date), r.keyword, r.market_sku, r.market_name,
+                r.brand or None, float(r.price), disc,
+            )
+        else:
+            await conn.execute(
+                """
+                INSERT INTO m13_seyahat_bebek_prices
+                    (snapshot_date, keyword, market_sku, market_name, brand, price, discounted_price)
+                VALUES ($1::date, $2, $3, $4, $5, $6::numeric, $7::numeric)
+                """,
+                snap_date, r.keyword, r.market_sku, r.market_name,
+                r.brand or None, float(r.price), disc,
+            )
+        inserted += 1
+    return inserted
+
+
 async def batch_upsert_saat_altin_prices(
     conn,
     records: list[SaatAltinRecord],

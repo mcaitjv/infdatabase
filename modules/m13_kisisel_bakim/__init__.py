@@ -19,9 +19,10 @@ from datetime import date, datetime
 
 import yaml
 
-from db.models import SaatAltinRecord, ScrapeRun
+from db.models import SaatAltinRecord, ScrapeRun, SeyahatBebekRecord
 from db.repository import (
     apply_schema,
+    batch_insert_seyahat_bebek_prices,
     batch_upsert_m13_products_and_snapshots,
     batch_upsert_saat_altin_prices,
     export_and_cleanup,
@@ -514,8 +515,8 @@ class KisiselBakimModule(BaseModule):
                     print(f"  ... ve {len(valid) - 5} ürün daha")
             else:
                 async with get_connection() as conn:
-                    inserted = await batch_upsert_m13_products_and_snapshots(conn, valid)
-                    logger.info("[m13:seyahat_bebek] %d ürün, %d snapshot eklendi", len(valid), inserted)
+                    inserted = await batch_insert_seyahat_bebek_prices(conn, valid)
+                    logger.info("[m13:seyahat_bebek] %d ürün eklendi", inserted)
 
             run.status = "success" if run.errors_count == 0 else "partial"
 
