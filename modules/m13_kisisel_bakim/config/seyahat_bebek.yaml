@@ -1,9 +1,11 @@
 # Modül 13 — Part: Seyahat & Bebek
 # COICOP 1329: Diğer kişisel bakım ürünleri
 #
-# Kaynak: Trendyol keyword araması (tüm kategoriler)
-# TrendyolM13Scraper.search_keyword() implementasyonu gereklidir.
+# Kaynak: Trendyol
+#   - keywords     → serbest keyword araması (bebek/seyahat tüketim ürünleri)
+#   - gunes_gozlugu → discovery + tracked SKU (saat_altin patternine paralel)
 
+# ── Keyword araması ──────────────────────────────────────────────────────────
 keywords:
   # 1329101 — Seyahat eşyaları
   - seyahat bavul
@@ -11,8 +13,6 @@ keywords:
   - kadın el çantası
   # 1329106 — Okul çantası
   - okul çantası
-  # 1329111 — Güneş gözlükleri
-  - güneş gözlüğü polarize
   # 1329114 — Bebek arabası
   - bebek arabası
   # 1329129 — Bebek bezi
@@ -20,3 +20,49 @@ keywords:
   - bebek bezi huggies
   # Bebek maması
   - bebek maması
+
+# ── Güneş gözlüğü — tracked SKU (1329111) ───────────────────────────────────
+# discover_gunes_gozlugu() → trendyol_sku alanlarını doldurur
+gunes_gozlugu:
+  label: Güneş Gözlüğü
+  models:
+    - brand: Ray-Ban
+      model_code: RB3025
+      model_name: Aviator
+      trendyol_sku: ""
+    - brand: Ray-Ban
+      model_code: RB2140
+      model_name: Wayfarer
+      trendyol_sku: ""
+    - brand: Ray-Ban
+      model_code: RB3016
+      model_name: Clubmaster
+      trendyol_sku: ""
+    - brand: Ray-Ban
+      model_code: RB4171
+      model_name: Erika
+      trendyol_sku: ""
+    - brand: Vogue
+      model_code: VO5338S
+      model_name: VO5338S
+      trendyol_sku: ""
+    - brand: Emporio Armani
+      model_code: EA4029
+      model_name: EA4029
+      trendyol_sku: ""
+    - brand: Oakley
+      model_code: OO9102
+      model_name: Holbrook
+      trendyol_sku: ""
+    - brand: Osse
+      model_code: OS2486
+      model_name: OS 2486
+      trendyol_sku: ""
+    - brand: Prada
+      model_code: PR17WS
+      model_name: PR 17WS
+      trendyol_sku: ""
+    - brand: Benetton
+      model_code: BE4016
+      model_name: BE 4016
+      trendyol_sku: ""

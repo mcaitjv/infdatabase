@@ -57,10 +57,17 @@ def _load_saat_altin_config() -> dict:
 
 
 def _load_seyahat_bebek_config() -> dict:
-    """seyahat_bebek.yaml'ı döner (marketfiyati + trendyol keyword listeleri)."""
+    """seyahat_bebek.yaml'ı döner (keywords + gunes_gozlugu bölümleri)."""
     path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
+
+
+def _write_seyahat_bebek_config(config: dict) -> None:
+    """Discovery sonrası güncellenmiş config'i YAML'a yazar."""
+    path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
 
 def _write_saat_altin_config(config: dict) -> None:
@@ -199,6 +206,46 @@ class KisiselBakimModule(BaseModule):
 
         _write_saat_altin_config(config)
         logger.info("[m13:discover] tamamlandı — %d marka, %d toplam tracked SKU", len(brands), total_skus)
+
+    async def discover_gunes_gozlugu(self) -> None:
+        """
+        gunes_gozlugu.models listesindeki her model için Trendyol'da arama yapar,
+        ilk eşleşen ürünün SKU'sunu YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-gunes
+        """
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        import asyncio as _asyncio
+
+        config = _load_seyahat_bebek_config()
+        models = config.get("gunes_gozlugu", {}).get("models", [])
+        if not models:
+            logger.warning("[m13:discover-gunes] gunes_gozlugu.models boş — YAML'ı kontrol et")
+            return
+
+        found = 0
+        async with TrendyolM13Scraper() as scraper:
+            for m in models:
+                brand      = m.get("brand", "")
+                model_code = m.get("model_code", "")
+                query      = f"{brand} {model_code}".strip()
+
+                match = await scraper.find_by_model(model_code, brand)
+                if match:
+                    m["trendyol_sku"] = match["sku"]
+                    found += 1
+                    logger.info(
+                        "[m13:discover-gunes] %s %s → sku=%s, fiyat=%.2f TL",
+                        brand, model_code, match["sku"], match["price"],
+                    )
+                else:
+                    logger.warning("[m13:discover-gunes] %s %s → Trendyol'da bulunamadı", brand, model_code)
+
+                await _asyncio.sleep(2)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-gunes] tamamlandı — %d/%d model bulundu", found, len(models))
 
     async def _run_saat_altin(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Tracked SKU'lar için günlük fiyat çeker (her iki kaynak)."""
@@ -499,6 +546,7 @@ class KisiselBakimModule(BaseModule):
             sb_records: list[SeyahatBebekRecord] = []
             errors = 0
             async with TrendyolM13Scraper() as scraper:
+                # ── Keyword araması (bebek/seyahat tüketim) ───────────────
                 for kw in keywords:
                     price_records = await scraper.search_keyword(kw)
                     for r in price_records:
@@ -515,6 +563,37 @@ class KisiselBakimModule(BaseModule):
                         except Exception:
                             errors += 1
                     await asyncio.sleep(2)
+
+                # ── Tracked SKU araması (güneş gözlüğü) ──────────────────
+                gg_models = cfg.get("gunes_gozlugu", {}).get("models", [])
+                tracked = [
+                    {
+                        "sku":         m["trendyol_sku"],
+                        "brand_model": m["model_code"],
+                        "brand":       m["brand"],
+                        "source":      "trendyol",
+                    }
+                    for m in gg_models if m.get("trendyol_sku")
+                ]
+                if tracked:
+                    price_records = await scraper.scrape_tracked(tracked)
+                    sku_to_model = {m["trendyol_sku"]: m for m in gg_models if m.get("trendyol_sku")}
+                    for r in price_records:
+                        m = sku_to_model.get(r.market_sku, {})
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=r.snapshot_date,
+                                keyword=m.get("model_code", "gunes_gozlugu"),
+                                market_sku=r.market_sku,
+                                market_name=r.market_name,
+                                brand=m.get("brand") or r.brand or "",
+                                price=r.price,
+                                discounted_price=r.islem_hacmi,
+                            ))
+                        except Exception:
+                            errors += 1
+                elif gg_models:
+                    logger.warning("[m13:seyahat_bebek] güneş gözlüğü SKU'ları boş — önce --discover-gunes çalıştır")
 
             run.products_scraped = len(sb_records)
             run.errors_count = errors
