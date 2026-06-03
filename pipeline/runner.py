@@ -128,6 +128,7 @@ async def main(
     do_discover_m05: bool,
     do_discover_saat: bool,
     do_discover_gunes: bool,
+    do_discover_okul_cantasi: bool,
     do_discover_kadin_cantasi: bool,
     do_discover_bebek_arabasi: bool,
     do_discover_bebek_bezi: bool,
@@ -150,6 +151,10 @@ async def main(
 
     if do_discover_gunes:
         await KisiselBakimModule().discover_gunes_gozlugu()
+        return
+
+    if do_discover_okul_cantasi:
+        await KisiselBakimModule().discover_okul_cantasi()
         return
 
     if do_discover_kadin_cantasi:
@@ -289,6 +294,11 @@ if __name__ == "__main__":
         help="Modül 13 güneş gözlüğü keşfi (Trendyol, seyahat_bebek.yaml günceller)",
     )
     parser.add_argument(
+        "--discover-okul-cantasi",
+        action="store_true",
+        help="Modül 13 okul çantası keşfi (5 marka × 5 ürün, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
         "--discover-kadin-cantasi",
         action="store_true",
         help="Modül 13 kadın çantası keşfi (5 marka × 5 ürün, seyahat_bebek.yaml günceller)",
@@ -332,6 +342,7 @@ if __name__ == "__main__":
         do_discover_m05           = args.discover_m05,
         do_discover_saat          = args.discover_saat,
         do_discover_gunes         = args.discover_gunes,
+        do_discover_okul_cantasi  = args.discover_okul_cantasi,
         do_discover_kadin_cantasi = args.discover_kadin_cantasi,
         do_discover_bebek_arabasi = args.discover_bebek_arabasi,
         do_discover_bebek_bezi    = args.discover_bebek_bezi,

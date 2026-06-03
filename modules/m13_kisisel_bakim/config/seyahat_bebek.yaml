@@ -10,10 +10,32 @@ keywords:
   # 1329101 — Seyahat eşyaları
   - seyahat bavul
   # 1329104 — Kadın çantası (tracked sepet ortalaması ile izleniyor)
-  # 1329106 — Okul çantası
-  - okul çantası
+  # 1329106 — Okul çantası (tracked sepet ortalaması ile izleniyor)
   # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
   # 1329129 — Bebek bezi (tracked SKU ile izleniyor, keyword araması yok)
+
+# ── Okul çantası — sepet ortalaması (1329106) ────────────────────────────────
+# discover_okul_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar
+# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="okul_cantasi")
+okul_cantasi:
+  label: Okul Çantası
+  top_n: 5
+  brands:
+    - brand: Eastpak
+      search_query: Eastpak okul çantası
+      top_skus: []
+    - brand: Kaukko
+      search_query: Kaukko okul çantası
+      top_skus: []
+    - brand: Hakan Çanta
+      search_query: Hakan Çanta okul çantası
+      top_skus: []
+    - brand: Yaygan
+      search_query: Yaygan okul çantası
+      top_skus: []
+    - brand: Jansport
+      search_query: Jansport okul çantası
+      top_skus: []
 
 # ── Kadın çantası — sepet ortalaması (1329104) ───────────────────────────────
 # discover_kadin_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar
