@@ -496,29 +496,41 @@ class KisiselBakimModule(BaseModule):
             started_at=datetime.now(),
         )
         try:
-            all_records = []
+            sb_records: list[SeyahatBebekRecord] = []
+            errors = 0
             async with TrendyolM13Scraper() as scraper:
                 for kw in keywords:
-                    records = await scraper.search_keyword(kw)
-                    all_records.extend(records)
+                    price_records = await scraper.search_keyword(kw)
+                    for r in price_records:
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=r.snapshot_date,
+                                keyword=kw,
+                                market_sku=r.market_sku,
+                                market_name=r.market_name,
+                                brand=r.brand or "",
+                                price=r.price,
+                                discounted_price=r.islem_hacmi,
+                            ))
+                        except Exception:
+                            errors += 1
                     await asyncio.sleep(2)
 
-            valid = validate_batch(all_records)
-            run.products_scraped = len(valid)
-            run.errors_count = len(all_records) - len(valid)
+            run.products_scraped = len(sb_records)
+            run.errors_count = errors
 
             if dry_run:
-                logger.info("[m13:seyahat_bebek] Dry-run: %d ürün (DB'ye yazılmadı)", len(valid))
-                for r in valid[:5]:
-                    print(f"  [trendyol] {r.market_name} | {r.price} TL")
-                if len(valid) > 5:
-                    print(f"  ... ve {len(valid) - 5} ürün daha")
+                logger.info("[m13:seyahat_bebek] Dry-run: %d ürün (DB'ye yazılmadı)", len(sb_records))
+                for r in sb_records[:5]:
+                    print(f"  [trendyol:{r.keyword}] {r.market_name} | {r.price} TL")
+                if len(sb_records) > 5:
+                    print(f"  ... ve {len(sb_records) - 5} ürün daha")
             else:
                 async with get_connection() as conn:
-                    inserted = await batch_insert_seyahat_bebek_prices(conn, valid)
+                    inserted = await batch_insert_seyahat_bebek_prices(conn, sb_records)
                     logger.info("[m13:seyahat_bebek] %d ürün eklendi", inserted)
 
-            run.status = "success" if run.errors_count == 0 else "partial"
+            run.status = "success" if errors == 0 else "partial"
 
         except Exception as exc:
             logger.error("[m13:seyahat_bebek] kritik hata: %s", exc, exc_info=True)
