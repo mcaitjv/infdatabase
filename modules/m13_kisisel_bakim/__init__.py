@@ -55,6 +55,13 @@ def _load_saat_altin_config() -> dict:
         return yaml.safe_load(f) or {}
 
 
+def _load_seyahat_bebek_config() -> dict:
+    """seyahat_bebek.yaml'ı döner (marketfiyati + trendyol keyword listeleri)."""
+    path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
 def _write_saat_altin_config(config: dict) -> None:
     """Discovery sonrası güncellenmiş config'i YAML'a yazar."""
     path = os.path.join(_MODULE_DIR, "config", "saat_altin.yaml")
@@ -73,7 +80,13 @@ class KisiselBakimModule(BaseModule):
     name = "Kişisel Bakım Ürünleri"
     weight = 4.4935
 
-    PART_SCHEDULE = {"main": 0, "online": 0, "saat_altin": 0}  # her gün
+    PART_SCHEDULE = {"main": 0, "online": 0, "saat_altin": 0, "seyahat_bebek": 0}  # her gün
+    PART_DISPLAY = {
+        "main":          "Kişisel Bakım (MarketFiyati)",
+        "online":        "Kişisel Bakım (Gratis + Rossmann)",
+        "saat_altin":    "Saat & Altın",
+        "seyahat_bebek": "Seyahat & Bebek",
+    }
 
     async def setup_schema(self, conn) -> None:
         await apply_schema(conn)
@@ -85,11 +98,12 @@ class KisiselBakimModule(BaseModule):
         parts=["online"]      → sadece Gratis + Rossmann
         parts=["saat_altin"]  → sadece saatvesaat + Trendyol
         """
-        run_main       = (parts is None or "main"       in parts) and self._should_run("main")
-        run_online     = (parts is None or "online"     in parts) and self._should_run("online")
-        run_saat_altin = (parts is None or "saat_altin" in parts) and self._should_run("saat_altin")
+        run_main          = (parts is None or "main"          in parts) and self._should_run("main")
+        run_online        = (parts is None or "online"        in parts) and self._should_run("online")
+        run_saat_altin    = (parts is None or "saat_altin"    in parts) and self._should_run("saat_altin")
+        run_seyahat_bebek = (parts is None or "seyahat_bebek" in parts) and self._should_run("seyahat_bebek")
 
-        if not run_main and not run_online and not run_saat_altin:
+        if not run_main and not run_online and not run_saat_altin and not run_seyahat_bebek:
             logger.info("[m13] Bugün çalışma günü değil — atlanıyor.")
             return []
 
@@ -108,6 +122,9 @@ class KisiselBakimModule(BaseModule):
         if run_saat_altin:
             runs.extend(await self._run_saat_altin(dry_run=dry_run))
             runs.extend(await self._run_altin(dry_run=dry_run))
+
+        if run_seyahat_bebek:
+            runs.extend(await self._run_seyahat_bebek(dry_run=dry_run))
 
         return runs
 
@@ -458,5 +475,63 @@ class KisiselBakimModule(BaseModule):
             if not dry_run:
                 async with get_connection() as conn:
                     await upsert_scrape_run(conn, run)
+
+        return runs
+
+    # ── Seyahat & Bebek part: Trendyol keyword araması ──────────────────────
+
+    async def _run_seyahat_bebek(self, dry_run: bool = False) -> list[ScrapeRun]:
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        cfg = _load_seyahat_bebek_config()
+        keywords = cfg.get("keywords", [])
+        runs: list[ScrapeRun] = []
+
+        logger.info("[m13:seyahat_bebek] %d keyword, kaynak: trendyol", len(keywords))
+
+        run = ScrapeRun(
+            market="m13:trendyol:seyahat_bebek",
+            run_date=date.today(),
+            started_at=datetime.now(),
+        )
+        try:
+            all_records = []
+            async with TrendyolM13Scraper() as scraper:
+                for kw in keywords:
+                    records = await scraper.search_keyword(kw)
+                    all_records.extend(records)
+                    await asyncio.sleep(2)
+
+            valid = validate_batch(all_records)
+            run.products_scraped = len(valid)
+            run.errors_count = len(all_records) - len(valid)
+
+            if dry_run:
+                logger.info("[m13:seyahat_bebek] Dry-run: %d ürün (DB'ye yazılmadı)", len(valid))
+                for r in valid[:5]:
+                    print(f"  [trendyol] {r.market_name} | {r.price} TL")
+                if len(valid) > 5:
+                    print(f"  ... ve {len(valid) - 5} ürün daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_upsert_m13_products_and_snapshots(conn, valid)
+                    logger.info("[m13:seyahat_bebek] %d ürün, %d snapshot eklendi", len(valid), inserted)
+
+            run.status = "success" if run.errors_count == 0 else "partial"
+
+        except Exception as exc:
+            logger.error("[m13:seyahat_bebek] kritik hata: %s", exc, exc_info=True)
+            run.status = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        logger.info(
+            "[m13:seyahat_bebek] tamamlandı — %s, %.1fs",
+            run.status, (run.finished_at - run.started_at).total_seconds(),
+        )
+        runs.append(run)
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
 
         return runs

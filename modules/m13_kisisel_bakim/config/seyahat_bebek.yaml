@@ -1,0 +1,22 @@
+# Modül 13 — Part: Seyahat & Bebek
+# COICOP 1329: Diğer kişisel bakım ürünleri
+#
+# Kaynak: Trendyol keyword araması (tüm kategoriler)
+# TrendyolM13Scraper.search_keyword() implementasyonu gereklidir.
+
+keywords:
+  # 1329101 — Seyahat eşyaları
+  - seyahat bavul
+  # 1329104 — Kadın çantası
+  - kadın el çantası
+  # 1329106 — Okul çantası
+  - okul çantası
+  # 1329111 — Güneş gözlükleri
+  - güneş gözlüğü polarize
+  # 1329114 — Bebek arabası
+  - bebek arabası
+  # 1329129 — Bebek bezi
+  - bebek bezi pampers
+  - bebek bezi huggies
+  # Bebek maması
+  - bebek maması
