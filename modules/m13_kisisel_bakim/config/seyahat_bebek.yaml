@@ -13,13 +13,58 @@ keywords:
   - kadın el çantası
   # 1329106 — Okul çantası
   - okul çantası
-  # 1329114 — Bebek arabası
-  - bebek arabası
+  # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
   # 1329129 — Bebek bezi
   - bebek bezi pampers
   - bebek bezi huggies
   # Bebek maması
   - bebek maması
+
+# ── Bebek arabası — tracked SKU (1329114) ────────────────────────────────────
+# discover_bebek_arabasi() → trendyol_sku alanlarını doldurur
+bebek_arabasi:
+  label: Bebek Arabası
+  models:
+    - brand: Chicco
+      model_code: Goody Plus
+      model_name: Goody Plus
+      trendyol_sku: ""
+    - brand: Cybex
+      model_code: Libelle
+      model_name: Libelle
+      trendyol_sku: ""
+    - brand: Maxi-Cosi
+      model_code: Lara2
+      model_name: Lara 2
+      trendyol_sku: ""
+    - brand: Joie
+      model_code: Pact Pro
+      model_name: Pact Pro
+      trendyol_sku: ""
+    - brand: Kraft
+      model_code: Kenya Travel Sistem
+      model_name: Kenya Travel Sistem
+      trendyol_sku: ""
+    - brand: Pierre Cardin
+      model_code: Legend Travel Sistem
+      model_name: Legend Travel Sistem
+      trendyol_sku: ""
+    - brand: Yoyko
+      model_code: Ultimate Travel Sistem
+      model_name: Ultimate Travel Sistem
+      trendyol_sku: ""
+    - brand: 4 Baby
+      model_code: Esse Gold Travel Sistem
+      model_name: Esse Gold Travel Sistem
+      trendyol_sku: ""
+    - brand: Prego
+      model_code: Lotus Baston
+      model_name: Lotus Baston
+      trendyol_sku: ""
+    - brand: Babyhope
+      model_code: BH-302 Baston
+      model_name: BH-302 Baston
+      trendyol_sku: ""
 
 # ── Güneş gözlüğü — tracked SKU (1329111) ───────────────────────────────────
 # discover_gunes_gozlugu() → trendyol_sku alanlarını doldurur
