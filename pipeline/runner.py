@@ -129,6 +129,7 @@ async def main(
     do_discover_saat: bool,
     do_discover_gunes: bool,
     do_discover_bebek_arabasi: bool,
+    do_discover_bebek_bezi: bool,
     do_health_check: bool,
     health_date: date | None,
     parts: list[str] | None = None,
@@ -152,6 +153,10 @@ async def main(
 
     if do_discover_bebek_arabasi:
         await KisiselBakimModule().discover_bebek_arabasi()
+        return
+
+    if do_discover_bebek_bezi:
+        await KisiselBakimModule().discover_bebek_bezi()
         return
 
     if do_health_check:
@@ -284,6 +289,11 @@ if __name__ == "__main__":
         help="Modül 13 bebek arabası keşfi (Trendyol, seyahat_bebek.yaml günceller)",
     )
     parser.add_argument(
+        "--discover-bebek-bezi",
+        action="store_true",
+        help="Modül 13 bebek bezi keşfi (Trendyol, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
         "--health-check",
         action="store_true",
         help="Sağlık raporu — DB verisi bütünlük ve anomali kontrolü",
@@ -313,6 +323,7 @@ if __name__ == "__main__":
         do_discover_saat          = args.discover_saat,
         do_discover_gunes         = args.discover_gunes,
         do_discover_bebek_arabasi = args.discover_bebek_arabasi,
+        do_discover_bebek_bezi    = args.discover_bebek_bezi,
         do_health_check           = args.health_check,
         health_date               = hdate,
         parts                     = parts,

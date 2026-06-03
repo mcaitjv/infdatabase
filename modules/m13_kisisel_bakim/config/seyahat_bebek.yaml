@@ -14,11 +14,56 @@ keywords:
   # 1329106 — Okul çantası
   - okul çantası
   # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
-  # 1329129 — Bebek bezi
-  - bebek bezi pampers
-  - bebek bezi huggies
+  # 1329129 — Bebek bezi (tracked SKU ile izleniyor, keyword araması yok)
   # Bebek maması
   - bebek maması
+
+# ── Bebek bezi — tracked SKU (1329129) ───────────────────────────────────────
+# discover_bebek_bezi() → trendyol_sku alanlarını doldurur
+# Tüm ürünler 4 numara / Maxi boyut
+bebek_bezi:
+  label: Bebek Bezi
+  models:
+    - brand: Prima
+      model_code: Premium Care 4 Numara
+      model_name: Premium Care 4 Numara
+      trendyol_sku: ""
+    - brand: Prima
+      model_code: Aktif Bebek 4 Numara
+      model_name: Aktif Bebek 4 Numara
+      trendyol_sku: ""
+    - brand: Molfix
+      model_code: Avantaj Paket 4 Numara
+      model_name: Avantaj Paket 4 Numara
+      trendyol_sku: ""
+    - brand: Molfix
+      model_code: Pure Soft 4 Numara
+      model_name: Pure & Soft 4 Numara
+      trendyol_sku: ""
+    - brand: Sleepy
+      model_code: Bio Natural 4 Numara
+      model_name: Bio Natural 4 Numara
+      trendyol_sku: ""
+    - brand: Sleepy
+      model_code: Ecologic 4 Numara
+      model_name: Ecologic 4 Numara
+      trendyol_sku: ""
+    - brand: Canbebe
+      model_code: Standart Paket 4 Numara
+      model_name: Standart Paket 4 Numara
+      trendyol_sku: ""
+    - brand: Evy Baby
+      model_code: Ikiz Paket 4 Numara
+      model_name: İkiz Paket 4 Numara
+      trendyol_sku: ""
+    - brand: Baby Turco
+      model_code: Dogadan 4 Numara
+      model_name: Doğadan 4 Numara
+      trendyol_sku: ""
+    - brand: Minies
+      model_code: 4 Numara
+      model_name: 4 Numara
+      trendyol_sku: ""
 
 # ── Bebek arabası — tracked SKU (1329114) ────────────────────────────────────
 # discover_bebek_arabasi() → trendyol_sku alanlarını doldurur
