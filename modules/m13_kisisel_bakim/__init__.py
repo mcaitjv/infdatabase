@@ -755,119 +755,98 @@ class KisiselBakimModule(BaseModule):
                 # ── Valiz & Bavul sepet ortalaması ───────────────────────
                 vb_cfg    = cfg.get("valiz_bavul", {})
                 vb_brands = vb_cfg.get("brands", [])
-                vb_skus = [
-                    s["sku"]
-                    for b in vb_brands
-                    for s in b.get("top_skus", [])
-                    if s.get("sku")
-                ]
-                if vb_skus:
-                    vb_tracked = [
-                        {"sku": sku, "brand_model": sku, "brand": "", "source": "trendyol"}
-                        for sku in vb_skus
-                    ]
-                    vb_prices = await scraper.scrape_tracked(vb_tracked)
-                    valid_vb  = [r.price for r in vb_prices if r.price > 0]
-                    if valid_vb:
+                vb_top_n  = int(vb_cfg.get("top_n", 5))
+                if vb_brands:
+                    vb_prices: list = []
+                    for b in vb_brands:
+                        q = b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1)
+                        vb_prices.extend(r.price for r in res[:vb_top_n] if r.price > 0)
+                        await asyncio.sleep(2)
+                    if vb_prices:
                         from decimal import Decimal as _D
-                        avg_vb = sum(valid_vb) / _D(len(valid_vb))
+                        avg_vb = sum(vb_prices) / _D(len(vb_prices))
                         try:
                             sb_records.append(SeyahatBebekRecord(
                                 snapshot_date=date.today(),
                                 keyword="valiz_bavul",
                                 market_sku="valiz_bavul_sepet",
-                                market_name=f"Valiz & Bavul Ortalama ({len(valid_vb)} ürün)",
+                                market_name=f"Valiz & Bavul Ortalama ({len(vb_prices)} ürün)",
                                 brand="",
                                 price=avg_vb,
                             ))
                         except Exception:
                             errors += 1
                         logger.info(
-                            "[m13:seyahat_bebek] valiz & bavul: %d/%d ürün fiyatlandı, ort=%.2f TL",
-                            len(valid_vb), len(vb_skus), float(avg_vb),
+                            "[m13:seyahat_bebek] valiz & bavul: %d fiyat, ort=%.2f TL",
+                            len(vb_prices), float(avg_vb),
                         )
                     else:
                         logger.warning("[m13:seyahat_bebek] valiz & bavul: hiçbir ürün fiyatı alınamadı")
-                elif vb_brands:
-                    logger.warning("[m13:seyahat_bebek] valiz & bavul SKU'ları boş — önce --discover-valiz-bavul çalıştır")
 
                 # ── Okul çantası sepet ortalaması ────────────────────────
                 oc_cfg    = cfg.get("okul_cantasi", {})
                 oc_brands = oc_cfg.get("brands", [])
-                oc_skus = [
-                    s["sku"]
-                    for b in oc_brands
-                    for s in b.get("top_skus", [])
-                    if s.get("sku")
-                ]
-                if oc_skus:
-                    oc_tracked = [
-                        {"sku": sku, "brand_model": sku, "brand": "", "source": "trendyol"}
-                        for sku in oc_skus
-                    ]
-                    oc_prices = await scraper.scrape_tracked(oc_tracked)
-                    valid_oc  = [r.price for r in oc_prices if r.price > 0]
-                    if valid_oc:
+                oc_top_n  = int(oc_cfg.get("top_n", 5))
+                if oc_brands:
+                    oc_prices: list = []
+                    for b in oc_brands:
+                        q = b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1)
+                        oc_prices.extend(r.price for r in res[:oc_top_n] if r.price > 0)
+                        await asyncio.sleep(2)
+                    if oc_prices:
                         from decimal import Decimal as _D
-                        avg_oc = sum(valid_oc) / _D(len(valid_oc))
+                        avg_oc = sum(oc_prices) / _D(len(oc_prices))
                         try:
                             sb_records.append(SeyahatBebekRecord(
                                 snapshot_date=date.today(),
                                 keyword="okul_cantasi",
                                 market_sku="okul_cantasi_sepet",
-                                market_name=f"Okul Çantası Ortalama ({len(valid_oc)} ürün)",
+                                market_name=f"Okul Çantası Ortalama ({len(oc_prices)} ürün)",
                                 brand="",
                                 price=avg_oc,
                             ))
                         except Exception:
                             errors += 1
                         logger.info(
-                            "[m13:seyahat_bebek] okul çantası: %d/%d ürün fiyatlandı, ort=%.2f TL",
-                            len(valid_oc), len(oc_skus), float(avg_oc),
+                            "[m13:seyahat_bebek] okul çantası: %d fiyat, ort=%.2f TL",
+                            len(oc_prices), float(avg_oc),
                         )
                     else:
                         logger.warning("[m13:seyahat_bebek] okul çantası: hiçbir ürün fiyatı alınamadı")
-                elif oc_brands:
-                    logger.warning("[m13:seyahat_bebek] okul çantası SKU'ları boş — önce --discover-okul-cantasi çalıştır")
 
                 # ── Kadın çantası sepet ortalaması ───────────────────────
                 kc_cfg    = cfg.get("kadin_cantasi", {})
                 kc_brands = kc_cfg.get("brands", [])
-                kc_skus = [
-                    s["sku"]
-                    for b in kc_brands
-                    for s in b.get("top_skus", [])
-                    if s.get("sku")
-                ]
-                if kc_skus:
-                    kc_tracked = [
-                        {"sku": sku, "brand_model": sku, "brand": "", "source": "trendyol"}
-                        for sku in kc_skus
-                    ]
-                    kc_prices = await scraper.scrape_tracked(kc_tracked)
-                    valid_prices = [r.price for r in kc_prices if r.price > 0]
-                    if valid_prices:
+                kc_top_n  = int(kc_cfg.get("top_n", 5))
+                if kc_brands:
+                    kc_prices: list = []
+                    for b in kc_brands:
+                        q = b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1)
+                        kc_prices.extend(r.price for r in res[:kc_top_n] if r.price > 0)
+                        await asyncio.sleep(2)
+                    if kc_prices:
                         from decimal import Decimal as _D
-                        avg_price = sum(valid_prices) / _D(len(valid_prices))
+                        avg_kc = sum(kc_prices) / _D(len(kc_prices))
                         try:
                             sb_records.append(SeyahatBebekRecord(
                                 snapshot_date=date.today(),
                                 keyword="kadin_cantasi",
                                 market_sku="kadin_cantasi_sepet",
-                                market_name=f"Kadın Çantası Ortalama ({len(valid_prices)} ürün)",
+                                market_name=f"Kadın Çantası Ortalama ({len(kc_prices)} ürün)",
                                 brand="",
-                                price=avg_price,
+                                price=avg_kc,
                             ))
                         except Exception:
                             errors += 1
                         logger.info(
-                            "[m13:seyahat_bebek] kadın çantası: %d/%d ürün fiyatlandı, ort=%.2f TL",
-                            len(valid_prices), len(kc_skus), float(avg_price),
+                            "[m13:seyahat_bebek] kadın çantası: %d fiyat, ort=%.2f TL",
+                            len(kc_prices), float(avg_kc),
                         )
                     else:
                         logger.warning("[m13:seyahat_bebek] kadın çantası: hiçbir ürün fiyatı alınamadı")
-                elif kc_brands:
-                    logger.warning("[m13:seyahat_bebek] kadın çantası SKU'ları boş — önce --discover-kadin-cantasi çalıştır")
 
                 # ── Tracked SKU araması (güneş gözlüğü) ──────────────────
                 gg_models = cfg.get("gunes_gozlugu", {}).get("models", [])
