@@ -720,7 +720,7 @@ class KisiselBakimModule(BaseModule):
         from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
 
         cfg = _load_seyahat_bebek_config()
-        keywords = cfg.get("keywords", [])
+        keywords = cfg.get("keywords") or []
         runs: list[ScrapeRun] = []
 
         logger.info("[m13:seyahat_bebek] %d keyword, kaynak: trendyol", len(keywords))

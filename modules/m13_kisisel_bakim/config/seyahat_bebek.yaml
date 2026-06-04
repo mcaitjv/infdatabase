@@ -6,12 +6,8 @@
 #   - gunes_gozlugu → discovery + tracked SKU (saat_altin patternine paralel)
 
 # ── Keyword araması ──────────────────────────────────────────────────────────
-keywords:
-  # 1329101 — Seyahat eşyaları (tracked sepet ortalaması ile izleniyor)
-  # 1329104 — Kadın çantası (tracked sepet ortalaması ile izleniyor)
-  # 1329106 — Okul çantası (tracked sepet ortalaması ile izleniyor)
-  # 1329114 — Bebek arabası (tracked SKU ile izleniyor, keyword araması yok)
-  # 1329129 — Bebek bezi (tracked SKU ile izleniyor, keyword araması yok)
+# Tüm kategoriler tracked SKU veya sepet ortalaması ile izleniyor; serbest keyword araması yok.
+keywords: []
 
 # ── Valiz & Bavul — sepet ortalaması (1329101) ───────────────────────────────
 # discover_valiz_bavul() → her markanın en çok satan 5 ürününü top_skus'a yazar
