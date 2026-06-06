@@ -13,6 +13,7 @@ Tip B: Discovery + Tracked
   Günlük run: sabit SKU sepeti, self-heal
 """
 
+import asyncio
 import logging
 import os
 from collections import defaultdict
@@ -253,14 +254,15 @@ class HouseholdModule(BaseModule):
             valid = []
             try:
                 source_config = sources[source_name]
+                _CAT_TIMEOUT = 300  # 5 dk — sonsuz bekleyişi önler
                 if source_name == "vestel":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key)
+                    records = await asyncio.wait_for(scraper.scrape_tracked(tracked_skus, cat_key), _CAT_TIMEOUT)
                 elif source_name == "ikea":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config.get("keyword", _first_path(source_config)))
+                    records = await asyncio.wait_for(scraper.scrape_tracked(tracked_skus, cat_key, source_config.get("keyword", _first_path(source_config))), _CAT_TIMEOUT)
                 elif source_name == "yatas":
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, source_config["cat_code"])
+                    records = await asyncio.wait_for(scraper.scrape_tracked(tracked_skus, cat_key, source_config["cat_code"]), _CAT_TIMEOUT)
                 else:
-                    records = await scraper.scrape_tracked(tracked_skus, cat_key, _first_path(source_config))
+                    records = await asyncio.wait_for(scraper.scrape_tracked(tracked_skus, cat_key, _first_path(source_config)), _CAT_TIMEOUT)
 
                 error_count = 0
                 for rec in records:

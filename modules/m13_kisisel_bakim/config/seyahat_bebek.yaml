@@ -1,218 +1,372 @@
-# Modül 13 — Part: Seyahat & Bebek
-# COICOP 1329: Diğer kişisel bakım ürünleri
-#
-# Kaynak: Trendyol
-#   - keywords     → serbest keyword araması (bebek/seyahat tüketim ürünleri)
-#   - gunes_gozlugu → discovery + tracked SKU (saat_altin patternine paralel)
-
-# ── Keyword araması ──────────────────────────────────────────────────────────
-# Tüm kategoriler tracked SKU veya sepet ortalaması ile izleniyor; serbest keyword araması yok.
 keywords: []
-
-# ── Valiz & Bavul — sepet ortalaması (1329101) ───────────────────────────────
-# discover_valiz_bavul() → her markanın en çok satan 5 ürününü top_skus'a yazar
-# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="valiz_bavul")
 valiz_bavul:
   label: Valiz & Bavul
   top_n: 5
+  trendyol_filter: lc=1202
   brands:
-    - brand: Samsonite
-      search_query: Samsonite valiz
-      top_skus: []
-    - brand: IT Luggage
-      search_query: IT Luggage valiz
-      top_skus: []
-    - brand: Pierre Cardin
-      search_query: Pierre Cardin valiz
-      top_skus: []
-    - brand: My Valice
-      search_query: My Valice valiz
-      top_skus: []
-    - brand: Benetton
-      search_query: Benetton valiz
-      top_skus: []
-
-# ── Okul çantası — sepet ortalaması (1329106) ────────────────────────────────
-# discover_okul_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar
-# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="okul_cantasi")
+  - brand: Samsonite
+    search_query: Samsonite
+    top_skus:
+    - sku: '921333480'
+      name: 2 Birlikte Al Kazan Samsonite Siyah Urbify Spinner - Körüklü Orta Boy
+        Valiz 🧡 748 kişi favoriledi! 4.7 (3) Kargo Bedava
+    - sku: '880005273'
+      name: 2 Birlikte Al Kazan Samsonite Siyah Restackd - Körüklü 55/20 Kabin Boy
+        Valiz Belirtilmemiş Kargo Bedava 19.885 TL
+    - sku: '247695417'
+      name: Birlikte Al Kazan Samsonite Gri Lite-Cube Dlx - 4 Tekerlekli 55 cm Kabin
+        Boy Valiz Belirtilmemiş Kargo Bedava 22.185 TL
+    - sku: '880102597'
+      name: 3 Birlikte Al Kazan Samsonite Siyah Pro-Dlx-6 Spinner - Körüklü 4 Tekerlekli
+        Kabin Boy Valiz 55 cm Belirtilmemiş Kargo B
+    - sku: '317902711'
+      name: Birlikte Al Kazan Samsonite Lite-box Alu - Trunk Büyük Boy Valiz 80cm
+        🧡 1,2B kişi favoriledi! Kargo Bedava 63.885 TL
+  - brand: IT Luggage
+    trendyol_params: wb=101662&lc=1202
+    search_query: ''
+    top_skus:
+    - sku: '940519536'
+      name: İT LUGGAGE İtluggage Bordo Çekçekli Sert Valiz Unanimous B.Boy Belirtilmemiş
+        Son 14 Günün En Düşük Fiyatı Kargo Bedava 1
+    - sku: '906432901'
+      name: İT LUGGAGE Flyrite 2 Tekerlekli Kabin Çantası Dokuma Sepette %2 İndirim
+        Kargo Bedava 75 TL Kupon Sepette %2 İndirim Sepe
+    - sku: '927821126'
+      name: İT LUGGAGE Unanimous Seri 75 cm Büyük Boy Valiz Polipropilen Sepette %2
+        İndirim Kargo Bedava 75 TL Kupon Sepette %2 İndi
+    - sku: '929494529'
+      name: İT LUGGAGE Unisex Büyük Boy Valiz 3108A08-01 Polipropilen Kargo Bedava
+        100 TL Kupon Kargo Bedava 8.679,30 TL
+    - sku: '929807869'
+      name: Süper Fırsat Ürünü 10 Günün En Düşük Fiyatı İT LUGGAGE Britbag 2 Tekerlekli
+        Seyahat Çantası 1138 🚛 Hızlı teslimat yapıl
+  - brand: Pierre Cardin
+    trendyol_params: wb=122&lc=1202
+    search_query: ''
+    top_skus:
+    - sku: '1072532841'
+      name: Pierre CardinUnisex Büyük Boy Valiz 04PC8009-01 Son 10 Günün En Düşük
+        Fiyatı 5.015,61 TL 5.188,50 TL
+    - sku: '987304587'
+      name: Pierre CardinUnisex Kabin Boy Valiz 04PC8009-03 Son 10 Günün En Düşük
+        Fiyatı 3.988,37 TL 4.124,60 TL
+    - sku: '87642065'
+      name: Pierre CardinErkek Gri Askılı Çanta Son 10 Günün En Düşük Fiyatı 624,20
+        TL 686,39 TL
+    - sku: '841672685'
+      name: Pierre CardinLaptop Bölmeli Siyah Erkek Sırt Çantası 01PC00106 Son 10
+        Günün En Düşük Fiyatı -%49 2.421,30 TL 4.799 TL
+    - sku: '929897722'
+      name: 9 Başarılı Satıcı Pierre Cardin 04PC001255 El Valizi Bavul Spor Çantası
+        Valiz Seyahat Tatil Çantası YEŞİL 🚛 Hızlı tesli
+  - brand: My Valice
+    trendyol_params: wb=102279&lc=1202
+    search_query: ''
+    top_skus:
+    - sku: '25555509'
+      name: '5 En Çok Satan 2. Ürün My Valice Lotus Abs Büyük Boy Valiz Gri 🧡 4,2B
+        kişi favoriledi! 4.2 (142) Son 10 Günün En Düşük '
+    - sku: '25546959'
+      name: 5 En Çok Ziyaret Edilen 1. Ürün My Valice Lotus Abs Orta Boy Valiz Siyah
+        🧡 16,2B kişi favoriledi! 4.4 (602) Son 10 Günü
+    - sku: '3523261'
+      name: En Çok Değerlendirilen 4. Ürün My Valice Ruby Abs Büyük Boy Valiz Siyah
+        🚀 3 günde 363 kişi ekledi! 4.2 (742) Son 10 Gün
+    - sku: '870405619'
+      name: 8 En Çok Satan 8. Ürün My Valice Solid PP Polipropilen Kırılmaz Orta Boy
+        Krem Valiz 🧡 5,6B kişi favoriledi! 4.4 (90) So
+    - sku: '2962817'
+      name: 'Fenomen Seçimi My Valice Diamond Abs Unisex Büyük Boy Valiz MV7209 🧡
+        5,3B kişi favoriledi! 4.5 (91) Kargo Bedava 1.569 '
+  - brand: U.S. Polo Assn.
+    trendyol_params: wb=101990&lc=1202
+    search_query: ''
+    top_skus:
+    - sku: '1043682190'
+      name: '6 Başarılı Satıcı U.S. Polo Assn. US Polo Assn 25062-25064-25065-25066-25067-25068-25069Seyahat
+        ValSpor Hastane Çantası '
+    - sku: '927803421'
+      name: Başarılı Satıcı U.S. Polo Assn. U.S. POLO ASSN. PLVLZ24038C Valiz Kumaş
+        Küçük Boy 🚛 Hızlı teslimat yapılıyor! 5.0 (1) K
+    - sku: '1121027790'
+      name: 3 Birlikte Al Kazan U.S. Polo Assn. TSA Kilitli Kırılmaz Darbeye Dayanıklı
+        360 Derece Tekerlek Geniş İç Hacimli Lisanslı
+    - sku: '1056560010'
+      name: Başarılı Satıcı U.S. Polo Assn. U.S. Polo Assn Polipropilen Kırılmaz 2'li
+        Valiz Seti Büyük ve Kabin Boy – TSA Kilitli, D
+    - sku: '927803456'
+      name: Süper Fırsat Ürünü U.S. Polo Assn. PLVLZ24020C Valiz Küçük Boy Belirtilmemiş
+        Son 30 Günün En Düşük Fiyatı Kargo Bedava Ç
 okul_cantasi:
   label: Okul Çantası
   top_n: 5
   brands:
-    - brand: Eastpak
-      search_query: Eastpak okul çantası
-      top_skus: []
-    - brand: Kaukko
-      search_query: Kaukko okul çantası
-      top_skus: []
-    - brand: Hakan Çanta
-      search_query: Hakan Çanta okul çantası
-      top_skus: []
-    - brand: Yaygan
-      search_query: Yaygan okul çantası
-      top_skus: []
-    - brand: Jansport
-      search_query: Jansport okul çantası
-      top_skus: []
-
-# ── Kadın çantası — sepet ortalaması (1329104) ───────────────────────────────
-# discover_kadin_cantasi() → her markanın en çok satan 5 ürününü top_skus'a yazar
-# Günlük: 25 fiyatın ortalaması → 1 kayıt (keyword="kadin_cantasi")
+  - brand: Eastpak
+    search_query: Eastpak okul çantası
+    top_skus:
+    - sku: '964866812'
+      name: Eastpak EK0A5BG44W91-R Day Pak&#039;r Sırt &Ccedil;antası Krem
+    - sku: '3743454'
+      name: Eastpak EK0A5BG44W91-R Day Pak&#039;r Sırt &Ccedil;antası Krem
+    - sku: '251855539'
+      name: Eastpak EK0A5BG44W91-R Day Pak&#039;r Sırt &Ccedil;antası Krem
+    - sku: '835176055'
+      name: Eastpak EK0A5BG44W91-R Day Pak&#039;r Sırt &Ccedil;antası Krem
+    - sku: '948990507'
+      name: Eastpak EK0A5BG44W91-R Day Pak&#039;r Sırt &Ccedil;antası Krem
+  - brand: Kaukko
+    search_query: Kaukko okul çantası
+    top_skus:
+    - sku: '940608750'
+      name: Kaukko Kids Sırt Çantası Toys Astronaut L5253
+    - sku: '705212729'
+      name: Kaukko Kids Sırt Çantası Toys Astronaut L5253
+    - sku: '705075613'
+      name: Kaukko Kids Sırt Çantası Toys Astronaut L5253
+    - sku: '951776291'
+      name: Kaukko Kids Sırt Çantası Toys Astronaut L5253
+    - sku: '962091559'
+      name: Kaukko Kids Sırt Çantası Toys Astronaut L5253
+  - brand: Hakan Çanta
+    search_query: Hakan Çanta okul çantası
+    top_skus:
+    - sku: '747867317'
+      name: Hakan Çanta Benetton Okul Sırt Çantası 96032
+    - sku: '850386721'
+      name: Hakan Çanta Benetton Okul Sırt Çantası 96032
+    - sku: '42745855'
+      name: Hakan Çanta Benetton Okul Sırt Çantası 96032
+    - sku: '3213179'
+      name: Hakan Çanta Benetton Okul Sırt Çantası 96032
+    - sku: '250186274'
+      name: Hakan Çanta Benetton Okul Sırt Çantası 96032
+  - brand: Yaygan
+    search_query: Yaygan okul çantası
+    top_skus:
+    - sku: '846067680'
+      name: Yaygan Minnie Mouse Okul Çantası 41287
+    - sku: '841982694'
+      name: Yaygan Minnie Mouse Okul Çantası 41287
+    - sku: '277986857'
+      name: Yaygan Minnie Mouse Okul Çantası 41287
+    - sku: '277988682'
+      name: Yaygan Minnie Mouse Okul Çantası 41287
+    - sku: '751360391'
+      name: Yaygan Minnie Mouse Okul Çantası 41287
+  - brand: Jansport
+    search_query: Jansport okul çantası
+    top_skus:
+    - sku: '137709539'
+      name: Jansport SuperBreak Plus Siyah Sırt Çantası
+    - sku: '989989781'
+      name: Jansport SuperBreak Plus Siyah Sırt Çantası
+    - sku: '322720131'
+      name: Jansport SuperBreak Plus Siyah Sırt Çantası
+    - sku: '332365804'
+      name: Jansport SuperBreak Plus Siyah Sırt Çantası
+    - sku: '952707587'
+      name: Jansport SuperBreak Plus Siyah Sırt Çantası
 kadin_cantasi:
   label: Kadın Çantası
   top_n: 5
   brands:
-    - brand: Stradivarius
-      search_query: Stradivarius kadın çanta
-      top_skus: []
-    - brand: Bagmori
-      search_query: Bagmori kadın çanta
-      top_skus: []
-    - brand: Mango
-      search_query: Mango kadın çanta
-      top_skus: []
-    - brand: Vakko
-      search_query: Vakko kadın çanta
-      top_skus: []
-    - brand: David Jones
-      search_query: David Jones kadın çanta
-      top_skus: []
-
-# ── Bebek bezi — tracked SKU (1329129) ───────────────────────────────────────
-# discover_bebek_bezi() → trendyol_sku alanlarını doldurur
-# Tüm ürünler 4 numara / Maxi boyut
+  - brand: Stradivarius
+    search_query: Stradivarius kadın çanta
+    top_skus:
+    - sku: '934101755'
+      name: Stradivarius Ketenli dökümlü pantolon
+    - sku: '1116435258'
+      name: Stradivarius Ketenli dökümlü pantolon
+    - sku: '327326374'
+      name: Stradivarius Ketenli dökümlü pantolon
+    - sku: '940829373'
+      name: Stradivarius Ketenli dökümlü pantolon
+    - sku: '740330187'
+      name: Stradivarius Ketenli dökümlü pantolon
+  - brand: Bagmori
+    search_query: Bagmori kadın çanta
+    top_skus:
+    - sku: '844535358'
+      name: Bagmori Vizon Kadın Islak Bikini Çantası M000008494
+    - sku: '1019691572'
+      name: Bagmori Vizon Kadın Islak Bikini Çantası M000008494
+    - sku: '1135579765'
+      name: Bagmori Vizon Kadın Islak Bikini Çantası M000008494
+    - sku: '844535366'
+      name: Bagmori Vizon Kadın Islak Bikini Çantası M000008494
+    - sku: '877536258'
+      name: Bagmori Vizon Kadın Islak Bikini Çantası M000008494
+  - brand: Mango
+    search_query: Mango kadın çanta
+    top_skus:
+    - sku: '740330187'
+      name: Stradivarius Mini boncuklu çanta
+    - sku: '1115208085'
+      name: Stradivarius Mini boncuklu çanta
+    - sku: '804036216'
+      name: Stradivarius Mini boncuklu çanta
+    - sku: '1058831944'
+      name: Stradivarius Mini boncuklu çanta
+    - sku: '1043213323'
+      name: Stradivarius Mini boncuklu çanta
+  - brand: Vakko
+    search_query: Vakko kadın çanta
+    top_skus:
+    - sku: '1122932783'
+      name: Vakko KAHVE MONOGRAM ÇANTA
+    - sku: '1122932806'
+      name: Vakko KAHVE MONOGRAM ÇANTA
+    - sku: '1107034102'
+      name: Vakko KAHVE MONOGRAM ÇANTA
+    - sku: '1043166379'
+      name: Vakko KAHVE MONOGRAM ÇANTA
+    - sku: '1105991183'
+      name: Vakko KAHVE MONOGRAM ÇANTA
+  - brand: David Jones
+    search_query: David Jones kadın çanta
+    top_skus:
+    - sku: '825258324'
+      name: David Jones Renk Süet Sırt Çantası, Çapraz Askılı Çanta , Yumuşak Vegan
+        Deri Omuz Çantası , Casual Süet Ça
+    - sku: '458226684'
+      name: David Jones Renk Süet Sırt Çantası, Çapraz Askılı Çanta , Yumuşak Vegan
+        Deri Omuz Çantası , Casual Süet Ça
+    - sku: '1146335669'
+      name: David Jones Renk Süet Sırt Çantası, Çapraz Askılı Çanta , Yumuşak Vegan
+        Deri Omuz Çantası , Casual Süet Ça
+    - sku: '933340297'
+      name: David Jones Renk Süet Sırt Çantası, Çapraz Askılı Çanta , Yumuşak Vegan
+        Deri Omuz Çantası , Casual Süet Ça
+    - sku: '1123830133'
+      name: David Jones Renk Süet Sırt Çantası, Çapraz Askılı Çanta , Yumuşak Vegan
+        Deri Omuz Çantası , Casual Süet Ça
 bebek_bezi:
   label: Bebek Bezi
   models:
-    - brand: Prima
-      model_code: Premium Care 4 Numara
-      model_name: Premium Care 4 Numara
-      trendyol_sku: ""
-    - brand: Prima
-      model_code: Aktif Bebek 4 Numara
-      model_name: Aktif Bebek 4 Numara
-      trendyol_sku: ""
-    - brand: Molfix
-      model_code: Avantaj Paket 4 Numara
-      model_name: Avantaj Paket 4 Numara
-      trendyol_sku: ""
-    - brand: Molfix
-      model_code: Pure Soft 4 Numara
-      model_name: Pure & Soft 4 Numara
-      trendyol_sku: ""
-    - brand: Sleepy
-      model_code: Bio Natural 4 Numara
-      model_name: Bio Natural 4 Numara
-      trendyol_sku: ""
-    - brand: Sleepy
-      model_code: Ecologic 4 Numara
-      model_name: Ecologic 4 Numara
-      trendyol_sku: ""
-    - brand: Canbebe
-      model_code: Standart Paket 4 Numara
-      model_name: Standart Paket 4 Numara
-      trendyol_sku: ""
-    - brand: Evy Baby
-      model_code: Ikiz Paket 4 Numara
-      model_name: İkiz Paket 4 Numara
-      trendyol_sku: ""
-    - brand: Baby Turco
-      model_code: Dogadan 4 Numara
-      model_name: Doğadan 4 Numara
-      trendyol_sku: ""
-    - brand: Minies
-      model_code: 4 Numara
-      model_name: 4 Numara
-      trendyol_sku: ""
-
-# ── Bebek arabası — tracked SKU (1329114) ────────────────────────────────────
-# discover_bebek_arabasi() → trendyol_sku alanlarını doldurur
+  - brand: Prima
+    model_code: Premium Care 4 Numara
+    model_name: Premium Care 4 Numara
+    trendyol_sku: '129710287'
+  - brand: Prima
+    model_code: Aktif Bebek 4 Numara
+    model_name: Aktif Bebek 4 Numara
+    trendyol_sku: '35310402'
+  - brand: Molfix
+    model_code: Avantaj Paket 4 Numara
+    model_name: Avantaj Paket 4 Numara
+    trendyol_sku: '89392058'
+  - brand: Molfix
+    model_code: Pure Soft 4 Numara
+    model_name: Pure & Soft 4 Numara
+    trendyol_sku: '748465750'
+  - brand: Sleepy
+    model_code: Bio Natural 4 Numara
+    model_name: Bio Natural 4 Numara
+    trendyol_sku: '246412936'
+  - brand: Sleepy
+    model_code: Ecologic 4 Numara
+    model_name: Ecologic 4 Numara
+    trendyol_sku: '263192524'
+  - brand: Canbebe
+    model_code: Standart Paket 4 Numara
+    model_name: Standart Paket 4 Numara
+    trendyol_sku: '931204002'
+  - brand: Evy Baby
+    model_code: Ikiz Paket 4 Numara
+    model_name: İkiz Paket 4 Numara
+    trendyol_sku: '937605626'
+  - brand: Baby Turco
+    model_code: Dogadan 4 Numara
+    model_name: Doğadan 4 Numara
+    trendyol_sku: '1120951869'
+  - brand: Minies
+    model_code: 4 Numara
+    model_name: 4 Numara
+    trendyol_sku: '311007573'
 bebek_arabasi:
   label: Bebek Arabası
   models:
-    - brand: Chicco
-      model_code: Goody Plus
-      model_name: Goody Plus
-      trendyol_sku: ""
-    - brand: Cybex
-      model_code: Libelle
-      model_name: Libelle
-      trendyol_sku: ""
-    - brand: Maxi-Cosi
-      model_code: Lara2
-      model_name: Lara 2
-      trendyol_sku: ""
-    - brand: Joie
-      model_code: Pact Pro
-      model_name: Pact Pro
-      trendyol_sku: ""
-    - brand: Kraft
-      model_code: Kenya Travel Sistem
-      model_name: Kenya Travel Sistem
-      trendyol_sku: ""
-    - brand: Pierre Cardin
-      model_code: Legend Travel Sistem
-      model_name: Legend Travel Sistem
-      trendyol_sku: ""
-    - brand: Yoyko
-      model_code: Ultimate Travel Sistem
-      model_name: Ultimate Travel Sistem
-      trendyol_sku: ""
-    - brand: 4 Baby
-      model_code: Esse Gold Travel Sistem
-      model_name: Esse Gold Travel Sistem
-      trendyol_sku: ""
-    - brand: Prego
-      model_code: Lotus Baston
-      model_name: Lotus Baston
-      trendyol_sku: ""
-    - brand: Babyhope
-      model_code: BH-302 Baston
-      model_name: BH-302 Baston
-      trendyol_sku: ""
-
-# ── Güneş gözlüğü — tracked SKU (1329111) ───────────────────────────────────
-# discover_gunes_gozlugu() → trendyol_sku alanlarını doldurur
+  - brand: Chicco
+    model_code: Goody Plus
+    model_name: Goody Plus
+    trendyol_sku: '357227206'
+  - brand: Cybex
+    model_code: Libelle
+    model_name: Libelle
+    trendyol_sku: '823617305'
+  - brand: Maxi-Cosi
+    model_code: Lara2
+    model_name: Lara 2
+    trendyol_sku: '811428041'
+  - brand: Joie
+    model_code: Pact Pro
+    model_name: Pact Pro
+    trendyol_sku: '959439863'
+  - brand: Kraft
+    model_code: Kenya Travel Sistem
+    model_name: Kenya Travel Sistem
+    trendyol_sku: '815147498'
+  - brand: Pierre Cardin
+    model_code: Legend Travel Sistem
+    model_name: Legend Travel Sistem
+    trendyol_sku: '800082965'
+  - brand: Yoyko
+    model_code: Ultimate Travel Sistem
+    model_name: Ultimate Travel Sistem
+    trendyol_sku: '1064992737'
+  - brand: 4 Baby
+    model_code: Esse Gold Travel Sistem
+    model_name: Esse Gold Travel Sistem
+    trendyol_sku: '98387892'
+  - brand: Prego
+    model_code: Lotus Baston
+    model_name: Lotus Baston
+    trendyol_sku: '736448884'
+  - brand: Babyhope
+    model_code: BH-302 Baston
+    model_name: BH-302 Baston
+    trendyol_sku: '736448884'
 gunes_gozlugu:
   label: Güneş Gözlüğü
   models:
-    - brand: Ray-Ban
-      model_code: RB3025
-      model_name: Aviator
-      trendyol_sku: ""
-    - brand: Ray-Ban
-      model_code: RB2140
-      model_name: Wayfarer
-      trendyol_sku: ""
-    - brand: Ray-Ban
-      model_code: RB3016
-      model_name: Clubmaster
-      trendyol_sku: ""
-    - brand: Ray-Ban
-      model_code: RB4171
-      model_name: Erika
-      trendyol_sku: ""
-    - brand: Vogue
-      model_code: VO5338S
-      model_name: VO5338S
-      trendyol_sku: ""
-    - brand: Emporio Armani
-      model_code: EA4029
-      model_name: EA4029
-      trendyol_sku: ""
-    - brand: Oakley
-      model_code: OO9102
-      model_name: Holbrook
-      trendyol_sku: ""
-    - brand: Osse
-      model_code: OS2486
-      model_name: OS 2486
-      trendyol_sku: ""
-    - brand: Prada
-      model_code: PR17WS
-      model_name: PR 17WS
-      trendyol_sku: ""
-    - brand: Benetton
-      model_code: BE4016
-      model_name: BE 4016
-      trendyol_sku: ""
+  - brand: Ray-Ban
+    model_code: RB3025
+    model_name: Aviator
+    trendyol_sku: '929405'
+  - brand: Ray-Ban
+    model_code: RB2140
+    model_name: Wayfarer
+    trendyol_sku: '731635'
+  - brand: Ray-Ban
+    model_code: RB3016
+    model_name: Clubmaster
+    trendyol_sku: '994747994'
+  - brand: Ray-Ban
+    model_code: RB4171
+    model_name: Erika
+    trendyol_sku: '731469'
+  - brand: Vogue
+    model_code: VO5338S
+    model_name: VO5338S
+    trendyol_sku: '697446548'
+  - brand: Emporio Armani
+    model_code: EA4029
+    model_name: EA4029
+    trendyol_sku: '1145222672'
+  - brand: Oakley
+    model_code: OO9102
+    model_name: Holbrook
+    trendyol_sku: '836196034'
+  - brand: Osse
+    model_code: OS2486
+    model_name: OS 2486
+    trendyol_sku: '35845338'
+  - brand: Prada
+    model_code: PR17WS
+    model_name: PR 17WS
+    trendyol_sku: '94971195'
+  - brand: Benetton
+    model_code: BE4016
+    model_name: BE 4016
+    trendyol_sku: '327326374'

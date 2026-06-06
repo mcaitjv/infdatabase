@@ -32,13 +32,17 @@ _EXTRACT_JS = """
     const seen = new Set();
     const links = document.querySelectorAll('a[href*="-p-"]');
     for (const link of Array.from(links)) {
+        // Renk swatch linkleri metin içermez; sadece ürün adı taşıyan linkleri al
+        const text = (link.innerText || '').trim().replace(/\\s+/g, ' ');
+        if (text.length < 10) continue;
+
         const href = link.getAttribute('href') || '';
-        const m = href.match(/-p-(\d+)/);
+        const m = href.match(/-p-(\\d+)/);
         if (!m || seen.has(m[1])) continue;
 
         let card = link;
         let priceEl = null;
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 8; i++) {
             card = card.parentElement;
             if (!card) break;
             priceEl = card.querySelector('.sale-price')
@@ -54,17 +58,11 @@ _EXTRACT_JS = """
         const numeric = parseFloat(raw.replace(/\\./g, '').replace(',', '.'));
         if (!numeric || numeric <= 0) continue;
 
-        const nameEl = card ? (
-            card.querySelector('[class*="name"]')
-            || card.querySelector('[class*="title"]')
-            || card.querySelector('[class*="desc"]')
-        ) : null;
         const brandEl = card ? card.querySelector('[class*="brand"]') : null;
-        const name  = (nameEl  ? nameEl.innerText  : link.innerText).trim().substring(0, 120);
         const brand = (brandEl ? brandEl.innerText : '').trim().substring(0, 60);
 
         seen.add(m[1]);
-        result.push({ id: m[1], name, brand, price: numeric });
+        result.push({ id: m[1], name: text.substring(0, 120), brand, price: numeric });
     }
     return result;
 }
@@ -145,10 +143,17 @@ class TrendyolM13Scraper:
         """)
         return ctx
 
-    async def _fetch_products(self, query: str) -> list[dict]:
-        """Playwright ile arama sayfasını render et, ürün listesini döndür."""
+    async def _fetch_products(self, query: str = "", extra_params: str = "") -> list[dict]:
+        """Playwright ile arama sayfasını render et, ürün listesini döndür.
+
+        query boşsa (marka browse modu) q= parametresi eklenmez; extra_params doğrudan kullanılır.
+        """
         import urllib.parse
-        path = f"/sr?q={urllib.parse.quote(query)}&sst=BEST_SELLER"
+        if query:
+            q_enc = urllib.parse.quote(query)
+            path = f"/sr?q={q_enc}&sst=BEST_SELLER&{extra_params}" if extra_params else f"/sr?q={q_enc}&sst=BEST_SELLER"
+        else:
+            path = f"/sr?sst=BEST_SELLER&{extra_params}" if extra_params else "/sr?sst=BEST_SELLER"
         url  = _BASE + path
         logger.info("[trendyol-m13] Arama: %s", query)
 
@@ -174,11 +179,11 @@ class TrendyolM13Scraper:
         finally:
             await ctx.close()
 
-    async def search_keyword(self, keyword: str, max_pages: int = 1) -> list[PriceRecord]:
+    async def search_keyword(self, keyword: str, max_pages: int = 1, extra_params: str = "") -> list[PriceRecord]:
         """Trendyol'da keyword araması yapar, list[PriceRecord] döner."""
         today   = date.today()
         records: list[PriceRecord] = []
-        raw     = await self._fetch_products(keyword)
+        raw     = await self._fetch_products(keyword, extra_params=extra_params)
 
         for item in raw:
             price = _parse_price(item.get("price"))

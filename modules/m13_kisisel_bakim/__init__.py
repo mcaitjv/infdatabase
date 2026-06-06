@@ -63,6 +63,28 @@ def _load_seyahat_bebek_config() -> dict:
         return yaml.safe_load(f) or {}
 
 
+_BADGE_PREFIX_RE = __import__("re").compile(
+    r"^\d+\s+\S[\s\S]{0,30}?\s+(?=[A-ZÇŞÖÜĞİ])", __import__("re").UNICODE
+)
+
+
+def _dedup_top_n(results, top_n: int):
+    """İlk top_n farklı ürünü döner — Trendyol badge prefix + varyant duplikasyonunu engeller."""
+    seen: set[str] = set()
+    out = []
+    for r in results:
+        name = r.market_name or ""
+        # Badge prefix'i atla: "3 Birlikte Al Kazan Samsonite..." → "Samsonite..."
+        clean = _BADGE_PREFIX_RE.sub("", name).strip()
+        key = (clean or name)[:50].lower()
+        if key not in seen:
+            seen.add(key)
+            out.append(r)
+        if len(out) >= top_n:
+            break
+    return out
+
+
 def _write_seyahat_bebek_config(config: dict) -> None:
     """Discovery sonrası güncellenmiş config'i YAML'a yazar."""
     path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
@@ -266,17 +288,19 @@ class KisiselBakimModule(BaseModule):
             logger.warning("[m13:discover-valiz-bavul] valiz_bavul.brands boş — YAML'ı kontrol et")
             return
 
+        trendyol_filter = vb.get("trendyol_filter", "")
         total = 0
         async with TrendyolM13Scraper() as scraper:
             for b in brands:
-                query   = b.get("search_query", b.get("brand", ""))
-                results = await scraper.search_keyword(query, max_pages=1)
-                top     = results[:top_n]
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top     = _dedup_top_n(results, top_n)
                 b["top_skus"] = [{"sku": r.market_sku, "name": r.market_name} for r in top]
                 total += len(top)
                 logger.info(
-                    "[m13:discover-valiz-bavul] %s → %d ürün (query: %s)",
-                    b["brand"], len(top), query,
+                    "[m13:discover-valiz-bavul] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
                 )
                 await _asyncio.sleep(3)
 
@@ -302,17 +326,19 @@ class KisiselBakimModule(BaseModule):
             logger.warning("[m13:discover-okul-cantasi] okul_cantasi.brands boş — YAML'ı kontrol et")
             return
 
+        trendyol_filter = oc.get("trendyol_filter", "")
         total = 0
         async with TrendyolM13Scraper() as scraper:
             for b in brands:
-                query   = b.get("search_query", b.get("brand", ""))
-                results = await scraper.search_keyword(query, max_pages=1)
-                top     = results[:top_n]
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top     = _dedup_top_n(results, top_n)
                 b["top_skus"] = [{"sku": r.market_sku, "name": r.market_name} for r in top]
                 total += len(top)
                 logger.info(
-                    "[m13:discover-okul-cantasi] %s → %d ürün (query: %s)",
-                    b["brand"], len(top), query,
+                    "[m13:discover-okul-cantasi] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
                 )
                 await _asyncio.sleep(3)
 
@@ -338,21 +364,22 @@ class KisiselBakimModule(BaseModule):
             logger.warning("[m13:discover-kadin-cantasi] kadin_cantasi.brands boş — YAML'ı kontrol et")
             return
 
+        trendyol_filter = kc.get("trendyol_filter", "")
         total = 0
         async with TrendyolM13Scraper() as scraper:
             for b in brands:
-                query = b.get("search_query", b.get("brand", ""))
-                results = await scraper.search_keyword(query, max_pages=1)
-
-                top = results[:top_n]
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top = _dedup_top_n(results, top_n)
                 b["top_skus"] = [
                     {"sku": r.market_sku, "name": r.market_name}
                     for r in top
                 ]
                 total += len(top)
                 logger.info(
-                    "[m13:discover-kadin-cantasi] %s → %d ürün (query: %s)",
-                    b["brand"], len(top), query,
+                    "[m13:discover-kadin-cantasi] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
                 )
                 await _asyncio.sleep(3)
 
@@ -756,12 +783,14 @@ class KisiselBakimModule(BaseModule):
                 vb_cfg    = cfg.get("valiz_bavul", {})
                 vb_brands = vb_cfg.get("brands", [])
                 vb_top_n  = int(vb_cfg.get("top_n", 5))
+                vb_filter = vb_cfg.get("trendyol_filter", "")
                 if vb_brands:
                     vb_prices: list = []
                     for b in vb_brands:
-                        q = b.get("search_query", b.get("brand", ""))
-                        res = await scraper.search_keyword(q, max_pages=1)
-                        vb_prices.extend(r.price for r in res[:vb_top_n] if r.price > 0)
+                        bp = b.get("trendyol_params") or vb_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        vb_prices.extend(r.price for r in _dedup_top_n(res, vb_top_n) if r.price > 0)
                         await asyncio.sleep(2)
                     if vb_prices:
                         from decimal import Decimal as _D
@@ -788,12 +817,14 @@ class KisiselBakimModule(BaseModule):
                 oc_cfg    = cfg.get("okul_cantasi", {})
                 oc_brands = oc_cfg.get("brands", [])
                 oc_top_n  = int(oc_cfg.get("top_n", 5))
+                oc_filter = oc_cfg.get("trendyol_filter", "")
                 if oc_brands:
                     oc_prices: list = []
                     for b in oc_brands:
-                        q = b.get("search_query", b.get("brand", ""))
-                        res = await scraper.search_keyword(q, max_pages=1)
-                        oc_prices.extend(r.price for r in res[:oc_top_n] if r.price > 0)
+                        bp = b.get("trendyol_params") or oc_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        oc_prices.extend(r.price for r in _dedup_top_n(res, oc_top_n) if r.price > 0)
                         await asyncio.sleep(2)
                     if oc_prices:
                         from decimal import Decimal as _D
@@ -820,12 +851,14 @@ class KisiselBakimModule(BaseModule):
                 kc_cfg    = cfg.get("kadin_cantasi", {})
                 kc_brands = kc_cfg.get("brands", [])
                 kc_top_n  = int(kc_cfg.get("top_n", 5))
+                kc_filter = kc_cfg.get("trendyol_filter", "")
                 if kc_brands:
                     kc_prices: list = []
                     for b in kc_brands:
-                        q = b.get("search_query", b.get("brand", ""))
-                        res = await scraper.search_keyword(q, max_pages=1)
-                        kc_prices.extend(r.price for r in res[:kc_top_n] if r.price > 0)
+                        bp = b.get("trendyol_params") or kc_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        kc_prices.extend(r.price for r in _dedup_top_n(res, kc_top_n) if r.price > 0)
                         await asyncio.sleep(2)
                     if kc_prices:
                         from decimal import Decimal as _D
