@@ -9,6 +9,7 @@ SKU: Ürün sayfasının son URL segment'i
 
 import asyncio
 import logging
+import os
 import random
 import re
 from datetime import date
@@ -21,6 +22,16 @@ logger = logging.getLogger(__name__)
 _BASE = "https://www.pasabahce.com"
 _PRICE_RE = re.compile(r"([\d]{1,3}(?:\.[\d]{3})*(?:,\d{1,2})?)\s*TL", re.I)
 _PRODUCT_RE = re.compile(r"^/[a-z0-9][a-z0-9-]+-p-\d+/$")  # /slug-p-{id}/
+
+_LAUNCH_ARGS = [
+    "--disable-blink-features=AutomationControlled",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--js-flags=--max-old-space-size=256",
+]
+_LAUNCH_TIMEOUT = 60.0
+_CLOSE_TIMEOUT = 15.0
 
 
 def _parse_price(raw: str) -> Decimal | None:
@@ -47,25 +58,45 @@ class PasabahceScraper:
     async def __aenter__(self) -> "PasabahceScraper":
         from playwright.async_api import async_playwright
         self._pw = await async_playwright().start()
-        self._browser = await self._pw.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--js-flags=--max-old-space-size=256",
-            ],
-        )
+        self._browser = await self._launch_browser()
         return self
+
+    async def _launch_browser(self):
+        """chromium.launch() ölü/zombi bir driver ile sonsuza dek bloke
+        olabilir (IPC handshake takılması); bu yüzden timeout'lu çağırılır."""
+        return await asyncio.wait_for(
+            self._pw.chromium.launch(headless=True, args=_LAUNCH_ARGS),
+            timeout=_LAUNCH_TIMEOUT,
+        )
+
+    async def _kill_orphan_processes(self) -> None:
+        """close()/stop() takılıp kaldığında geride kalan zombi
+        Chromium/playwright-driver alt süreçlerini zorla öldür."""
+        try:
+            import psutil
+            children = psutil.Process(os.getpid()).children(recursive=True)
+        except Exception:
+            return
+        for child in children:
+            try:
+                name = child.name().lower()
+                if "chrom" in name or "node" in name:
+                    child.kill()
+            except Exception:
+                continue
 
     async def __aexit__(self, *_) -> None:
         try:
             if self._browser:
-                await self._browser.close()
-        finally:
+                await asyncio.wait_for(self._browser.close(), timeout=_CLOSE_TIMEOUT)
+        except Exception:
+            pass
+        try:
             if self._pw:
-                await self._pw.stop()
+                await asyncio.wait_for(self._pw.stop(), timeout=_CLOSE_TIMEOUT)
+        except Exception:
+            pass
+        finally:
             self._pw = None
             self._browser = None
 
@@ -204,22 +235,35 @@ class PasabahceScraper:
         return None
 
     async def _restart_browser(self) -> None:
-        """Bellek birikimini önlemek için browser'ı yeniden başlat."""
+        """Bellek birikimini önlemek veya çökme sonrası toparlanmak için
+        browser'ı yeniden başlat. Çökmüş bir Chromium'da close()/launch()
+        event loop'u sonsuza dek bloke edebilir (2026-06-07'de pipeline'ı
+        2.5 saat dondurdu) — bu yüzden her adım timeout'lu; launch
+        takılırsa/başarısız olursa playwright driver'ın kendisi de
+        zombi alt süreçler temizlenerek sıfırdan kurulur."""
         if self._browser:
             try:
-                await self._browser.close()
+                await asyncio.wait_for(self._browser.close(), timeout=_CLOSE_TIMEOUT)
             except Exception:
                 pass
-        self._browser = await self._pw.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--js-flags=--max-old-space-size=256",
-            ],
-        )
+        self._browser = None
+
+        try:
+            self._browser = await self._launch_browser()
+        except Exception as exc:
+            logger.warning(
+                "[pasabahce] chromium.launch takildi/basarisiz, playwright driver yeniden kuruluyor: %s",
+                exc,
+            )
+            try:
+                await asyncio.wait_for(self._pw.stop(), timeout=_CLOSE_TIMEOUT)
+            except Exception:
+                pass
+            await self._kill_orphan_processes()
+            from playwright.async_api import async_playwright
+            self._pw = await asyncio.wait_for(async_playwright().start(), timeout=_LAUNCH_TIMEOUT)
+            self._browser = await self._launch_browser()
+
         self._renders_since_restart = 0
         await asyncio.sleep(2.0)  # Chromium process stabilleşsin, new_context() erken çağrılmasın
         logger.info("[pasabahce] browser yeniden baslatildi")

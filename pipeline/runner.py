@@ -20,6 +20,8 @@ import asyncio
 import json
 import logging
 import os
+import threading
+import time
 from datetime import date
 
 import psutil
@@ -114,6 +116,80 @@ def _release_lock() -> None:
         pass
 
 
+# 2026-06-07: pasabahce scraper'ında çöken bir Chromium, asyncio event loop'u
+# tamamen bloke etti — modül seviyesindeki asyncio.wait_for(...) bile tetiklenmedi
+# (zamanlayıcısı da aynı donmuş loop'a bağlı). Süreç ~2.5 saat askıda kaldı.
+# Bu watchdog ayrı bir OS thread'inde çalışır; event loop donsa bile log dosyasının
+# yazılmadığını fark edip süreci zorla sonlandırır. Eşik, M01'in şehirler arası
+# kasıtlı 10 dakikalık beklemesinden (config: "10 dakika bekleniyor…") belirgin
+# şekilde yüksek tutuldu — yanlış pozitif olmasın diye.
+_WATCHDOG_TIMEOUT = 1200  # saniye — 20 dakika sessizlik = donmuş kabul et
+_WATCHDOG_CHECK_INTERVAL = 60
+
+
+def _start_watchdog(log_path: str, stop_event: threading.Event) -> threading.Thread:
+    """Log dosyasının son yazılma zamanını izler; uzun süre sessizlik
+    pipeline'ın donduğunu gösterir ve süreç os._exit ile sonlandırılır.
+    Lock dosyası burada da temizlenir — ölü PID zaten stale lock olarak
+    bir sonraki çalışmada da temizlenirdi, ama erken temizlemek daha iyi."""
+
+    def _watch() -> None:
+        while not stop_event.wait(_WATCHDOG_CHECK_INTERVAL):
+            try:
+                last_write = os.path.getmtime(log_path)
+            except OSError:
+                continue
+            silent_for = time.time() - last_write
+            if silent_for > _WATCHDOG_TIMEOUT:
+                logger.critical(
+                    "[watchdog] %.0f saniyedir log akışı yok — pipeline donmuş olabilir, "
+                    "süreç zorla sonlandırılıyor (PID %d)",
+                    silent_for, os.getpid(),
+                )
+                _release_lock()
+                os._exit(1)
+
+    thread = threading.Thread(target=_watch, name="pipeline-watchdog", daemon=True)
+    thread.start()
+    return thread
+
+
+# 2026-06-08: Pipeline 11:00'de log yazmayı kesti, sistem 11:14'te
+# "System Idle" nedeniyle uykuya daldı (Kernel-Power #42/#107/#131, gerçek
+# uyanış ~12:05) — ~50 dakikalık S3 uykusunda Python süreci ve Playwright/
+# Chromium alt süreçleri sessizce öldü (traceback yok). Task Scheduler'daki
+# WakeToRun yalnızca görevi BAŞLATMAK için uyandırmayı kapsar, ÇALIŞIRKEN
+# uykuyu engellemez. Bu yüzden pipeline kendi süresince Windows'a "uyuma"
+# diyor — global güç planı ayarlarına dokunmadan (onlar güncellemelerde
+# sıfırlanabiliyor).
+_ES_CONTINUOUS = 0x80000000
+_ES_SYSTEM_REQUIRED = 0x00000001
+_ES_AWAYMODE_REQUIRED = 0x00000040
+
+
+def _prevent_sleep() -> None:
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(
+            _ES_CONTINUOUS | _ES_SYSTEM_REQUIRED | _ES_AWAYMODE_REQUIRED
+        )
+        logger.info("[runner] Uyku engellendi (SetThreadExecutionState) — pipeline süresince sistem uykuya geçmeyecek")
+    except Exception as exc:
+        logger.warning("[runner] SetThreadExecutionState başarısız — sistem uykuya geçebilir: %s", exc)
+
+
+def _allow_sleep() -> None:
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(_ES_CONTINUOUS)
+    except Exception:
+        pass
+
+
 def _print_safe(text: str) -> None:
     """Windows'ta Unicode print sorununu önler — stdout.buffer üzerinden UTF-8 yazar."""
     import sys
@@ -188,10 +264,16 @@ async def main(
     if not _acquire_lock():
         return
 
+    _prevent_sleep()
+    log_path = os.path.join("logs", f"{date.today()}.log")
+    watchdog_stop = threading.Event()
+    _start_watchdog(log_path, watchdog_stop)
     try:
         await _run_modules(module_codes, dry_run, setup_schema, parts, resume=resume)
     finally:
+        watchdog_stop.set()
         _release_lock()
+        _allow_sleep()
 
 
 async def _run_modules(
