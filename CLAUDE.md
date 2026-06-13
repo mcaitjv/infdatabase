@@ -122,11 +122,17 @@ infdatabase/
 | 01 | Gıda ve Alkolsüz İçecekler | %24.44 | A | marketfiyati.org.tr (TÜBİTAK API), hal.gov.tr (toptan hal) |
 | 05 | Mobilya, Mefruşat ve Ev Bakım | %7.92 | B | Arçelik, Beko, BSH, Samsung, Vestel, IKEA, Trendyol, Vivense |
 | 07 | Ulaştırma — Akaryakıt | %16.62 | C | Petrol Ofisi, Opet/Aygaz, Shell (Playwright) |
-| 13 | Kişisel Bakım Ürünleri | %4.4935 | A | marketfiyati.org.tr (TÜBİTAK API) |
+| 13 | Kişisel Bakım Ürünleri | %4.4935 | A | marketfiyati.org.tr (TÜBİTAK API), Gratis, Rossmann, SaatveSaat, Altın, Trendyol |
 
 **M05 Parts:**
 - `appliances.yaml` — beyaz eşya & küçük ev aleti (5 marka sitesi)
 - `mobilya.yaml` — mobilya & ev tekstili (IKEA + Trendyol + Vivense, 9 kategori)
+
+**M13 Parts:**
+- `categories.yaml` — Kişisel Bakım (MarketFiyati keyword araması)
+- `online_stores.yaml` — Gratis + Rossmann
+- `saat_altin.yaml` — Saat & Altın (SaatveSaat + Trendyol tracked SKU)
+- `seyahat_bebek.yaml` — Seyahat & Bebek (Trendyol): valiz_bavul/okul_cantasi/kadin_cantasi (5 marka × 5 ürün sepet ortalaması), gunes_gozlugu + bebek_arabasi (10 model tracked SKU)
 
 ---
 
