@@ -63,6 +63,12 @@ def _load_seyahat_bebek_config() -> dict:
         return yaml.safe_load(f) or {}
 
 
+def _print_safe(text: str) -> None:
+    """Windows'ta Unicode print sorununu önler — stdout.buffer üzerinden UTF-8 yazar."""
+    import sys
+    sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
+
+
 _BADGE_PREFIX_RE = __import__("re").compile(
     r"^\d+\s+\S[\s\S]{0,30}?\s+(?=[A-ZÇŞÖÜĞİ])", __import__("re").UNICODE
 )
@@ -385,44 +391,6 @@ class KisiselBakimModule(BaseModule):
 
         _write_seyahat_bebek_config(config)
         logger.info("[m13:discover-kadin-cantasi] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
-
-    async def discover_bebek_bezi(self) -> None:
-        """
-        bebek_bezi.models listesindeki her model için Trendyol'da arama yapar,
-        ilk eşleşen ürünün SKU'sunu YAML'a yazar.
-
-        Kullanım: python -m pipeline.runner --discover-bebek-bezi
-        """
-        import asyncio as _asyncio
-        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
-
-        config = _load_seyahat_bebek_config()
-        models = config.get("bebek_bezi", {}).get("models", [])
-        if not models:
-            logger.warning("[m13:discover-bebek-bezi] bebek_bezi.models boş — YAML'ı kontrol et")
-            return
-
-        found = 0
-        async with TrendyolM13Scraper() as scraper:
-            for m in models:
-                brand      = m.get("brand", "")
-                model_code = m.get("model_code", "")
-
-                match = await scraper.find_by_model(model_code, brand)
-                if match:
-                    m["trendyol_sku"] = match["sku"]
-                    found += 1
-                    logger.info(
-                        "[m13:discover-bebek-bezi] %s %s → sku=%s, fiyat=%.2f TL",
-                        brand, model_code, match["sku"], match["price"],
-                    )
-                else:
-                    logger.warning("[m13:discover-bebek-bezi] %s %s → Trendyol'da bulunamadı", brand, model_code)
-
-                await _asyncio.sleep(2)
-
-        _write_seyahat_bebek_config(config)
-        logger.info("[m13:discover-bebek-bezi] tamamlandı — %d/%d model bulundu", found, len(models))
 
     async def discover_bebek_arabasi(self) -> None:
         """
@@ -943,46 +911,15 @@ class KisiselBakimModule(BaseModule):
                 elif ba_models:
                     logger.warning("[m13:seyahat_bebek] bebek arabası SKU'ları boş — önce --discover-bebek-arabasi çalıştır")
 
-                # ── Tracked SKU araması (bebek bezi) ──────────────────────
-                bb_models = cfg.get("bebek_bezi", {}).get("models", [])
-                tracked_bb = [
-                    {
-                        "sku":         m["trendyol_sku"],
-                        "brand_model": m["model_code"],
-                        "brand":       m["brand"],
-                        "source":      "trendyol",
-                    }
-                    for m in bb_models if m.get("trendyol_sku")
-                ]
-                if tracked_bb:
-                    price_records = await scraper.scrape_tracked(tracked_bb)
-                    sku_to_bb = {m["trendyol_sku"]: m for m in bb_models if m.get("trendyol_sku")}
-                    for r in price_records:
-                        m = sku_to_bb.get(r.market_sku, {})
-                        try:
-                            sb_records.append(SeyahatBebekRecord(
-                                snapshot_date=r.snapshot_date,
-                                keyword="bebek_bezi",
-                                market_sku=r.market_sku,
-                                market_name=r.market_name,
-                                brand=m.get("brand") or r.brand or "",
-                                price=r.price,
-                                discounted_price=r.islem_hacmi,
-                            ))
-                        except Exception:
-                            errors += 1
-                elif bb_models:
-                    logger.warning("[m13:seyahat_bebek] bebek bezi SKU'ları boş — önce --discover-bebek-bezi çalıştır")
-
             run.products_scraped = len(sb_records)
             run.errors_count = errors
 
             if dry_run:
                 logger.info("[m13:seyahat_bebek] Dry-run: %d ürün (DB'ye yazılmadı)", len(sb_records))
                 for r in sb_records[:5]:
-                    print(f"  [trendyol:{r.keyword}] {r.market_name} | {r.price} TL")
+                    _print_safe(f"  [trendyol:{r.keyword}] {r.market_name} | {r.price} TL")
                 if len(sb_records) > 5:
-                    print(f"  ... ve {len(sb_records) - 5} ürün daha")
+                    _print_safe(f"  ... ve {len(sb_records) - 5} ürün daha")
             else:
                 async with get_connection() as conn:
                     inserted = await batch_insert_seyahat_bebek_prices(conn, sb_records)

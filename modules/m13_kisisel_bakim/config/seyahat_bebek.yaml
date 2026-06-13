@@ -295,54 +295,11 @@ kadin_cantasi:
     - sku: '1146752814'
       name: 5 Yetkili Satıcı David Jones Kadın Çapraz Çantası CM7429-2 🚛 Hızlı teslimat
         yapılıyor! Kampanyalı Fiyat Kargo Bedava 20
-bebek_bezi:
-  label: Bebek Bezi
-  models:
-  - brand: Prima
-    model_code: Premium Care 4 Numara
-    model_name: Premium Care 4 Numara
-    trendyol_sku: '36462023'
-  - brand: Prima
-    model_code: Aktif Bebek 4 Numara
-    model_name: Aktif Bebek 4 Numara
-    trendyol_sku: '35310402'
-  - brand: Molfix
-    model_code: Avantaj Paket 4 Numara
-    model_name: Avantaj Paket 4 Numara
-    trendyol_sku: '89392058'
-  - brand: Molfix
-    model_code: Pure Soft 4 Numara
-    model_name: Pure & Soft 4 Numara
-    trendyol_sku: '748465750'
-  - brand: Sleepy
-    model_code: Bio Natural 4 Numara
-    model_name: Bio Natural 4 Numara
-    trendyol_sku: '246412936'
-  - brand: Sleepy
-    model_code: Ecologic 4 Numara
-    model_name: Ecologic 4 Numara
-    trendyol_sku: '263192524'
-  - brand: Canbebe
-    model_code: Standart Paket 4 Numara
-    model_name: Standart Paket 4 Numara
-    trendyol_sku: '931204002'
-  - brand: Evy Baby
-    model_code: Ikiz Paket 4 Numara
-    model_name: İkiz Paket 4 Numara
-    trendyol_sku: '937605626'
-  - brand: Baby Turco
-    model_code: Dogadan 4 Numara
-    model_name: Doğadan 4 Numara
-    trendyol_sku: '1120951869'
-  - brand: Minies
-    model_code: 4 Numara
-    model_name: 4 Numara
-    trendyol_sku: '311007573'
 bebek_arabasi:
   label: Bebek Arabası
   models:
   - brand: Chicco
-    model_code: Goody Plus
+    model_code: Goody Plus Mist Grey Bebek Arabası
     model_name: Goody Plus Mist Grey
     trendyol_sku: '237772993'
   - brand: Cybex
@@ -392,10 +349,10 @@ gunes_gozlugu:
     model_code: RB2140
     model_name: Wayfarer
     trendyol_sku: '731635'
-  - brand: Ray-Ban
-    model_code: RB3016
-    model_name: Clubmaster
-    trendyol_sku: '994747994'
+  - brand: Tommy Hilfiger
+    model_code: TH-1979-S-807-IR
+    model_name: TH 1979/S 807/IR Kadın Güneş Gözlüğü
+    trendyol_sku: '788937462'
   - brand: Ray-Ban
     model_code: RB4171
     model_name: Erika
@@ -420,3 +377,7 @@ gunes_gozlugu:
     model_code: PR17WS
     model_name: PR 17WS
     trendyol_sku: '94971195'
+  - brand: Versace
+    model_code: VE4361
+    model_name: VE4361 521773-53 Kadın Güneş Gözlüğü
+    trendyol_sku: '653545147'
