@@ -189,7 +189,7 @@ class KorkmazstoreScraper:
             sku = entry["sku"]
             model = entry.get("model", sku)
             try:
-                price = await self._fetch_product_price(sku)
+                price = await asyncio.wait_for(self._fetch_product_price(sku), timeout=35.0)
                 if price is None or price <= 0:
                     logger.warning("[korkmazstore] %s fiyat bulunamadi", sku)
                     continue

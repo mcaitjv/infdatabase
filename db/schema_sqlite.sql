@@ -100,6 +100,22 @@ CREATE INDEX IF NOT EXISTS idx_m13_ps_date         ON m13_price_snapshots(snapsh
 CREATE INDEX IF NOT EXISTS idx_m13_ps_product_date ON m13_price_snapshots(market_product_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_m13_mp_market       ON m13_market_products(market);
 
+-- Seyahat & Bebek fiyat tablosu (Modül 13 — COICOP 1329)
+CREATE TABLE IF NOT EXISTS m13_seyahat_bebek_prices (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    snapshot_date    TEXT    NOT NULL,
+    keyword          TEXT    NOT NULL,
+    market_sku       TEXT    NOT NULL,
+    market_name      TEXT    NOT NULL,
+    brand            TEXT,
+    price            REAL    NOT NULL,
+    discounted_price REAL,
+    scraped_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_m13_sb_date    ON m13_seyahat_bebek_prices(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_m13_sb_keyword ON m13_seyahat_bebek_prices(keyword);
+
 -- Saat & Altın fiyat tablosu (Modül 13 — COICOP 1313)
 CREATE TABLE IF NOT EXISTS m13_saat_altin_prices (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,

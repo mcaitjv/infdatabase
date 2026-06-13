@@ -208,6 +208,24 @@ class TaxiPriceRecord(BaseModel):
         return v
 
 
+class SeyahatBebekRecord(BaseModel):
+    """Modül 13 — Seyahat & Bebek fiyat kaydı (m13_seyahat_bebek_prices tablosu)."""
+    snapshot_date:    date
+    keyword:          str
+    market_sku:       str
+    market_name:      str
+    brand:            str = ""
+    price:            Decimal
+    discounted_price: Decimal | None = None
+
+    @field_validator("price")
+    @classmethod
+    def price_must_be_positive(cls, v: Decimal) -> Decimal:
+        if v <= 0:
+            raise ValueError(f"Fiyat sıfır veya negatif olamaz: {v}")
+        return v
+
+
 class SaatAltinRecord(BaseModel):
     """Modül 13 — Saat & Altın fiyat kaydı (m13_saat_altin_prices tablosu)."""
     snapshot_date: date

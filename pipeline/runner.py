@@ -20,6 +20,8 @@ import asyncio
 import json
 import logging
 import os
+import threading
+import time
 from datetime import date
 
 import psutil
@@ -114,6 +116,80 @@ def _release_lock() -> None:
         pass
 
 
+# 2026-06-07: pasabahce scraper'ında çöken bir Chromium, asyncio event loop'u
+# tamamen bloke etti — modül seviyesindeki asyncio.wait_for(...) bile tetiklenmedi
+# (zamanlayıcısı da aynı donmuş loop'a bağlı). Süreç ~2.5 saat askıda kaldı.
+# Bu watchdog ayrı bir OS thread'inde çalışır; event loop donsa bile log dosyasının
+# yazılmadığını fark edip süreci zorla sonlandırır. Eşik, M01'in şehirler arası
+# kasıtlı 10 dakikalık beklemesinden (config: "10 dakika bekleniyor…") belirgin
+# şekilde yüksek tutuldu — yanlış pozitif olmasın diye.
+_WATCHDOG_TIMEOUT = 1200  # saniye — 20 dakika sessizlik = donmuş kabul et
+_WATCHDOG_CHECK_INTERVAL = 60
+
+
+def _start_watchdog(log_path: str, stop_event: threading.Event) -> threading.Thread:
+    """Log dosyasının son yazılma zamanını izler; uzun süre sessizlik
+    pipeline'ın donduğunu gösterir ve süreç os._exit ile sonlandırılır.
+    Lock dosyası burada da temizlenir — ölü PID zaten stale lock olarak
+    bir sonraki çalışmada da temizlenirdi, ama erken temizlemek daha iyi."""
+
+    def _watch() -> None:
+        while not stop_event.wait(_WATCHDOG_CHECK_INTERVAL):
+            try:
+                last_write = os.path.getmtime(log_path)
+            except OSError:
+                continue
+            silent_for = time.time() - last_write
+            if silent_for > _WATCHDOG_TIMEOUT:
+                logger.critical(
+                    "[watchdog] %.0f saniyedir log akışı yok — pipeline donmuş olabilir, "
+                    "süreç zorla sonlandırılıyor (PID %d)",
+                    silent_for, os.getpid(),
+                )
+                _release_lock()
+                os._exit(1)
+
+    thread = threading.Thread(target=_watch, name="pipeline-watchdog", daemon=True)
+    thread.start()
+    return thread
+
+
+# 2026-06-08: Pipeline 11:00'de log yazmayı kesti, sistem 11:14'te
+# "System Idle" nedeniyle uykuya daldı (Kernel-Power #42/#107/#131, gerçek
+# uyanış ~12:05) — ~50 dakikalık S3 uykusunda Python süreci ve Playwright/
+# Chromium alt süreçleri sessizce öldü (traceback yok). Task Scheduler'daki
+# WakeToRun yalnızca görevi BAŞLATMAK için uyandırmayı kapsar, ÇALIŞIRKEN
+# uykuyu engellemez. Bu yüzden pipeline kendi süresince Windows'a "uyuma"
+# diyor — global güç planı ayarlarına dokunmadan (onlar güncellemelerde
+# sıfırlanabiliyor).
+_ES_CONTINUOUS = 0x80000000
+_ES_SYSTEM_REQUIRED = 0x00000001
+_ES_AWAYMODE_REQUIRED = 0x00000040
+
+
+def _prevent_sleep() -> None:
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(
+            _ES_CONTINUOUS | _ES_SYSTEM_REQUIRED | _ES_AWAYMODE_REQUIRED
+        )
+        logger.info("[runner] Uyku engellendi (SetThreadExecutionState) — pipeline süresince sistem uykuya geçmeyecek")
+    except Exception as exc:
+        logger.warning("[runner] SetThreadExecutionState başarısız — sistem uykuya geçebilir: %s", exc)
+
+
+def _allow_sleep() -> None:
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(_ES_CONTINUOUS)
+    except Exception:
+        pass
+
+
 def _print_safe(text: str) -> None:
     """Windows'ta Unicode print sorununu önler — stdout.buffer üzerinden UTF-8 yazar."""
     import sys
@@ -127,6 +203,11 @@ async def main(
     do_discover: bool,
     do_discover_m05: bool,
     do_discover_saat: bool,
+    do_discover_gunes: bool,
+    do_discover_valiz_bavul: bool,
+    do_discover_okul_cantasi: bool,
+    do_discover_kadin_cantasi: bool,
+    do_discover_bebek_arabasi: bool,
     do_health_check: bool,
     health_date: date | None,
     parts: list[str] | None = None,
@@ -144,6 +225,26 @@ async def main(
         await KisiselBakimModule().discover_saat_altin()
         return
 
+    if do_discover_gunes:
+        await KisiselBakimModule().discover_gunes_gozlugu()
+        return
+
+    if do_discover_valiz_bavul:
+        await KisiselBakimModule().discover_valiz_bavul()
+        return
+
+    if do_discover_okul_cantasi:
+        await KisiselBakimModule().discover_okul_cantasi()
+        return
+
+    if do_discover_kadin_cantasi:
+        await KisiselBakimModule().discover_kadin_cantasi()
+        return
+
+    if do_discover_bebek_arabasi:
+        await KisiselBakimModule().discover_bebek_arabasi()
+        return
+
     if do_health_check:
         from pipeline.health import format_report, run_health_check, save_report
         from pipeline.notifier import send_health_email
@@ -158,10 +259,16 @@ async def main(
     if not _acquire_lock():
         return
 
+    _prevent_sleep()
+    log_path = os.path.join("logs", f"{date.today()}.log")
+    watchdog_stop = threading.Event()
+    _start_watchdog(log_path, watchdog_stop)
     try:
         await _run_modules(module_codes, dry_run, setup_schema, parts, resume=resume)
     finally:
+        watchdog_stop.set()
         _release_lock()
+        _allow_sleep()
 
 
 async def _run_modules(
@@ -264,6 +371,31 @@ if __name__ == "__main__":
         help="Modül 13 saat_altin keşfi (saatvesaat.com.tr + Trendyol, saat_altin.yaml günceller)",
     )
     parser.add_argument(
+        "--discover-gunes",
+        action="store_true",
+        help="Modül 13 güneş gözlüğü keşfi (Trendyol, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
+        "--discover-valiz-bavul",
+        action="store_true",
+        help="Modül 13 valiz & bavul keşfi (5 marka × 5 ürün, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
+        "--discover-okul-cantasi",
+        action="store_true",
+        help="Modül 13 okul çantası keşfi (5 marka × 5 ürün, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
+        "--discover-kadin-cantasi",
+        action="store_true",
+        help="Modül 13 kadın çantası keşfi (5 marka × 5 ürün, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
+        "--discover-bebek-arabasi",
+        action="store_true",
+        help="Modül 13 bebek arabası keşfi (Trendyol, seyahat_bebek.yaml günceller)",
+    )
+    parser.add_argument(
         "--health-check",
         action="store_true",
         help="Sağlık raporu — DB verisi bütünlük ve anomali kontrolü",
@@ -285,14 +417,19 @@ if __name__ == "__main__":
     parts = [p.strip() for p in args.part.split(",")] if args.part else None
 
     asyncio.run(main(
-        module_codes       = codes,
-        dry_run            = args.dry_run,
-        setup_schema       = args.setup_schema,
-        do_discover        = args.discover_branches,
-        do_discover_m05    = args.discover_m05,
-        do_discover_saat   = args.discover_saat,
-        do_health_check    = args.health_check,
-        health_date        = hdate,
-        parts              = parts,
-        resume             = args.resume,
+        module_codes              = codes,
+        dry_run                   = args.dry_run,
+        setup_schema              = args.setup_schema,
+        do_discover               = args.discover_branches,
+        do_discover_m05           = args.discover_m05,
+        do_discover_saat          = args.discover_saat,
+        do_discover_gunes         = args.discover_gunes,
+        do_discover_valiz_bavul   = args.discover_valiz_bavul,
+        do_discover_okul_cantasi  = args.discover_okul_cantasi,
+        do_discover_kadin_cantasi = args.discover_kadin_cantasi,
+        do_discover_bebek_arabasi = args.discover_bebek_arabasi,
+        do_health_check           = args.health_check,
+        health_date               = hdate,
+        parts                     = parts,
+        resume                    = args.resume,
     ))

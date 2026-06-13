@@ -19,9 +19,10 @@ from datetime import date, datetime
 
 import yaml
 
-from db.models import SaatAltinRecord, ScrapeRun
+from db.models import SaatAltinRecord, ScrapeRun, SeyahatBebekRecord
 from db.repository import (
     apply_schema,
+    batch_insert_seyahat_bebek_prices,
     batch_upsert_m13_products_and_snapshots,
     batch_upsert_saat_altin_prices,
     export_and_cleanup,
@@ -55,6 +56,48 @@ def _load_saat_altin_config() -> dict:
         return yaml.safe_load(f) or {}
 
 
+def _load_seyahat_bebek_config() -> dict:
+    """seyahat_bebek.yaml'ı döner (keywords + gunes_gozlugu bölümleri)."""
+    path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def _print_safe(text: str) -> None:
+    """Windows'ta Unicode print sorununu önler — stdout.buffer üzerinden UTF-8 yazar."""
+    import sys
+    sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
+
+
+_BADGE_PREFIX_RE = __import__("re").compile(
+    r"^\d+\s+\S[\s\S]{0,30}?\s+(?=[A-ZÇŞÖÜĞİ])", __import__("re").UNICODE
+)
+
+
+def _dedup_top_n(results, top_n: int):
+    """İlk top_n farklı ürünü döner — Trendyol badge prefix + varyant duplikasyonunu engeller."""
+    seen: set[str] = set()
+    out = []
+    for r in results:
+        name = r.market_name or ""
+        # Badge prefix'i atla: "3 Birlikte Al Kazan Samsonite..." → "Samsonite..."
+        clean = _BADGE_PREFIX_RE.sub("", name).strip()
+        key = (clean or name)[:50].lower()
+        if key not in seen:
+            seen.add(key)
+            out.append(r)
+        if len(out) >= top_n:
+            break
+    return out
+
+
+def _write_seyahat_bebek_config(config: dict) -> None:
+    """Discovery sonrası güncellenmiş config'i YAML'a yazar."""
+    path = os.path.join(_MODULE_DIR, "config", "seyahat_bebek.yaml")
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+
+
 def _write_saat_altin_config(config: dict) -> None:
     """Discovery sonrası güncellenmiş config'i YAML'a yazar."""
     path = os.path.join(_MODULE_DIR, "config", "saat_altin.yaml")
@@ -73,7 +116,13 @@ class KisiselBakimModule(BaseModule):
     name = "Kişisel Bakım Ürünleri"
     weight = 4.4935
 
-    PART_SCHEDULE = {"main": 0, "online": 0, "saat_altin": 0}  # her gün
+    PART_SCHEDULE = {"main": 0, "online": 0, "saat_altin": 0, "seyahat_bebek": 0}  # her gün
+    PART_DISPLAY = {
+        "main":          "Kişisel Bakım (MarketFiyati)",
+        "online":        "Kişisel Bakım (Gratis + Rossmann)",
+        "saat_altin":    "Saat & Altın",
+        "seyahat_bebek": "Seyahat & Bebek",
+    }
 
     async def setup_schema(self, conn) -> None:
         await apply_schema(conn)
@@ -85,11 +134,12 @@ class KisiselBakimModule(BaseModule):
         parts=["online"]      → sadece Gratis + Rossmann
         parts=["saat_altin"]  → sadece saatvesaat + Trendyol
         """
-        run_main       = (parts is None or "main"       in parts) and self._should_run("main")
-        run_online     = (parts is None or "online"     in parts) and self._should_run("online")
-        run_saat_altin = (parts is None or "saat_altin" in parts) and self._should_run("saat_altin")
+        run_main          = (parts is None or "main"          in parts) and self._should_run("main")
+        run_online        = (parts is None or "online"        in parts) and self._should_run("online")
+        run_saat_altin    = (parts is None or "saat_altin"    in parts) and self._should_run("saat_altin")
+        run_seyahat_bebek = (parts is None or "seyahat_bebek" in parts) and self._should_run("seyahat_bebek")
 
-        if not run_main and not run_online and not run_saat_altin:
+        if not run_main and not run_online and not run_saat_altin and not run_seyahat_bebek:
             logger.info("[m13] Bugün çalışma günü değil — atlanıyor.")
             return []
 
@@ -108,6 +158,9 @@ class KisiselBakimModule(BaseModule):
         if run_saat_altin:
             runs.extend(await self._run_saat_altin(dry_run=dry_run))
             runs.extend(await self._run_altin(dry_run=dry_run))
+
+        if run_seyahat_bebek:
+            runs.extend(await self._run_seyahat_bebek(dry_run=dry_run))
 
         return runs
 
@@ -181,6 +234,201 @@ class KisiselBakimModule(BaseModule):
 
         _write_saat_altin_config(config)
         logger.info("[m13:discover] tamamlandı — %d marka, %d toplam tracked SKU", len(brands), total_skus)
+
+    async def discover_gunes_gozlugu(self) -> None:
+        """
+        gunes_gozlugu.models listesindeki her model için Trendyol'da arama yapar,
+        ilk eşleşen ürünün SKU'sunu YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-gunes
+        """
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        import asyncio as _asyncio
+
+        config = _load_seyahat_bebek_config()
+        models = config.get("gunes_gozlugu", {}).get("models", [])
+        if not models:
+            logger.warning("[m13:discover-gunes] gunes_gozlugu.models boş — YAML'ı kontrol et")
+            return
+
+        found = 0
+        async with TrendyolM13Scraper() as scraper:
+            for m in models:
+                brand      = m.get("brand", "")
+                model_code = m.get("model_code", "")
+                query      = f"{brand} {model_code}".strip()
+
+                match = await scraper.find_by_model(model_code, brand)
+                if match:
+                    m["trendyol_sku"] = match["sku"]
+                    found += 1
+                    logger.info(
+                        "[m13:discover-gunes] %s %s → sku=%s, fiyat=%.2f TL",
+                        brand, model_code, match["sku"], match["price"],
+                    )
+                else:
+                    logger.warning("[m13:discover-gunes] %s %s → Trendyol'da bulunamadı", brand, model_code)
+
+                await _asyncio.sleep(2)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-gunes] tamamlandı — %d/%d model bulundu", found, len(models))
+
+    async def discover_valiz_bavul(self) -> None:
+        """
+        Her marka için Trendyol'da search_query ile arama yapar,
+        ilk top_n ürünün SKU + adını YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-valiz-bavul
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        vb     = config.get("valiz_bavul", {})
+        brands = vb.get("brands", [])
+        top_n  = int(vb.get("top_n", 5))
+
+        if not brands:
+            logger.warning("[m13:discover-valiz-bavul] valiz_bavul.brands boş — YAML'ı kontrol et")
+            return
+
+        trendyol_filter = vb.get("trendyol_filter", "")
+        total = 0
+        async with TrendyolM13Scraper() as scraper:
+            for b in brands:
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top     = _dedup_top_n(results, top_n)
+                b["top_skus"] = [{"sku": r.market_sku, "name": r.market_name} for r in top]
+                total += len(top)
+                logger.info(
+                    "[m13:discover-valiz-bavul] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
+                )
+                await _asyncio.sleep(3)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-valiz-bavul] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
+
+    async def discover_okul_cantasi(self) -> None:
+        """
+        Her marka için Trendyol'da search_query ile arama yapar,
+        ilk top_n ürünün SKU + adını YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-okul-cantasi
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        oc     = config.get("okul_cantasi", {})
+        brands = oc.get("brands", [])
+        top_n  = int(oc.get("top_n", 5))
+
+        if not brands:
+            logger.warning("[m13:discover-okul-cantasi] okul_cantasi.brands boş — YAML'ı kontrol et")
+            return
+
+        trendyol_filter = oc.get("trendyol_filter", "")
+        total = 0
+        async with TrendyolM13Scraper() as scraper:
+            for b in brands:
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top     = _dedup_top_n(results, top_n)
+                b["top_skus"] = [{"sku": r.market_sku, "name": r.market_name} for r in top]
+                total += len(top)
+                logger.info(
+                    "[m13:discover-okul-cantasi] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
+                )
+                await _asyncio.sleep(3)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-okul-cantasi] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
+
+    async def discover_kadin_cantasi(self) -> None:
+        """
+        Her marka için Trendyol'da search_query ile arama yapar,
+        ilk top_n ürünün SKU + adını YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-kadin-cantasi
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        kc     = config.get("kadin_cantasi", {})
+        brands = kc.get("brands", [])
+        top_n  = int(kc.get("top_n", 5))
+
+        if not brands:
+            logger.warning("[m13:discover-kadin-cantasi] kadin_cantasi.brands boş — YAML'ı kontrol et")
+            return
+
+        trendyol_filter = kc.get("trendyol_filter", "")
+        total = 0
+        async with TrendyolM13Scraper() as scraper:
+            for b in brands:
+                brand_params = b.get("trendyol_params") or trendyol_filter
+                brand_query  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                results = await scraper.search_keyword(brand_query, max_pages=1, extra_params=brand_params)
+                top = _dedup_top_n(results, top_n)
+                b["top_skus"] = [
+                    {"sku": r.market_sku, "name": r.market_name}
+                    for r in top
+                ]
+                total += len(top)
+                logger.info(
+                    "[m13:discover-kadin-cantasi] %s → %d ürün (params: %s)",
+                    b["brand"], len(top), brand_params,
+                )
+                await _asyncio.sleep(3)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-kadin-cantasi] tamamlandı — %d marka, %d toplam SKU", len(brands), total)
+
+    async def discover_bebek_arabasi(self) -> None:
+        """
+        bebek_arabasi.models listesindeki her model için Trendyol'da arama yapar,
+        ilk eşleşen ürünün SKU'sunu YAML'a yazar.
+
+        Kullanım: python -m pipeline.runner --discover-bebek-arabasi
+        """
+        import asyncio as _asyncio
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        config = _load_seyahat_bebek_config()
+        models = config.get("bebek_arabasi", {}).get("models", [])
+        if not models:
+            logger.warning("[m13:discover-bebek-arabasi] bebek_arabasi.models boş — YAML'ı kontrol et")
+            return
+
+        found = 0
+        async with TrendyolM13Scraper() as scraper:
+            for m in models:
+                brand      = m.get("brand", "")
+                model_code = m.get("model_code", "")
+
+                match = await scraper.find_by_model(model_code, brand)
+                if match:
+                    m["trendyol_sku"] = match["sku"]
+                    found += 1
+                    logger.info(
+                        "[m13:discover-bebek-arabasi] %s %s → sku=%s, fiyat=%.2f TL",
+                        brand, model_code, match["sku"], match["price"],
+                    )
+                else:
+                    logger.warning("[m13:discover-bebek-arabasi] %s %s → Trendyol'da bulunamadı", brand, model_code)
+
+                await _asyncio.sleep(2)
+
+        _write_seyahat_bebek_config(config)
+        logger.info("[m13:discover-bebek-arabasi] tamamlandı — %d/%d model bulundu", found, len(models))
 
     async def _run_saat_altin(self, dry_run: bool = False) -> list[ScrapeRun]:
         """Tracked SKU'lar için günlük fiyat çeker (her iki kaynak)."""
@@ -458,5 +706,240 @@ class KisiselBakimModule(BaseModule):
             if not dry_run:
                 async with get_connection() as conn:
                     await upsert_scrape_run(conn, run)
+
+        return runs
+
+    # ── Seyahat & Bebek part: Trendyol keyword araması ──────────────────────
+
+    async def _run_seyahat_bebek(self, dry_run: bool = False) -> list[ScrapeRun]:
+        from modules.m13_kisisel_bakim.scrapers.m13_trendyol import TrendyolM13Scraper
+
+        cfg = _load_seyahat_bebek_config()
+        keywords = cfg.get("keywords") or []
+        runs: list[ScrapeRun] = []
+
+        logger.info("[m13:seyahat_bebek] %d keyword, kaynak: trendyol", len(keywords))
+
+        run = ScrapeRun(
+            market="m13:trendyol:seyahat_bebek",
+            run_date=date.today(),
+            started_at=datetime.now(),
+        )
+        try:
+            sb_records: list[SeyahatBebekRecord] = []
+            errors = 0
+            async with TrendyolM13Scraper() as scraper:
+                # ── Keyword araması (bebek/seyahat tüketim) ───────────────
+                for kw in keywords:
+                    price_records = await scraper.search_keyword(kw)
+                    for r in price_records:
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=r.snapshot_date,
+                                keyword=kw,
+                                market_sku=r.market_sku,
+                                market_name=r.market_name,
+                                brand=r.brand or "",
+                                price=r.price,
+                                discounted_price=r.islem_hacmi,
+                            ))
+                        except Exception:
+                            errors += 1
+                    await asyncio.sleep(2)
+
+                # ── Valiz & Bavul sepet ortalaması ───────────────────────
+                vb_cfg    = cfg.get("valiz_bavul", {})
+                vb_brands = vb_cfg.get("brands", [])
+                vb_top_n  = int(vb_cfg.get("top_n", 5))
+                vb_filter = vb_cfg.get("trendyol_filter", "")
+                if vb_brands:
+                    vb_prices: list = []
+                    for b in vb_brands:
+                        bp = b.get("trendyol_params") or vb_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        vb_prices.extend(r.price for r in _dedup_top_n(res, vb_top_n) if r.price > 0)
+                        await asyncio.sleep(2)
+                    if vb_prices:
+                        from decimal import Decimal as _D
+                        avg_vb = sum(vb_prices) / _D(len(vb_prices))
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=date.today(),
+                                keyword="valiz_bavul",
+                                market_sku="valiz_bavul_sepet",
+                                market_name=f"Valiz & Bavul Ortalama ({len(vb_prices)} ürün)",
+                                brand="",
+                                price=avg_vb,
+                            ))
+                        except Exception:
+                            errors += 1
+                        logger.info(
+                            "[m13:seyahat_bebek] valiz & bavul: %d fiyat, ort=%.2f TL",
+                            len(vb_prices), float(avg_vb),
+                        )
+                    else:
+                        logger.warning("[m13:seyahat_bebek] valiz & bavul: hiçbir ürün fiyatı alınamadı")
+
+                # ── Okul çantası sepet ortalaması ────────────────────────
+                oc_cfg    = cfg.get("okul_cantasi", {})
+                oc_brands = oc_cfg.get("brands", [])
+                oc_top_n  = int(oc_cfg.get("top_n", 5))
+                oc_filter = oc_cfg.get("trendyol_filter", "")
+                if oc_brands:
+                    oc_prices: list = []
+                    for b in oc_brands:
+                        bp = b.get("trendyol_params") or oc_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        oc_prices.extend(r.price for r in _dedup_top_n(res, oc_top_n) if r.price > 0)
+                        await asyncio.sleep(2)
+                    if oc_prices:
+                        from decimal import Decimal as _D
+                        avg_oc = sum(oc_prices) / _D(len(oc_prices))
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=date.today(),
+                                keyword="okul_cantasi",
+                                market_sku="okul_cantasi_sepet",
+                                market_name=f"Okul Çantası Ortalama ({len(oc_prices)} ürün)",
+                                brand="",
+                                price=avg_oc,
+                            ))
+                        except Exception:
+                            errors += 1
+                        logger.info(
+                            "[m13:seyahat_bebek] okul çantası: %d fiyat, ort=%.2f TL",
+                            len(oc_prices), float(avg_oc),
+                        )
+                    else:
+                        logger.warning("[m13:seyahat_bebek] okul çantası: hiçbir ürün fiyatı alınamadı")
+
+                # ── Kadın çantası sepet ortalaması ───────────────────────
+                kc_cfg    = cfg.get("kadin_cantasi", {})
+                kc_brands = kc_cfg.get("brands", [])
+                kc_top_n  = int(kc_cfg.get("top_n", 5))
+                kc_filter = kc_cfg.get("trendyol_filter", "")
+                if kc_brands:
+                    kc_prices: list = []
+                    for b in kc_brands:
+                        bp = b.get("trendyol_params") or kc_filter
+                        q  = "" if b.get("trendyol_params") else b.get("search_query", b.get("brand", ""))
+                        res = await scraper.search_keyword(q, max_pages=1, extra_params=bp)
+                        kc_prices.extend(r.price for r in _dedup_top_n(res, kc_top_n) if r.price > 0)
+                        await asyncio.sleep(2)
+                    if kc_prices:
+                        from decimal import Decimal as _D
+                        avg_kc = sum(kc_prices) / _D(len(kc_prices))
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=date.today(),
+                                keyword="kadin_cantasi",
+                                market_sku="kadin_cantasi_sepet",
+                                market_name=f"Kadın Çantası Ortalama ({len(kc_prices)} ürün)",
+                                brand="",
+                                price=avg_kc,
+                            ))
+                        except Exception:
+                            errors += 1
+                        logger.info(
+                            "[m13:seyahat_bebek] kadın çantası: %d fiyat, ort=%.2f TL",
+                            len(kc_prices), float(avg_kc),
+                        )
+                    else:
+                        logger.warning("[m13:seyahat_bebek] kadın çantası: hiçbir ürün fiyatı alınamadı")
+
+                # ── Tracked SKU araması (güneş gözlüğü) ──────────────────
+                gg_models = cfg.get("gunes_gozlugu", {}).get("models", [])
+                tracked = [
+                    {
+                        "sku":         m["trendyol_sku"],
+                        "brand_model": m["model_code"],
+                        "brand":       m["brand"],
+                        "source":      "trendyol",
+                    }
+                    for m in gg_models if m.get("trendyol_sku")
+                ]
+                if tracked:
+                    price_records = await scraper.scrape_tracked(tracked)
+                    sku_to_model = {m["trendyol_sku"]: m for m in gg_models if m.get("trendyol_sku")}
+                    for r in price_records:
+                        m = sku_to_model.get(r.market_sku, {})
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=r.snapshot_date,
+                                keyword=m.get("model_code", "gunes_gozlugu"),
+                                market_sku=r.market_sku,
+                                market_name=r.market_name,
+                                brand=m.get("brand") or r.brand or "",
+                                price=r.price,
+                                discounted_price=r.islem_hacmi,
+                            ))
+                        except Exception:
+                            errors += 1
+                elif gg_models:
+                    logger.warning("[m13:seyahat_bebek] güneş gözlüğü SKU'ları boş — önce --discover-gunes çalıştır")
+
+                # ── Tracked SKU araması (bebek arabası) ───────────────────
+                ba_models = cfg.get("bebek_arabasi", {}).get("models", [])
+                tracked_ba = [
+                    {
+                        "sku":         m["trendyol_sku"],
+                        "brand_model": m["model_code"],
+                        "brand":       m["brand"],
+                        "source":      "trendyol",
+                    }
+                    for m in ba_models if m.get("trendyol_sku")
+                ]
+                if tracked_ba:
+                    price_records = await scraper.scrape_tracked(tracked_ba)
+                    sku_to_ba = {m["trendyol_sku"]: m for m in ba_models if m.get("trendyol_sku")}
+                    for r in price_records:
+                        m = sku_to_ba.get(r.market_sku, {})
+                        try:
+                            sb_records.append(SeyahatBebekRecord(
+                                snapshot_date=r.snapshot_date,
+                                keyword="bebek_arabasi",
+                                market_sku=r.market_sku,
+                                market_name=r.market_name,
+                                brand=m.get("brand") or r.brand or "",
+                                price=r.price,
+                                discounted_price=r.islem_hacmi,
+                            ))
+                        except Exception:
+                            errors += 1
+                elif ba_models:
+                    logger.warning("[m13:seyahat_bebek] bebek arabası SKU'ları boş — önce --discover-bebek-arabasi çalıştır")
+
+            run.products_scraped = len(sb_records)
+            run.errors_count = errors
+
+            if dry_run:
+                logger.info("[m13:seyahat_bebek] Dry-run: %d ürün (DB'ye yazılmadı)", len(sb_records))
+                for r in sb_records[:5]:
+                    _print_safe(f"  [trendyol:{r.keyword}] {r.market_name} | {r.price} TL")
+                if len(sb_records) > 5:
+                    _print_safe(f"  ... ve {len(sb_records) - 5} ürün daha")
+            else:
+                async with get_connection() as conn:
+                    inserted = await batch_insert_seyahat_bebek_prices(conn, sb_records)
+                    logger.info("[m13:seyahat_bebek] %d ürün eklendi", inserted)
+
+            run.status = "success" if errors == 0 else "partial"
+
+        except Exception as exc:
+            logger.error("[m13:seyahat_bebek] kritik hata: %s", exc, exc_info=True)
+            run.status = "failed"
+            run.error_details = str(exc)
+
+        run.finished_at = datetime.now()
+        logger.info(
+            "[m13:seyahat_bebek] tamamlandı — %s, %.1fs",
+            run.status, (run.finished_at - run.started_at).total_seconds(),
+        )
+        runs.append(run)
+        if not dry_run:
+            async with get_connection() as conn:
+                await upsert_scrape_run(conn, run)
 
         return runs
